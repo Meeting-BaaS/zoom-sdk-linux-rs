@@ -1,0 +1,6 @@
+zoom-meeting-sdk-linux/images
+zoom-meeting-sdk-linux/json
+zoom-meeting-sdk-linux/libmpg123.so
+libwrapper.a
+target/
+!.gitkeep

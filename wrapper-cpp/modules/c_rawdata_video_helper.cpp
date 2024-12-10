@@ -18,7 +18,7 @@ public:
     }
     void onRawDataFrameReceived(YUVRawDataI420* data) override {
         using namespace std::chrono;
-        int64_t timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
         printf("width=%i, height=%i\n", data->GetStreamWidth(), data->GetStreamHeight());
 

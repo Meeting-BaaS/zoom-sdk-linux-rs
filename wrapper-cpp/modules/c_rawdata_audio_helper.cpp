@@ -63,7 +63,7 @@ public:
 private:
     inline struct exported_audio_raw_data provide(AudioRawData* rawdata) {
         using namespace std::chrono;
-        int64_t timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
         
         struct exported_audio_raw_data data = {
             data: rawdata->GetBuffer(),

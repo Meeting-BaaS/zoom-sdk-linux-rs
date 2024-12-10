@@ -44,7 +44,7 @@ class C_MeetingRecordingCtrlEvent: public ZOOMSDK::IMeetingRecordingCtrlEvent {
 	    /// \param status Value of recording status. For more details, see \link RecordingStatus \endlink enum.
 	    void onRecordingStatus(ZOOMSDK::RecordingStatus status) {
             using namespace std::chrono;
-            int64_t timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+            int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
             printf("onRecordingStatus %i\n", status);
             on_recording_status(ptr_to_rust, status, timestamp);

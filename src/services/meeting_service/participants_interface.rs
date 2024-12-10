@@ -23,7 +23,7 @@ impl<'a> fmt::Debug for ParticipantsInterface<'a> {
 /// This struct represents a [Participant].
 pub struct Participant<'a> {
     inner: &'a Cell<ZOOMSDK_IUserInfo>, // Interior mutability garanted by inner UnsafeCell
-    user_id: usize,
+    user_id: i32,
 }
 
 impl<'a> fmt::Debug for Participant<'a> {
@@ -47,15 +47,15 @@ impl<'a> ParticipantsInterface<'a> {
         }
     }
     /// Get user id of the bot
-    pub fn get_my_self_user_id(&mut self) -> u32 {
+    pub fn get_my_self_user_id(&mut self) -> i32 {
         let this = unsafe { get_my_self_user(self.ref_participants_controler) };
-        unsafe { get_user_id(this) }
+        unsafe { get_user_id(this) as i32 }
     }
 }
 
 impl<'a> Participant<'a> {
     #[inline(always)]
-    pub fn get_user_id(&self) -> usize {
+    pub fn get_user_id(&self) -> i32 {
         self.user_id
     }
     /// Check if a participant is talking.
@@ -102,7 +102,7 @@ impl<'a> ParticipantsInterface<'a> {
                         let v = *user_infos.offset(idx as isize);
                         InternalUserInfo {
                             cell: Cell::from_mut(v.user_info.as_mut().expect("All is bullshit")),
-                            user_id: v.user_id as usize,
+                            user_id: v.user_id,
                         }
                     })
                     .collect::<Vec<InternalUserInfo>>(),
@@ -115,7 +115,7 @@ impl<'a> ParticipantsInterface<'a> {
 
 struct InternalUserInfo<'a> {
     cell: &'a Cell<ZOOMSDK_IUserInfo>,
-    user_id: usize,
+    user_id: i32,
 }
 
 /// Public [Iterator] over [Participant].

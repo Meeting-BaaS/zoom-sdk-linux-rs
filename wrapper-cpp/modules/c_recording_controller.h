@@ -25,12 +25,21 @@ extern "C" ZOOMSDK::SDKError recording_start_recording(ZOOMSDK::IMeetingRecordin
 /// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
 extern "C" ZOOMSDK::SDKError recording_stop_recording(ZOOMSDK::IMeetingRecordingController *ctrl, time_t *stopTimestamp);
 
+/// \brief Pause recording.
+/// \return If the function succeeds, the return value is SDKErr_Success.
+/// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
+extern "C" ZOOMSDK::SDKError recording_pause_recording(ZOOMSDK::IMeetingRecordingController *ctrl);
+
+/// \brief Resume recording.
+/// \return If the function succeeds, the return value is SDKErr_Success.
+/// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
+extern "C" ZOOMSDK::SDKError recording_resume_recording(ZOOMSDK::IMeetingRecordingController *ctrl);
+
 /// \brief Set meeting recording callback event handler.
 /// \param pEvent A pointer to the IMeetingRecordingCtrlEvent that receives the recording event.
 /// \return If the function succeeds, the return value is SDKErr_Success.
 /// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
 extern "C" ZOOMSDK::SDKError recording_set_event(ZOOMSDK::IMeetingRecordingController *ctrl, void *arc_ptr);
-
 
 /// \brief Determine if the specified user is enabled to start raw recording.
 /// \return If the function succeeds, the return value is SDKErr_Success.

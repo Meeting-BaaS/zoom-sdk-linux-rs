@@ -5830,6 +5830,18 @@ extern "C" {
     ) -> ZOOMSDK_SDKError;
 }
 extern "C" {
+    #[doc = " \\brief Pause recording.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    pub fn recording_pause_recording(
+        ctrl: *mut ZOOMSDK_IMeetingRecordingController,
+    ) -> ZOOMSDK_SDKError;
+}
+extern "C" {
+    #[doc = " \\brief Resume recording.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    pub fn recording_resume_recording(
+        ctrl: *mut ZOOMSDK_IMeetingRecordingController,
+    ) -> ZOOMSDK_SDKError;
+}
+extern "C" {
     #[doc = " \\brief Set meeting recording callback event handler.\n \\param pEvent A pointer to the IMeetingRecordingCtrlEvent that receives the recording event.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
     pub fn recording_set_event(
         ctrl: *mut ZOOMSDK_IMeetingRecordingController,

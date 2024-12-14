@@ -132,6 +132,24 @@ impl<'a> RecordingController<'a> {
         )
         .into()
     }
+    /// Pause recording.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details
+    pub fn pause_recording(&mut self) -> SdkResult<()> {
+        ZoomSdkResult(
+            unsafe { recording_pause_recording(self.ref_recording_controller) },
+            (),
+        )
+        .into()
+    }
+    /// Resume recording.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details
+    pub fn resume_recording(&mut self) -> SdkResult<()> {
+        ZoomSdkResult(
+            unsafe { recording_resume_recording(self.ref_recording_controller) },
+            (),
+        )
+        .into()
+    }
 }
 
 /// Request local recording privilege status.

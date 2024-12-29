@@ -10,8 +10,10 @@ pub type ExportedAudioRawData = exported_audio_raw_data;
 /// This structure represents the ZOOM SDK audio sender.
 pub struct AudioRawDataSenderInterface(*mut ZOOMSDK_IZoomSDKAudioRawDataSender);
 
+unsafe impl Send for AudioRawDataSenderInterface {}
+
 impl AudioRawDataSenderInterface {
-    pub fn send(&mut self, data: &[u8], sample_rate: usize) -> ZoomSdkResult<()> {
+    pub fn send(&mut self, data: &[u8], sample_rate: usize) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe {
                 send_audio_raw_data(
@@ -23,6 +25,7 @@ impl AudioRawDataSenderInterface {
             },
             (),
         )
+        .into()
     }
 }
 
@@ -108,13 +111,12 @@ impl<'a> AudioRawDataHelper<'a> {
     /// \Subscribe audio mic raw data with a callback.
     /// - [VirtualAudioMicEvent], the callback handler of raw audio data.
     /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
-    pub fn audio_helper_set_external_audio_source(
+    pub fn set_external_audio_source(
         &mut self,
-        event: Box<dyn VirtualAudioMicEvent>,
+        arc_event: Arc<Mutex<Box<dyn VirtualAudioMicEvent>>>,
     ) -> SdkResult<()> {
-        let evt_mutex = Some(Arc::new(Mutex::new(event)));
-        let ptr = Arc::as_ptr(evt_mutex.as_ref().unwrap()) as *mut _;
-        self.evt_mic_event_mutex = evt_mutex;
+        let ptr = Arc::as_ptr(&arc_event) as *mut _;
+        self.evt_mic_event_mutex = Some(arc_event);
         ZoomSdkResult(
             unsafe { audio_helper_set_external_audio_source(self.ref_rawdata_helper, ptr) },
             (),

@@ -6,6 +6,26 @@ use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 /// Rust type definition.
 pub type ExportedAudioRawData = exported_audio_raw_data;
 
+#[derive(Debug, Clone)]
+/// This structure represents the ZOOM SDK audio sender.
+pub struct AudioRawDataSenderInterface(*mut ZOOMSDK_IZoomSDKAudioRawDataSender);
+
+impl AudioRawDataSenderInterface {
+    pub fn send(&mut self, data: &[u8], sample_rate: usize) -> ZoomSdkResult<()> {
+        ZoomSdkResult(
+            unsafe {
+                send_audio_raw_data(
+                    self.0,
+                    data.as_ptr() as *mut i8,
+                    data.len() as _,
+                    sample_rate as i32,
+                )
+            },
+            (),
+        )
+    }
+}
+
 /// RawData audio events from delegate.
 pub trait RawAudioEvent: Debug {
     /// Mixed audio represents all audio channels mixed.
@@ -18,11 +38,24 @@ pub trait RawAudioEvent: Debug {
     fn flush(&mut self);
 }
 
+/// VirtualAudioMicEvent
+pub trait VirtualAudioMicEvent: Debug {
+    /// Callback for virtual audio mic to do some initialization.
+    fn on_mic_initialize(&mut self, sender: AudioRawDataSenderInterface);
+    /// Callback for virtual audio mic can send raw data with 'pSender'.
+    fn on_mic_start_send(&mut self);
+    /// Callback for virtual audio mic should stop send raw data.
+    fn on_mic_stop_send(&mut self);
+    /// Callback for virtual audio mic is uninitialized.
+    fn on_mic_uninitialized(&mut self);
+}
+
 /// Audio RawData Helper.
 #[derive(Debug)]
 pub struct AudioRawDataHelper<'a> {
     ref_rawdata_helper: &'a mut ZOOMSDK_IZoomSDKAudioRawDataHelper,
     delegate: Option<RawAudioDelegate<'a>>,
+    evt_mic_event_mutex: Option<Arc<Mutex<Box<dyn VirtualAudioMicEvent>>>>,
 }
 
 impl<'a> AudioRawDataHelper<'a> {
@@ -36,6 +69,7 @@ impl<'a> AudioRawDataHelper<'a> {
         Ok(Self {
             ref_rawdata_helper: unsafe { ptr.as_mut() }.unwrap(),
             delegate: None,
+            evt_mic_event_mutex: None,
         })
     }
     /// Subscribe raw audio data.
@@ -70,6 +104,22 @@ impl<'a> AudioRawDataHelper<'a> {
             _trashes.flush();
         }
         result
+    }
+    /// \Subscribe audio mic raw data with a callback.
+    /// - [VirtualAudioMicEvent], the callback handler of raw audio data.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    pub fn audio_helper_set_external_audio_source(
+        &mut self,
+        event: Box<dyn VirtualAudioMicEvent>,
+    ) -> SdkResult<()> {
+        let evt_mutex = Some(Arc::new(Mutex::new(event)));
+        let ptr = Arc::as_ptr(evt_mutex.as_ref().unwrap()) as *mut _;
+        self.evt_mic_event_mutex = evt_mutex;
+        ZoomSdkResult(
+            unsafe { audio_helper_set_external_audio_source(self.ref_rawdata_helper, ptr) },
+            (),
+        )
+        .into()
     }
 }
 
@@ -149,6 +199,41 @@ extern "C" fn on_share_audio_raw_data(ptr: *const u8, data: *const exported_audi
 #[inline]
 fn convert(ptr: *const u8) -> Arc<Mutex<Box<dyn RawAudioEvent>>> {
     let ptr: *const Mutex<Box<dyn RawAudioEvent>> = ptr as *const _;
+    unsafe { Arc::increment_strong_count(ptr) }; // Avoid freeing Arc after Drop
+    unsafe { Arc::from_raw(ptr) }
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_mic_initialize(ptr: *const u8, sender: *mut ZOOMSDK_IZoomSDKAudioRawDataSender) {
+    if sender.is_null() {
+        tracing::warn!("Null pointer detected!");
+    } else {
+        (*convert_n(ptr).lock().unwrap()).on_mic_initialize(AudioRawDataSenderInterface(sender))
+    }
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_mic_start_send(ptr: *const u8) {
+    (*convert_n(ptr).lock().unwrap()).on_mic_start_send()
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_mic_stop_send(ptr: *const u8) {
+    (*convert_n(ptr).lock().unwrap()).on_mic_stop_send()
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_mic_uninitialized(ptr: *const u8) {
+    (*convert_n(ptr).lock().unwrap()).on_mic_uninitialized()
+}
+
+#[inline]
+fn convert_n(ptr: *const u8) -> Arc<Mutex<Box<dyn VirtualAudioMicEvent>>> {
+    let ptr: *const Mutex<Box<dyn VirtualAudioMicEvent>> = ptr as *const _;
     unsafe { Arc::increment_strong_count(ptr) }; // Avoid freeing Arc after Drop
     unsafe { Arc::from_raw(ptr) }
 }

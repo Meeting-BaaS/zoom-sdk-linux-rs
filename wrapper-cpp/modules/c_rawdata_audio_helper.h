@@ -28,10 +28,21 @@ extern "C" ZOOMSDK::SDKError audio_helper_subscribe_delegate(
 
 extern "C" ZOOMSDK::SDKError audio_helper_unsubscribe_delegate(ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx);
 
+/// \brief Subscribe audio mic raw data with a callback.
+/// \param pSource, Callback sink object.
+/// \return If the function succeeds, the return value is SDKERR_SUCCESS.
+///Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
 extern "C" ZOOMSDK::SDKError audio_helper_set_external_audio_source(
     ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx,
     void *arc_ptr);
 
+/// \brief Send audio raw data. Audio sample must be 16-bit audio.
+/// \param data the audio datas address.
+/// \param data_length the audio datas length. Must be an even number.
+/// \param sample_rate the audio datas sampling rate.
+/// When the channel is mono, supported sample rates: 8000/11025/16000/32000/44100/48000/50000/50400/96000/192000/2822400
+/// \return If the function succeeds, the return value is SDKERR_SUCCESS.
+// /Otherwise the function fails and returns an error code. To get extended error information, see \link SDKError \endlink enum.
 extern "C" ZOOMSDK::SDKError send_audio_raw_data(
     ZOOMSDK::IZoomSDKAudioRawDataSender* p_sender,
     char* data,

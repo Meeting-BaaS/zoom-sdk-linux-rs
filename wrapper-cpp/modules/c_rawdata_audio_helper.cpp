@@ -87,11 +87,11 @@ extern "C" ZOOMSDK::IZoomSDKAudioRawDataDelegate* audio_helper_create_delegate(
 extern "C" ZOOMSDK::SDKError audio_helper_subscribe_delegate(
     ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx,
     ZOOMSDK::IZoomSDKAudioRawDataDelegate* pDelegate) {
-        return ctx->subscribe(pDelegate);
+    return ctx->subscribe(pDelegate);
 }
 
 extern "C" ZOOMSDK::SDKError audio_helper_unsubscribe_delegate(ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx) {
-        return ctx->unSubscribe();
+    return ctx->unSubscribe();
 }
 
 extern "C" void on_mic_initialize(void *ptr, ZOOMSDK::IZoomSDKAudioRawDataSender* pSender);
@@ -127,7 +127,6 @@ public:
 	/// \brief Callback for virtual audio mic is uninitialized.
 	virtual void onMicUninitialized() override {
         on_mic_uninitialized(ptr_to_rust);
-
     }
 private:
     void *ptr_to_rust;

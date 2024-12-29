@@ -5707,6 +5707,22 @@ extern "C" {
         ctx: *mut ZOOMSDK_IZoomSDKAudioRawDataHelper,
     ) -> ZOOMSDK_SDKError;
 }
+extern "C" {
+    #[doc = " \\brief Subscribe audio mic raw data with a callback.\n \\param pSource, Callback sink object.\n \\return If the function succeeds, the return value is SDKERR_SUCCESS.\nOtherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    pub fn audio_helper_set_external_audio_source(
+        ctx: *mut ZOOMSDK_IZoomSDKAudioRawDataHelper,
+        arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+extern "C" {
+    #[doc = " \\brief Send audio raw data. Audio sample must be 16-bit audio.\n \\param data the audio datas address.\n \\param data_length the audio datas length. Must be an even number.\n \\param sample_rate the audio datas sampling rate.\n When the channel is mono, supported sample rates: 8000/11025/16000/32000/44100/48000/50000/50400/96000/192000/2822400\n \\return If the function succeeds, the return value is SDKERR_SUCCESS."]
+    pub fn send_audio_raw_data(
+        p_sender: *mut ZOOMSDK_IZoomSDKAudioRawDataSender,
+        data: *mut ::std::os::raw::c_char,
+        data_length: ::std::os::raw::c_uint,
+        sample_rate: ::std::os::raw::c_int,
+    ) -> ZOOMSDK_SDKError;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct exported_video_raw_data {

@@ -94,10 +94,65 @@ extern "C" ZOOMSDK::SDKError audio_helper_unsubscribe_delegate(ZOOMSDK::IZoomSDK
         return ctx->unSubscribe();
 }
 
+extern "C" void on_mic_initialize(void *ptr, ZOOMSDK::IZoomSDKAudioRawDataSender* pSender);
+
+extern "C" void on_mic_start_send(void *ptr);
+
+extern "C" void on_mic_stop_send(void *ptr);
+
+extern "C" void on_mic_uninitialized(void *ptr);
+
+class ZoomSDKVirtualAudioMicEvent : public ZOOMSDK::IZoomSDKVirtualAudioMicEvent {
+public:
+	ZoomSDKVirtualAudioMicEvent(void *ptr) {
+         ptr_to_rust = ptr;
+    }
+
+	/// \brief Callback for virtual audio mic to do some initialization.
+	/// \param pSender, You can send audio data based on this object, see \link IZoomSDKAudioRawDataSender \endlink.
+	virtual void onMicInitialize(ZOOMSDK::IZoomSDKAudioRawDataSender* pSender) override {
+        on_mic_initialize(ptr_to_rust, pSender);
+    }
+
+	/// \brief Callback for virtual audio mic can send raw data with 'pSender'.
+	virtual void onMicStartSend() override {
+        on_mic_start_send(ptr_to_rust);
+    }
+
+	/// \brief Callback for virtual audio mic should stop send raw data.
+	virtual void onMicStopSend() override {
+        on_mic_stop_send(ptr_to_rust);
+    }
+
+	/// \brief Callback for virtual audio mic is uninitialized.
+	virtual void onMicUninitialized() override {
+        on_mic_uninitialized(ptr_to_rust);
+
+    }
+private:
+    void *ptr_to_rust;
+};
+
+extern "C" ZOOMSDK::SDKError audio_helper_set_external_audio_source(
+    ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx,
+    void *arc_ptr) {
+        auto* obj = new ZoomSDKVirtualAudioMicEvent(arc_ptr); // TODO : Fix memory leak
+        return ctx->setExternalAudioSource(obj);
+}
+
+extern "C" ZOOMSDK::SDKError send_audio_raw_data(
+    ZOOMSDK::IZoomSDKAudioRawDataSender* p_sender,
+    char* data,
+    unsigned int data_length,
+    int sample_rate) {
+        return p_sender->send(data, data_length, sample_rate);
+}
+
 // TODO : Check it is not bullshit documentation
 // boolean canAddRef()
 // Determine if the reference count for the interface pointer can be increased.
 //
+
 // If you call addRef(), the SDK will try to hold the raw data buffer until the reference becomes 0.
 // When you finish using the raw data buffer, you must call releaseRef(); to release it.
 

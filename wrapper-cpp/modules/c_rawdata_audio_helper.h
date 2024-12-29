@@ -28,4 +28,14 @@ extern "C" ZOOMSDK::SDKError audio_helper_subscribe_delegate(
 
 extern "C" ZOOMSDK::SDKError audio_helper_unsubscribe_delegate(ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx);
 
+extern "C" ZOOMSDK::SDKError audio_helper_set_external_audio_source(
+    ZOOMSDK::IZoomSDKAudioRawDataHelper* ctx,
+    void *arc_ptr);
+
+extern "C" ZOOMSDK::SDKError send_audio_raw_data(
+    ZOOMSDK::IZoomSDKAudioRawDataSender* p_sender,
+    char* data,
+    unsigned int data_length,
+    int sample_rate);
+
 #endif

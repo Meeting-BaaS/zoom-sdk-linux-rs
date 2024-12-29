@@ -24,6 +24,9 @@ impl<'a> ChatInterface<'a> {
     /// Send chat message [str]
     /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
     pub fn send_message(&mut self, message: String) -> SdkResult<()> {
+        if message.len() == 0 {
+            return Ok(());
+        }
         let builder = unsafe { meeting_get_chat_message_builder(self.ptr_chat_controler) };
         if builder.is_null() {
             tracing::warn!("NullPtr received!");

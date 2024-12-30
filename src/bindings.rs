@@ -5276,6 +5276,37 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct mic_list {
+    pub device_id: *const zchar_t,
+    pub device_name: *const zchar_t,
+    pub selected: bool,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of mic_list"][::std::mem::size_of::<mic_list>() - 24usize];
+    ["Alignment of mic_list"][::std::mem::align_of::<mic_list>() - 8usize];
+    ["Offset of field: mic_list::device_id"][::std::mem::offset_of!(mic_list, device_id) - 0usize];
+    ["Offset of field: mic_list::device_name"]
+        [::std::mem::offset_of!(mic_list, device_name) - 8usize];
+    ["Offset of field: mic_list::selected"][::std::mem::offset_of!(mic_list, selected) - 16usize];
+};
+extern "C" {
+    #[doc = " \\brief Get the mic device list.\n \\return If the function succeeds, the return value is the camera device list.\n Otherwise failed, returns NULL."]
+    pub fn get_mic_list(
+        audio_setting: *mut ZOOMSDK_IAudioSettingContext,
+        len: *mut ::std::os::raw::c_uint,
+    ) -> *mut mic_list;
+}
+extern "C" {
+    #[doc = " \\brief Select mic device.\n \\param deviceId Specify the device to be selected.\n \\param deviceName Specify the device name assigned by deviceId.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    pub fn select_mic(
+        audio_setting: *mut ZOOMSDK_IAudioSettingContext,
+        deviceId: *const zchar_t,
+        deviceName: *const zchar_t,
+    ) -> ZOOMSDK_SDKError;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct timeval {
     pub tv_sec: __time_t,
     pub tv_usec: __suseconds_t,

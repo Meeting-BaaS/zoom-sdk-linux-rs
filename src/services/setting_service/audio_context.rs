@@ -27,4 +27,16 @@ impl<'a> AudioContext<'a> {
         )
         .into()
     }
+    pub fn select_microphone(&mut self) {
+        let mut len: u32 = 0;
+        let mic_list_ptr = unsafe { get_mic_list(self.ref_audio_context, &mut len) };
+        let ret = unsafe {
+            select_mic(
+                self.ref_audio_context,
+                (*mic_list_ptr.offset(1)).device_id,
+                (*mic_list_ptr.offset(1)).device_name,
+            );
+        };
+        dbg!(ret);
+    }
 }

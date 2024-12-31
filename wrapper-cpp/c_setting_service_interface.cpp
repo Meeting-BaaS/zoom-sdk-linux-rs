@@ -24,10 +24,6 @@ extern "C" struct mic_list* get_mic_list(ZOOMSDK::IAudioSettingContext* audio_se
         m[i].device_id = mic->GetDeviceId();
         m[i].device_name = mic->GetDeviceName();
         m[i].selected = mic->IsSelectedDevice();
-
-        printf("id : %s\n", m[i].device_id);
-        printf("name : %s\n", m[i].device_name);
-        printf("is_selected: %i\n", m[i].selected);
     }
     *len = count;
     return m;
@@ -38,13 +34,12 @@ extern "C" ZOOMSDK::SDKError select_mic(
     const zchar_t* deviceId,
     const zchar_t* deviceName
 ) {
-    ZOOMSDK::SDKError ret_a = audio_setting->SelectMic(deviceId, deviceName);
-    ZOOMSDK::SDKError ret_b = audio_setting->SetSuppressBackgroundNoiseLevel(ZOOMSDK::Suppress_Background_Noise_Level::Suppress_BGNoise_Level_None);
-    printf("Noise None = %i\n", ret_b);
-    if (ret_b != 0) {
-        ZOOMSDK::SDKError ret_c = audio_setting->SetSuppressBackgroundNoiseLevel(ZOOMSDK::Suppress_Background_Noise_Level::Suppress_BGNoise_Level_Low);
-        printf("Noise Low = %i\n", ret_c);
-    }
-    printf("Final = %i\n", ret_a);
-    return ret_a;
+    return audio_setting->SelectMic(deviceId, deviceName);
+}
+
+extern "C" ZOOMSDK::SDKError set_suppress_background_noise_level(
+    ZOOMSDK::IAudioSettingContext* audio_setting,
+    ZOOMSDK::Suppress_Background_Noise_Level level
+) {
+    return audio_setting->SetSuppressBackgroundNoiseLevel(level);
 }

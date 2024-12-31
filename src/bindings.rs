@@ -5305,6 +5305,13 @@ extern "C" {
         deviceName: *const zchar_t,
     ) -> ZOOMSDK_SDKError;
 }
+extern "C" {
+    #[doc = " \\brief Set the suppress background noise level.\n \\param level The new suppress background noise level to be set.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    pub fn set_suppress_background_noise_level(
+        audio_setting: *mut ZOOMSDK_IAudioSettingContext,
+        level: ZOOMSDK_Suppress_Background_Noise_Level,
+    ) -> ZOOMSDK_SDKError;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct timeval {

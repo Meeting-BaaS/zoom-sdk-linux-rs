@@ -37,4 +37,13 @@ extern "C" ZOOMSDK::SDKError select_mic(
     const zchar_t* deviceName
 );
 
+/// \brief Set the suppress background noise level.
+/// \param level The new suppress background noise level to be set.
+/// \return If the function succeeds, the return value is SDKErr_Success.
+/// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
+extern "C" ZOOMSDK::SDKError set_suppress_background_noise_level(
+    ZOOMSDK::IAudioSettingContext* audio_setting,
+    ZOOMSDK::Suppress_Background_Noise_Level level
+);
+
 #endif

@@ -21,7 +21,7 @@ pub fn parse(meeting_url: &str) -> Option<(String, String)> {
                         inner
                             .1
                             .strip_prefix("(Passcode:")
-                            .map(|s| s.trim_end_matches(')'))
+                            .map(|s| s.trim_end_matches(')').trim())
                     });
                     id.and_then(|id| pwd.and_then(|pwd| Some((id.to_owned(), pwd.to_owned()))))
                 })

@@ -91,11 +91,22 @@ impl<'a> AudioContext<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum MicDriver {
     SndAloop,
     Pulse,
     Default,
+}
+
+impl TryFrom<MicDriver> for &'static str {
+    type Error = &'static str;
+    fn try_from(driver: MicDriver) -> Result<Self, Self::Error> {
+        match driver {
+            MicDriver::Pulse => Ok("\"pulse:virtual_mic\""),
+            MicDriver::SndAloop => Ok("hw:Loopback,1"),
+            MicDriver::Default => Err("No Sense"),
+        }
+    }
 }
 
 #[derive(Debug)]

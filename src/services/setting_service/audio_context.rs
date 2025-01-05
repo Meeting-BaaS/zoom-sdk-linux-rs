@@ -54,7 +54,7 @@ impl<'a> AudioContext<'a> {
             use MicDriver::*;
             match driver {
                 SndAloop => v.device_id.to_str().unwrap().contains("snd_aloop"),
-                Pulse => unimplemented!(),
+                Pulse => v.device_id.to_str().unwrap().contains("virtual_mic_source"),
                 Default => unreachable!(),
             }
         });
@@ -102,7 +102,7 @@ impl TryFrom<MicDriver> for &'static str {
     type Error = &'static str;
     fn try_from(driver: MicDriver) -> Result<Self, Self::Error> {
         match driver {
-            MicDriver::Pulse => Ok("\"pulse:virtual_mic\""),
+            MicDriver::Pulse => Ok("pulse:virtual_mic"),
             MicDriver::SndAloop => Ok("hw:Loopback,1"),
             MicDriver::Default => Err("No Sense"),
         }

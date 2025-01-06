@@ -102,6 +102,7 @@ pub struct Instance<'a> {
 /// - [SdkInitParam] Initialize the parameter of ZOOM SDK.  
 /// - If the function succeeds, the return value is Ok([`Instance`]), otherwise failed, see [SdkError] for details.  
 /// ```rust
+/// use std::ffi::CString;
 /// use zoom_sdk_linux_rs::{Instance, SdkInitParam, SdkLanguageId, init_sdk};
 ///
 /// let mut instance = init_sdk(SdkInitParam {

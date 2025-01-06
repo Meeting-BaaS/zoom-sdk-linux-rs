@@ -8,8 +8,10 @@
 struct exported_video_raw_data {
     char *data;
     int64_t time;
-    unsigned int len;
+    uint32_t len;
     uint32_t user_id;
+    uint32_t width;
+    uint32_t height;
 };
 
 // SDK_API SDKError createRenderer(IZoomSDKRenderer** ppRenderer, IZoomSDKRendererDelegate* pDelegate);

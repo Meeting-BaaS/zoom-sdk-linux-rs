@@ -20,14 +20,13 @@ public:
         using namespace std::chrono;
         int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
-        printf("width=%i, height=%i\n", data->GetStreamWidth(), data->GetStreamHeight());
-
         struct exported_video_raw_data exported_data = {
             data: data->GetBuffer(),
             time: timestamp,
             len: data->GetBufferLen(),
             user_id: data->GetSourceID(),
-            // user_id: user_id,
+            width: data->GetStreamWidth(),
+            height: data->GetStreamHeight(),
         };
         on_raw_data_frame_received(ptr_to_rust, &exported_data);
     }

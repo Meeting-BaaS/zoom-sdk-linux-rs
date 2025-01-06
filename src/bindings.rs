@@ -5766,12 +5766,14 @@ extern "C" {
 pub struct exported_video_raw_data {
     pub data: *mut ::std::os::raw::c_char,
     pub time: i64,
-    pub len: ::std::os::raw::c_uint,
+    pub len: u32,
     pub user_id: u32,
+    pub width: u32,
+    pub height: u32,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of exported_video_raw_data"][::std::mem::size_of::<exported_video_raw_data>() - 24usize];
+    ["Size of exported_video_raw_data"][::std::mem::size_of::<exported_video_raw_data>() - 32usize];
     ["Alignment of exported_video_raw_data"]
         [::std::mem::align_of::<exported_video_raw_data>() - 8usize];
     ["Offset of field: exported_video_raw_data::data"]
@@ -5782,6 +5784,10 @@ const _: () = {
         [::std::mem::offset_of!(exported_video_raw_data, len) - 16usize];
     ["Offset of field: exported_video_raw_data::user_id"]
         [::std::mem::offset_of!(exported_video_raw_data, user_id) - 20usize];
+    ["Offset of field: exported_video_raw_data::width"]
+        [::std::mem::offset_of!(exported_video_raw_data, width) - 24usize];
+    ["Offset of field: exported_video_raw_data::height"]
+        [::std::mem::offset_of!(exported_video_raw_data, height) - 28usize];
 };
 extern "C" {
     pub fn video_helper_create_delegate(

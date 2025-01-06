@@ -107,7 +107,10 @@ impl<'a> MeetingService<'a> {
                     self.ref_meeting_service,
                     join_params.meeting_id as u64,
                     join_params.username.as_ptr() as *mut _,
-                    join_params.password.as_ptr() as *mut _,
+                    match join_params.password {
+                        Some(ptr) => ptr.as_ptr(),
+                        None => CStr::from_bytes_with_nul_unchecked(b"\0").as_ptr(),
+                    } as *mut _,
                 )
             },
             (),
@@ -413,5 +416,5 @@ pub struct JoinParam<'a> {
     /// Username when logged in the meeting.
     pub username: &'a CStr,
     /// Meeting password.
-    pub password: &'a CStr,
+    pub password: Option<&'a CStr>,
 }

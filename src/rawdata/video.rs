@@ -13,7 +13,7 @@ pub trait RawVideoEvent: Debug {
     /// Get Data frame.
     fn on_raw_data_frame_received(&mut self, _data: &ExportedVideoRawData);
     /// On status change.
-    fn on_raw_data_status_changed(&mut self, _status: bool);
+    fn on_raw_data_status_changed(&mut self, _status: bool, time: i64);
     /// On renderer destroyed.
     fn on_renderer_be_destroyed(&mut self);
     /// Use it when you want to do last operation after unsubscribing.
@@ -29,7 +29,10 @@ pub struct Renderer<'a> {
 }
 
 impl<'a> Renderer<'a> {
-    pub fn new(evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>) -> SdkResult<Self> {
+    pub fn new(
+        evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
+        resolution: VideoResolution,
+    ) -> SdkResult<Self> {
         let mut ptr_renderer: *mut ZOOMSDK_IZoomSDKRenderer = ptr::null_mut();
         let ptr = Arc::as_ptr(&evt_mutex) as *mut _;
         let ptr_delegate = unsafe { video_helper_create_delegate(ptr) };
@@ -40,10 +43,7 @@ impl<'a> Renderer<'a> {
         .into();
         result.map(|_| {
             tracing::info!("Resolution : {:?}", unsafe {
-                set_raw_data_resolution(
-                    ptr_renderer,
-                    ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_360P,
-                )
+                set_raw_data_resolution(ptr_renderer, resolution as u32)
             });
             Self {
                 renderer: unsafe { ptr_renderer.as_mut() }.unwrap(),
@@ -112,8 +112,8 @@ extern "C" fn on_renderer_be_destroyed(ptr: *const u8) {
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_raw_data_status_changed(ptr: *const u8, status: bool) {
-    (*convert(ptr).lock().unwrap()).on_raw_data_status_changed(status)
+extern "C" fn on_raw_data_status_changed(ptr: *const u8, status: bool, time: i64) {
+    (*convert(ptr).lock().unwrap()).on_raw_data_status_changed(status, time)
 }
 
 #[inline]
@@ -121,4 +121,14 @@ fn convert(ptr: *const u8) -> Arc<Mutex<Box<dyn RawVideoEvent>>> {
     let ptr: *const Mutex<Box<dyn RawVideoEvent>> = ptr as *const _;
     unsafe { Arc::increment_strong_count(ptr) }; // Avoid freeing Arc after Drop
     unsafe { Arc::from_raw(ptr) }
+}
+
+#[derive(Debug, Copy, Clone)]
+#[repr(u32)]
+pub enum VideoResolution {
+    R90P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_90P,
+    R180P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_180P,
+    R360P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_360P,
+    R720P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_720P,
+    R1080P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_1080P,
 }

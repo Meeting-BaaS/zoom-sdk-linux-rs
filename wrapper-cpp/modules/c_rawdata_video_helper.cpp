@@ -7,7 +7,7 @@ extern "C" void on_raw_data_frame_received(void *ptr, struct exported_video_raw_
 
 extern "C" void on_raw_data_status_changed(void *ptr, bool status, int64_t time);
 
-extern "C" void on_renderer_be_destroyed(void *ptr);
+extern "C" void on_renderer_be_destroyed(void *ptr, int64_t time);
 
 class ZoomSDKRendererDelegate : public ZOOMSDK::IZoomSDKRendererDelegate {
 public:
@@ -37,7 +37,10 @@ public:
         on_raw_data_status_changed(ptr_to_rust, status == RawData_On ? true : false, timestamp);
     }
     void onRendererBeDestroyed() override {
-        on_renderer_be_destroyed(ptr_to_rust);
+        using namespace std::chrono;
+        int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+
+        on_renderer_be_destroyed(ptr_to_rust, timestamp);
     }
 private:
     void *ptr_to_rust;

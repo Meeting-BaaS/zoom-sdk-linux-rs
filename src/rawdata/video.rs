@@ -15,7 +15,7 @@ pub trait RawVideoEvent: Debug {
     /// On status change.
     fn on_raw_data_status_changed(&mut self, _status: bool, time: i64);
     /// On renderer destroyed.
-    fn on_renderer_be_destroyed(&mut self);
+    fn on_renderer_be_destroyed(&mut self, time: i64);
     /// Use it when you want to do last operation after unsubscribing.
     fn flush(&mut self);
 }
@@ -106,8 +106,8 @@ extern "C" fn on_raw_data_frame_received(ptr: *const u8, data: *const exported_v
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_renderer_be_destroyed(ptr: *const u8) {
-    (*convert(ptr).lock().unwrap()).on_renderer_be_destroyed()
+extern "C" fn on_renderer_be_destroyed(ptr: *const u8, time: i64) {
+    (*convert(ptr).lock().unwrap()).on_renderer_be_destroyed(time)
 }
 
 #[tracing::instrument(ret)]

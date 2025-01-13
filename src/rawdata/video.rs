@@ -93,7 +93,7 @@ pub enum RawDataType {
     Share = ZOOMSDK_ZoomSDKRawDataType_RAW_DATA_TYPE_SHARE,
 }
 
-#[tracing::instrument(ret)]
+#[tracing::instrument(level = "DEBUG", ret)]
 #[no_mangle]
 extern "C" fn on_raw_data_frame_received(ptr: *const u8, data: *const exported_video_raw_data) {
     if data.is_null() {

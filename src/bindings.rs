@@ -5836,6 +5836,13 @@ extern "C" {
     ) -> *mut participant;
 }
 extern "C" {
+    #[doc = " \\brief Get the information of specified user.\n \\param userid Specify the user ID for which you want to get the information.\n \\return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \\link IUserInfo \\endlink.\n Otherwise the function fails, and the return value is NULL.\n \\remarks Valid for both ZOOM style and user custom interface mode. Valid for both normal user and webinar attendee."]
+    pub fn meeting_participants_get_user_by_id(
+        controller: *mut ZOOMSDK_IMeetingParticipantsController,
+        userid: ::std::os::raw::c_uint,
+    ) -> *mut ZOOMSDK_IUserInfo;
+}
+extern "C" {
     #[doc = " @brief Free Participants list\n @param m A Pointer to the struct participant array\n @return void"]
     pub fn meeting_participants_free_memory(m: *mut participant);
 }

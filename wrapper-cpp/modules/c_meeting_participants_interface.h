@@ -18,6 +18,15 @@ extern "C" struct participant *meeting_participants_get_users(
     ZOOMSDK::IMeetingParticipantsController *controller,
     unsigned int *len);
 
+/// \brief Get the information of specified user.
+/// \param userid Specify the user ID for which you want to get the information.
+/// \return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \link IUserInfo \endlink.
+/// Otherwise the function fails, and the return value is NULL.
+/// \remarks Valid for both ZOOM style and user custom interface mode. Valid for both normal user and webinar attendee.
+extern "C" ZOOMSDK::IUserInfo *meeting_participants_get_user_by_id(
+    ZOOMSDK::IMeetingParticipantsController *controller,
+    unsigned int userid);
+
 /// @brief Free Participants list
 /// @param m A Pointer to the struct participant array
 /// @return void

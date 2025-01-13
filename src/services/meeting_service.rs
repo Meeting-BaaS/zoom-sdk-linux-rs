@@ -160,13 +160,22 @@ impl<'a> MeetingService<'a> {
         self.recording_controller.as_mut().unwrap()
     }
     /// Initialize WebCam Injection.
-    pub fn set_webcam_injection(&mut self, ctx: Box<dyn VideoToWebcam>) -> SdkResult<()> {
-        if let Some(camera_mutex) = new_webcam_injection_boitlerplate(self.ref_meeting_service, ctx)
-        {
-            self.camera_mutex = Some(camera_mutex);
-            Ok(())
-        } else {
-            Err(ZoomRsError::NullPtr)
+    pub fn set_webcam_injection(&mut self, ctx: Option<Box<dyn VideoToWebcam>>) -> SdkResult<()> {
+        match ctx {
+            None => {
+                // TODO : Check is CAM is always OFF.
+                Ok(())
+            }
+            Some(ctx) => {
+                if let Some(camera_mutex) =
+                    new_webcam_injection_boitlerplate(self.ref_meeting_service, ctx)
+                {
+                    self.camera_mutex = Some(camera_mutex);
+                    Ok(())
+                } else {
+                    Err(ZoomRsError::NullPtr)
+                }
+            }
         }
     }
 }

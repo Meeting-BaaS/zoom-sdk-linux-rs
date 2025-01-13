@@ -38,6 +38,12 @@ extern "C" struct participant *meeting_participants_get_users(
     return m;
 }
 
+extern "C" ZOOMSDK::IUserInfo *meeting_participants_get_user_by_id(
+    ZOOMSDK::IMeetingParticipantsController *controller,
+    unsigned int userid) {
+        return controller->GetUserByUserID(userid);
+    }
+
 extern "C" void meeting_participants_free_memory(struct participant *m) {
     free(m);
 }

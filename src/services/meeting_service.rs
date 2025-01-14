@@ -10,11 +10,13 @@ use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 pub mod chat_interface;
 pub mod participants_interface;
 pub mod recording_controller;
+pub mod sharing_controller;
 pub mod webcam_interface;
 
 pub use chat_interface::ChatInterface;
 pub use participants_interface::ParticipantsInterface;
 pub use recording_controller::RecordingController;
+pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};
 
 #[derive(Debug)]
@@ -27,6 +29,7 @@ pub struct MeetingService<'a> {
     recording_controller: Option<RecordingController<'a>>,
     participants_interface: Option<ParticipantsInterface<'a>>,
     chat_interface: Option<ChatInterface<'a>>,
+    sharing_controller: Option<SharingController<'a>>,
 
     // Exception Class II
     camera_mutex: Option<Arc<Mutex<Box<dyn VideoToWebcam>>>>,
@@ -77,6 +80,7 @@ impl<'a> MeetingService<'a> {
                 evt_mutex: None,
                 ref_meeting_service: unsafe { ptr.as_mut() }.unwrap(),
                 recording_controller: None,
+                sharing_controller: None,
                 participants_interface: None,
                 chat_interface: None,
                 camera_mutex: None,
@@ -158,6 +162,17 @@ impl<'a> MeetingService<'a> {
                 .expect("Cannot create RecordingController");
         }
         self.recording_controller.as_mut().unwrap()
+    }
+    /// Get Sharing Controller.
+    pub fn sharing_ctrl(&mut self) -> &mut SharingController<'a> {
+        if self.sharing_controller.is_none() {
+            self.sharing_controller =
+                Some(SharingController::new(self.ref_meeting_service).unwrap());
+            self.sharing_controller
+                .as_ref()
+                .expect("Cannot create SharingController");
+        }
+        self.sharing_controller.as_mut().unwrap()
     }
     /// Initialize WebCam Injection.
     pub fn set_webcam_injection(&mut self, ctx: Option<Box<dyn VideoToWebcam>>) -> SdkResult<()> {

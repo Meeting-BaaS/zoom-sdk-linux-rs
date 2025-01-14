@@ -106,3 +106,9 @@ extern "C" ZOOMSDK::IMeetingRecordingController* meeting_get_meeting_recording_c
 {
     return meeting_service->GetMeetingRecordingController();
 }
+
+extern "C" ZOOMSDK::IMeetingShareController* meeting_get_meeting_share_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+) {
+    return meeting_service->GetMeetingShareController();
+}

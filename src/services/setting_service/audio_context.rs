@@ -2,8 +2,10 @@ use std::ffi::CStr;
 
 use crate::{bindings::*, SdkError, SdkResult, ZoomSdkResult};
 
+/// Main audio context instance.
 #[derive(Debug)]
 pub struct AudioContext<'a> {
+    /// Pointer to rhe underlaying cpp audio setting context.
     pub ref_audio_context: &'a mut ZOOMSDK_IAudioSettingContext,
 }
 
@@ -91,10 +93,14 @@ impl<'a> AudioContext<'a> {
     }
 }
 
+/// The driver that will be used for the microphone.
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum MicDriver {
+    /// hw::loopback
     SndAloop,
+    /// Pulse audio virtual mic.
     Pulse,
+    /// Default system microphone.
     Default,
 }
 
@@ -109,18 +115,29 @@ impl TryFrom<MicDriver> for &'static str {
     }
 }
 
+/// This structure stores information about the detected microphones.
 #[derive(Debug)]
 pub struct MicList<'a> {
+    /// Device ID.
     pub device_id: &'a CStr,
+    /// Device Name.
     pub device_name: &'a CStr,
+    /// Is currently selected device ?
     pub selected: bool,
 }
 
+/// According to the SDK, this enumeration contains the different levels of noise cancellation;
+/// for music, the level should be at a minimum.
 #[repr(u32)]
 pub enum SupressBackgroundNoiseLevel {
+    /// No noise cancellation: However, it does not work on Linux.
     None = ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_None,
+    /// Default is typically medium.
     Auto = ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_Auto,
+    /// Minimal noise cancellation, the music quality remains good.
     Low = ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_Low,
+    /// Medium noise cancellation, the sound quality is not good.
     Medium = ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_Medium,
+    /// For people working on a construction site.
     Heigh = ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_High,
 }

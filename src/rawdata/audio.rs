@@ -13,6 +13,11 @@ pub struct AudioRawDataSenderInterface(*mut ZOOMSDK_IZoomSDKAudioRawDataSender);
 unsafe impl Send for AudioRawDataSenderInterface {}
 
 impl AudioRawDataSenderInterface {
+    /// Send audio raw data. Audio sample must be 16-bit audio.
+    /// - &[u8] the audio datas address.
+    /// - [usize] sample_rate the audio datas sampling rate.
+    /// Supported sample rates: 8000/11025/16000/32000/44100/48000/50000/50400/96000/192000/2822400
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn send(&mut self, data: &[u8], sample_rate: usize) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe {
@@ -63,7 +68,7 @@ pub struct AudioRawDataHelper<'a> {
 
 impl<'a> AudioRawDataHelper<'a> {
     /// Create a new RawData helper.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn new() -> SdkResult<Self> {
         let ptr = unsafe { ZOOMSDK_GetAudioRawdataHelper() };
         if ptr.is_null() {
@@ -77,7 +82,7 @@ impl<'a> AudioRawDataHelper<'a> {
     }
     /// Subscribe raw audio data.
     /// - [RawAudioEvent], the callback handler of raw audio data.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn subscribe_delegate(
         &mut self,
         event: Box<dyn RawAudioEvent>,
@@ -96,7 +101,7 @@ impl<'a> AudioRawDataHelper<'a> {
         .into()
     }
     /// Unsubscribe raw audio data.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn unsubscribe_delegate(&mut self) -> SdkResult<()> {
         let result = ZoomSdkResult(
             unsafe { audio_helper_unsubscribe_delegate(self.ref_rawdata_helper) },
@@ -110,7 +115,7 @@ impl<'a> AudioRawDataHelper<'a> {
     }
     /// \Subscribe audio mic raw data with a callback.
     /// - [VirtualAudioMicEvent], the callback handler of raw audio data.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn set_external_audio_source(
         &mut self,
         arc_event: Arc<Mutex<Box<dyn VirtualAudioMicEvent>>>,

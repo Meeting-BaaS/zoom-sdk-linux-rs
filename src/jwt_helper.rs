@@ -3,6 +3,9 @@ use hmac::{Hmac, Mac};
 use jwt::{AlgorithmType, Header, SignWithKey, Token};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
+
+const TOKEN_VALIDATION_HOURS: i64 = 6;
+
 #[derive(Serialize, Deserialize)]
 #[allow(non_snake_case)]
 struct Payload {
@@ -12,6 +15,7 @@ struct Payload {
     tokenExp: i64,
 }
 
+/// Generate a zoom JWT Token.
 #[tracing::instrument(ret)]
 pub fn generate_jwt(sdk_key: &str, sdk_secret: &str) -> Result<String, Box<dyn std::error::Error>> {
     let header = Header {
@@ -23,7 +27,7 @@ pub fn generate_jwt(sdk_key: &str, sdk_secret: &str) -> Result<String, Box<dyn s
     let payload = Payload {
         appKey: sdk_key.to_string(),
         iat: now,
-        exp: now + 7200,
+        exp: now + (3600 * TOKEN_VALIDATION_HOURS),
         tokenExp: now + 86400,
     };
 

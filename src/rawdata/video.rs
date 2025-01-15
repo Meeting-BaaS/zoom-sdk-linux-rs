@@ -6,6 +6,7 @@ use crate::{SdkResult, ZoomRsError, ZoomSdkResult};
 
 use crate::bindings::*;
 
+/// Raw data of an image.
 pub type ExportedVideoRawData = exported_video_raw_data;
 
 /// RawData video events from delegate.
@@ -20,6 +21,7 @@ pub trait RawVideoEvent: Debug {
     fn flush(&mut self);
 }
 
+/// A renderer takes a delegate and allows retrieving images.
 #[derive(Debug)]
 pub struct Renderer<'a> {
     renderer: &'a mut ZOOMSDK_IZoomSDKRenderer,
@@ -29,6 +31,7 @@ pub struct Renderer<'a> {
 }
 
 impl<'a> Renderer<'a> {
+    /// Create a new renderer.
     pub fn new(
         evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
         resolution: VideoResolution,
@@ -52,6 +55,7 @@ impl<'a> Renderer<'a> {
             }
         })
     }
+    /// Subscribe a delegate for given user_id and type.
     pub fn subscribe_delegate(&mut self, user_id: u32, data_type: RawDataType) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { video_helper_subscribe_delegate(self.renderer, user_id, data_type as u32) },
@@ -59,6 +63,7 @@ impl<'a> Renderer<'a> {
         )
         .into()
     }
+    /// Unsibscribe the renderer delegate.
     pub fn unsubscribe_delegate(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { video_helper_unsubscribe_delegate(self.renderer) },
@@ -86,10 +91,13 @@ impl<'a> Drop for Renderer<'a> {
     }
 }
 
+/// Type of data to subscribe.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(u32)]
 pub enum RawDataType {
+    /// Video from camera.
     Video = ZOOMSDK_ZoomSDKRawDataType_RAW_DATA_TYPE_VIDEO,
+    /// Sharing screen.
     Share = ZOOMSDK_ZoomSDKRawDataType_RAW_DATA_TYPE_SHARE,
 }
 
@@ -123,8 +131,10 @@ fn convert(ptr: *const u8) -> Arc<Mutex<Box<dyn RawVideoEvent>>> {
     unsafe { Arc::from_raw(ptr) }
 }
 
+/// Resolution MAX of the input images.
 #[derive(Debug, Copy, Clone)]
 #[repr(u32)]
+#[allow(missing_docs)]
 pub enum VideoResolution {
     R90P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_90P,
     R180P = ZOOMSDK_ZoomSDKResolution_ZoomSDKResolution_180P,

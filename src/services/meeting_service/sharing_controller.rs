@@ -2,9 +2,12 @@ use std::sync::{Arc, Mutex};
 
 use crate::{bindings::*, SdkResult, ZoomSdkResult};
 
+/// Information about the sharing.
 pub type ShareInfo = ZOOMSDK_ShareInfo;
+/// Obscure pointer of the SDK.
 pub type ShareSwitchMultitoSingleConfirmHandler = ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler;
 
+/// This trait handles events related to sharing.
 pub trait SharingControllerEvent: std::fmt::Debug {
     /// Callback event of the changed sharing status.
     /// - status The values of sharing status. For more details, see \link SharingStatus \endlink enum.
@@ -32,14 +35,14 @@ pub trait SharingControllerEvent: std::fmt::Debug {
     }
 
     /// Callback event of sharing setting type changed.
-    /// [ZOOMSDK_ShareSettingType] type Sharing setting type. For more details.
+    /// [SharingSettingType] type Sharing setting type. For more details.
     fn on_share_setting_type_changed_notification(&mut self, _kind: SharingSettingType) {}
 
     /// Callback event of the shared video's playback has completed.
     fn on_shared_video_ended(&mut self) {}
 
     /// Callback event of the video file playback error.
-    /// - [ZOOMSDK_ZoomSDKVideoFileSharePlayError] The error type. For more details,
+    /// - [SharingPlayError] The error type. For more details,
     fn on_video_file_share_play_error(&mut self, _error: SharingPlayError) {}
 }
 
@@ -137,7 +140,7 @@ impl<'a> SharingController<'a> {
 
     /// Set the sharing controller callback event handler.
     /// - [SharingControllerEvent] A pointer to receive sharing event.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn set_event(&mut self, ctx: Box<dyn SharingControllerEvent>) -> SdkResult<()> {
         self.evt_mutex = Some(Arc::new(Mutex::new(ctx)));
         let ptr = Arc::as_ptr(&self.evt_mutex.as_ref().unwrap()) as *mut _;
@@ -150,6 +153,7 @@ impl<'a> SharingController<'a> {
     }
 }
 
+/// This enumeration describes all the events related to sharing.
 #[derive(Debug, Copy, Clone)]
 #[repr(u32)]
 pub enum SharingStatus {
@@ -190,6 +194,7 @@ impl From<u32> for SharingStatus {
     }
 }
 
+/// This enumeration describes all configuration related to sharing.
 #[derive(Debug, Copy, Clone)]
 #[repr(u32)]
 pub enum SharingSettingType {
@@ -216,6 +221,7 @@ impl From<u32> for SharingSettingType {
     }
 }
 
+/// This enumeration describes all errors related to sharing.
 #[derive(Debug, Copy, Clone)]
 #[repr(u32)]
 pub enum SharingPlayError {

@@ -7,10 +7,15 @@ use std::sync::{Arc, Mutex};
 use crate::SdkError;
 use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 
+/// Allows sending messages.
 pub mod chat_interface;
+/// Allows obtaining information about the participants.
 pub mod participants_interface;
+/// Allows managing, starting, and stopping the recording.
 pub mod recording_controller;
+/// Allows obtaining the events necessary for screen sharing.
 pub mod sharing_controller;
+/// Allows injecting an image into the bot webcam.
 pub mod webcam_interface;
 
 pub use chat_interface::ChatInterface;
@@ -19,6 +24,7 @@ pub use recording_controller::RecordingController;
 pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};
 
+/// Main instance of the meeting.
 #[derive(Debug)]
 pub struct MeetingService<'a> {
     // Inner stuff
@@ -35,6 +41,7 @@ pub struct MeetingService<'a> {
     camera_mutex: Option<Arc<Mutex<Box<dyn VideoToWebcam>>>>,
 }
 
+/// This trait handles all events related to the meeting
 pub trait MeetingServiceEvent: Debug {
     /// Meeting status changed callback.
     /// - [MeetingStatus] The value of meeting. For more details.  

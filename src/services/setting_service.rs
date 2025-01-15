@@ -2,10 +2,12 @@ use std::ptr;
 
 use crate::{bindings::*, SdkResult, ZoomRsError};
 
+/// Sub-service related to audio, microphone, auto-join, etc...
 pub mod audio_context;
 
 use audio_context::AudioContext;
 
+/// Main instance of the parameters.
 #[derive(Debug)]
 pub struct SettingService<'a> {
     ref_setting_service: &'a mut ZOOMSDK_ISettingService,
@@ -14,7 +16,7 @@ pub struct SettingService<'a> {
 
 impl<'a> SettingService<'a> {
     /// Create setting service interface
-    /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [crate::SdkError] for details.
     pub fn new() -> SdkResult<Self> {
         let mut ptr = ptr::null_mut();
         let ret = unsafe { ZOOMSDK_CreateSettingService(&mut ptr) };

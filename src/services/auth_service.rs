@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use crate::SdkError;
 use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 
+/// This trait handles events related to authentication.
 pub trait AuthServiceEvent: Debug {
     /// Authentication result callback.  
     /// - [AuthResult] Authentication result value.
@@ -34,9 +35,12 @@ pub trait AuthServiceEvent: Debug {
     fn on_zoom_auth_identity_expired(&mut self) {}
 }
 
+/// Main authentication instance.
 #[derive(Debug)]
 pub struct AuthService<'a> {
+    /// Dynamic polymorphism. Authentication events.
     pub evt_mutex: Option<Arc<Mutex<Box<dyn AuthServiceEvent>>>>,
+    /// Pointer to rhe underlaying cpp sdk auth service.
     pub ptr_auth_service: &'a mut ZOOMSDK_IAuthService,
 }
 

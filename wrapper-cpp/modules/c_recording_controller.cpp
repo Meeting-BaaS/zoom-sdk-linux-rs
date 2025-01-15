@@ -54,7 +54,6 @@ class C_MeetingRecordingCtrlEvent: public ZOOMSDK::IMeetingRecordingCtrlEvent {
             using namespace std::chrono;
             int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
-            printf("onRecordingStatus %i\n", status);
             on_recording_status(ptr_to_rust, status, timestamp);
         }
 	    /// \brief Callback event that the status of cloud recording changes.
@@ -70,7 +69,6 @@ class C_MeetingRecordingCtrlEvent: public ZOOMSDK::IMeetingRecordingCtrlEvent {
 	    /// \brief Callback event that the status of request local recording privilege.
 	    /// \param status Value of request local recording privilege status. For more details, see \link RequestLocalRecordingStatus \endlink enum.
 	    void onLocalRecordingPrivilegeRequestStatus(ZOOMSDK::RequestLocalRecordingStatus status) {
-            printf("onLocalRecordingPrivilegeRequestStatus %i\n", status);
             on_recording_privilege_request_status(ptr_to_rust, status);
         }
 	    /// \brief Callback event for when the host responds to a cloud recording permission request

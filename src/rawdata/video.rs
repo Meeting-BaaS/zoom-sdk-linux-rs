@@ -15,7 +15,8 @@ pub trait RawVideoEvent: Debug {
     fn on_raw_data_frame_received(&mut self, _data: &ExportedVideoRawData);
     /// On status change.
     fn on_raw_data_status_changed(&mut self, _status: bool, time: i64);
-    /// On renderer destroyed.
+    /// Notify the current renderer object is going to be destroyed.
+    /// After you handle this callback, you should never user this renderer object any more
     fn on_renderer_be_destroyed(&mut self, time: i64);
     /// Use it when you want to do last operation after unsubscribing.
     fn flush(&mut self);
@@ -23,57 +24,78 @@ pub trait RawVideoEvent: Debug {
 
 /// A renderer takes a delegate and allows retrieving images.
 #[derive(Debug)]
-pub struct Renderer<'a> {
-    renderer: &'a mut ZOOMSDK_IZoomSDKRenderer,
+pub struct Renderer {
+    renderer: Option<*mut ZOOMSDK_IZoomSDKRenderer>,
     #[allow(dead_code)]
-    delegate: &'a mut ZOOMSDK_IZoomSDKRendererDelegate,
+    delegate: *mut ZOOMSDK_IZoomSDKRendererDelegate,
     evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
 }
 
-impl<'a> Renderer<'a> {
+impl Renderer {
     /// Create a new renderer.
     pub fn new(
         evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
         resolution: VideoResolution,
     ) -> SdkResult<Self> {
-        let mut ptr_renderer: *mut ZOOMSDK_IZoomSDKRenderer = ptr::null_mut();
+        let mut renderer: *mut ZOOMSDK_IZoomSDKRenderer = ptr::null_mut();
         let ptr = Arc::as_ptr(&evt_mutex) as *mut _;
-        let ptr_delegate = unsafe { video_helper_create_delegate(ptr) };
+        let delegate = unsafe { video_helper_create_delegate(ptr) };
         let result: Result<(), ZoomRsError> = ZoomSdkResult(
-            unsafe { ZOOMSDK_createRenderer(&mut ptr_renderer, ptr_delegate) },
+            unsafe { ZOOMSDK_createRenderer(&mut renderer, delegate) },
             (),
         )
         .into();
         result.map(|_| {
             tracing::info!("Resolution : {:?}", unsafe {
-                set_raw_data_resolution(ptr_renderer, resolution as u32)
+                set_raw_data_resolution(renderer, resolution as u32)
             });
             Self {
-                renderer: unsafe { ptr_renderer.as_mut() }.unwrap(),
-                delegate: unsafe { ptr_delegate.as_mut() }.unwrap(),
+                renderer: Some(renderer),
+                delegate,
                 evt_mutex,
             }
         })
     }
     /// Subscribe a delegate for given user_id and type.
     pub fn subscribe_delegate(&mut self, user_id: u32, data_type: RawDataType) -> SdkResult<()> {
-        ZoomSdkResult(
-            unsafe { video_helper_subscribe_delegate(self.renderer, user_id, data_type as u32) },
-            (),
-        )
-        .into()
+        tracing::debug!("ptr renderer : {:?}", self.renderer);
+        match self.renderer {
+            Some(renderer) => ZoomSdkResult(
+                unsafe { video_helper_subscribe_delegate(renderer, user_id, data_type as u32) },
+                (),
+            )
+            .into(),
+            None => {
+                tracing::warn!("Cannot Subscribe : Renderer is in invalid state");
+                Err(ZoomRsError::NullPtr)
+            }
+        }
     }
-    /// Unsibscribe the renderer delegate.
+    /// Unsubscribe the renderer delegate.
     pub fn unsubscribe_delegate(&mut self) -> SdkResult<()> {
-        ZoomSdkResult(
-            unsafe { video_helper_unsubscribe_delegate(self.renderer) },
-            (),
-        )
-        .into()
+        tracing::debug!("ptr renderer : {:?}", self.renderer);
+        match self.renderer {
+            Some(renderer) => {
+                ZoomSdkResult(unsafe { video_helper_unsubscribe_delegate(renderer) }, ()).into()
+            }
+            None => {
+                tracing::warn!("Cannot Unsubscribe : Renderer is invalid state");
+                Err(ZoomRsError::NullPtr)
+            }
+        }
+    }
+
+    /// The renderer is not valid anymore according to documentation.
+    /// Notify the current renderer object is going to be destroyed.
+    /// After you handle this callback, you should never user this renderer object any more.
+    /// virtual void onRendererBeDestroyed() = 0;
+    pub fn invalid(&mut self) {
+        self.renderer = None;
+        tracing::warn!("Invalid Renderer Pointer");
     }
 }
 
-impl<'a> Drop for Renderer<'a> {
+impl Drop for Renderer {
     fn drop(&mut self) {
         tracing::info!("Droping renderer !");
         let r = self.unsubscribe_delegate();
@@ -83,9 +105,15 @@ impl<'a> Drop for Renderer<'a> {
         tracing::info!("Flushing renderer...");
         self.evt_mutex.lock().unwrap().flush();
         tracing::info!("Destroying renderer...");
-        let ret = unsafe { ZOOMSDK_destroyRenderer(self.renderer) };
-        if ret != 0 {
-            tracing::warn!("Error when destroying renderer: {:?}", ret);
+        match self.renderer {
+            Some(renderer) => {
+                tracing::debug!("ZOOMSDK_destroyRenderer");
+                let ret = unsafe { ZOOMSDK_destroyRenderer(renderer) };
+                if ret != 0 {
+                    tracing::warn!("Error when destroying renderer: {:?}", ret);
+                }
+            }
+            None => tracing::error!("Renderer is invalid"),
         }
         tracing::info!("Renderer instance droped!");
     }

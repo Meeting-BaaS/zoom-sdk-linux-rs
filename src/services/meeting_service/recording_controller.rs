@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{bindings::*, SdkResult, ZoomSdkResult};
 
+/// This trait handles events related to recording.
 pub trait RecordingControllerEvent: std::fmt::Debug {
     /// Callback event that the status of request local recording privilege.
     /// - [RequestLocalRecordingStatus] of request local recording privilege status.
@@ -60,7 +61,7 @@ impl<'a> RecordingController<'a> {
 
     /// Set the recording controller callback event handler.  
     /// - [RecordingControllerEvent] A pointer to receive recording event.  
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.  
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn set_event(&mut self, ctx: Box<dyn RecordingControllerEvent>) -> SdkResult<()> {
         self.evt_mutex = Some(Arc::new(Mutex::new(ctx)));
         let ptr = Arc::as_ptr(&self.evt_mutex.as_ref().unwrap()) as *mut _;
@@ -72,7 +73,7 @@ impl<'a> RecordingController<'a> {
         .into()
     }
     /// Send a request to enable the SDK to start local recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn request_local_recording_privilege(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_request_local_recording_privilege(self.ref_recording_controller) },
@@ -81,7 +82,7 @@ impl<'a> RecordingController<'a> {
         .into()
     }
     /// Send a request to ask the host to start cloud recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn request_start_cloud_recording(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_request_start_cloud_recording(self.ref_recording_controller) },
@@ -91,7 +92,7 @@ impl<'a> RecordingController<'a> {
     }
     /// Start recording.
     /// - [time_t] startTimestamp The timestamps when start recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn start_recording(&mut self, time: &mut time_t) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_start_recording(self.ref_recording_controller, time) },
@@ -101,7 +102,7 @@ impl<'a> RecordingController<'a> {
     }
     /// Stop recording.
     /// - [time_t] stopTimestamp The timestamps when stop recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn stop_recording(&mut self, time: &mut time_t) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_stop_recording(self.ref_recording_controller, time) },
@@ -115,7 +116,7 @@ impl<'a> RecordingController<'a> {
         unsafe { recording_can_start_raw_recording(self.ref_recording_controller) }
     }
     /// Start raw recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn start_raw_recording(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_start_raw_recording(self.ref_recording_controller) },
@@ -124,7 +125,7 @@ impl<'a> RecordingController<'a> {
         .into()
     }
     /// Stop raw recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn stop_raw_recording(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_stop_raw_recording(self.ref_recording_controller) },
@@ -133,7 +134,7 @@ impl<'a> RecordingController<'a> {
         .into()
     }
     /// Pause recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details
     pub fn pause_recording(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_pause_recording(self.ref_recording_controller) },
@@ -142,7 +143,7 @@ impl<'a> RecordingController<'a> {
         .into()
     }
     /// Resume recording.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details
     pub fn resume_recording(&mut self) -> SdkResult<()> {
         ZoomSdkResult(
             unsafe { recording_resume_recording(self.ref_recording_controller) },

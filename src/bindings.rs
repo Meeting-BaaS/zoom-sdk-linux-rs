@@ -3207,11 +3207,6 @@ pub struct ZOOMSDK_IMeetingBOController {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct ZOOMSDK_IMeetingShareController {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IMeetingWaitingRoomController {
     _unused: [u8; 0],
 }
@@ -4364,6 +4359,169 @@ const _: () = {
     ["Alignment of ZOOMSDK_IMeetingChatController"]
         [::std::mem::align_of::<ZOOMSDK_IMeetingChatController>() - 8usize];
 };
+#[doc = "<Only host can share, the same as \"lock share\""]
+pub const ZOOMSDK_ShareSettingType_ShareSettingType_LOCK_SHARE: ZOOMSDK_ShareSettingType = 0;
+#[doc = "<Anyone can share, but one sharing only at one moment, and only host can grab other's sharing"]
+pub const ZOOMSDK_ShareSettingType_ShareSettingType_HOST_GRAB: ZOOMSDK_ShareSettingType = 1;
+#[doc = "<Anyone can share, but one sharing only at one moment, and anyone can grab other's sharing"]
+pub const ZOOMSDK_ShareSettingType_ShareSettingType_ANYONE_GRAB: ZOOMSDK_ShareSettingType = 2;
+#[doc = "<Anyone can share, Multi-share can exist at the same time"]
+pub const ZOOMSDK_ShareSettingType_ShareSettingType_MULTI_SHARE: ZOOMSDK_ShareSettingType = 3;
+#[doc = " \\enum ShareSettingType\n\\brief Share setting type.\nHere are more detailed structural descriptions.."]
+pub type ZOOMSDK_ShareSettingType = ::std::os::raw::c_uint;
+pub const ZOOMSDK_AudioShareMode_AudioShareMode_Mono: ZOOMSDK_AudioShareMode = 0;
+#[doc = "Mono mode."]
+pub const ZOOMSDK_AudioShareMode_AudioShareMode_Stereo: ZOOMSDK_AudioShareMode = 1;
+#[doc = " \\enum AudioShareMode\n\\brief Audio share mode.\nHere are more detailed structural descriptions."]
+pub type ZOOMSDK_AudioShareMode = ::std::os::raw::c_uint;
+#[doc = " \\struct tagViewableShareSource\n\\brief Visible shared source information.\nHere are more detailed structural descriptions.."]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ZOOMSDK_tagViewableShareSource {
+    #[doc = "<User ID."]
+    pub userid: ::std::os::raw::c_uint,
+    #[doc = "<Display or not on the primary view. Valid for ZOOM style only."]
+    pub isShowingInFirstView: bool,
+    #[doc = "<Display or not on the secondary view. Valid for ZOOM style only."]
+    pub isShowingInSecondView: bool,
+    #[doc = "<Enable or disable the remote control."]
+    pub isCanBeRemoteControl: bool,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_tagViewableShareSource"]
+        [::std::mem::size_of::<ZOOMSDK_tagViewableShareSource>() - 8usize];
+    ["Alignment of ZOOMSDK_tagViewableShareSource"]
+        [::std::mem::align_of::<ZOOMSDK_tagViewableShareSource>() - 4usize];
+    ["Offset of field: ZOOMSDK_tagViewableShareSource::userid"]
+        [::std::mem::offset_of!(ZOOMSDK_tagViewableShareSource, userid) - 0usize];
+    ["Offset of field: ZOOMSDK_tagViewableShareSource::isShowingInFirstView"]
+        [::std::mem::offset_of!(ZOOMSDK_tagViewableShareSource, isShowingInFirstView) - 4usize];
+    ["Offset of field: ZOOMSDK_tagViewableShareSource::isShowingInSecondView"]
+        [::std::mem::offset_of!(ZOOMSDK_tagViewableShareSource, isShowingInSecondView) - 5usize];
+    ["Offset of field: ZOOMSDK_tagViewableShareSource::isCanBeRemoteControl"]
+        [::std::mem::offset_of!(ZOOMSDK_tagViewableShareSource, isCanBeRemoteControl) - 6usize];
+};
+#[doc = " \\struct tagViewableShareSource\n\\brief Visible shared source information.\nHere are more detailed structural descriptions.."]
+pub type ZOOMSDK_ViewableShareSource = ZOOMSDK_tagViewableShareSource;
+#[doc = "<Type of sharing a selected area of desktop."]
+pub const ZOOMSDK_AdvanceShareOption_AdvanceShareOption_ShareFrame: ZOOMSDK_AdvanceShareOption = 0;
+#[doc = "<Type of sharing only the computer audio."]
+pub const ZOOMSDK_AdvanceShareOption_AdvanceShareOption_PureComputerAudio:
+    ZOOMSDK_AdvanceShareOption = 1;
+#[doc = "<Type of sharing the camera."]
+pub const ZOOMSDK_AdvanceShareOption_AdvanceShareOption_ShareCamera: ZOOMSDK_AdvanceShareOption = 2;
+#[doc = " \\enum AdvanceShareOption\nAdditional type of current sharing sent to others.\nHere are more detailed structural descriptions."]
+pub type ZOOMSDK_AdvanceShareOption = ::std::os::raw::c_uint;
+#[doc = "<Multi-participants can share simultaneously."]
+pub const ZOOMSDK_MultiShareOption_Enable_Multi_Share: ZOOMSDK_MultiShareOption = 0;
+#[doc = "<Only host can share at a time."]
+pub const ZOOMSDK_MultiShareOption_Enable_Only_HOST_Start_Share: ZOOMSDK_MultiShareOption = 1;
+#[doc = "<One participant can share at a time, during sharing only host can start a new sharing and the previous sharing will be replaced."]
+pub const ZOOMSDK_MultiShareOption_Enable_Only_HOST_Grab_Share: ZOOMSDK_MultiShareOption = 2;
+#[doc = "<One participant can share at a time, during sharing everyone can start a new sharing and the previous sharing will be replaced."]
+pub const ZOOMSDK_MultiShareOption_Enable_All_Grab_Share: ZOOMSDK_MultiShareOption = 3;
+pub type ZOOMSDK_MultiShareOption = ::std::os::raw::c_uint;
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_None:
+    ZOOMSDK_ZoomSDKVideoFileSharePlayError = 0;
+#[doc = "<Not supported."]
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_Not_Supported:
+    ZOOMSDK_ZoomSDKVideoFileSharePlayError = 1;
+#[doc = "<The resolution is too high to play."]
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_Resolution_Too_High : ZOOMSDK_ZoomSDKVideoFileSharePlayError = 2 ;
+#[doc = "<Failed to open."]
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_Open_Fail:
+    ZOOMSDK_ZoomSDKVideoFileSharePlayError = 3;
+#[doc = "<Failed to play."]
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_Play_Fail:
+    ZOOMSDK_ZoomSDKVideoFileSharePlayError = 4;
+#[doc = "<Failed to seek."]
+pub const ZOOMSDK_ZoomSDKVideoFileSharePlayError_ZoomSDKVideoFileSharePlayError_Seek_Fail:
+    ZOOMSDK_ZoomSDKVideoFileSharePlayError = 5;
+pub type ZOOMSDK_ZoomSDKVideoFileSharePlayError = ::std::os::raw::c_uint;
+#[doc = " \\struct tagShareInfo\n\\brief Information of current sharing.\nHere are more detailed structural descriptions."]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ZOOMSDK_tagShareInfo {
+    #[doc = "<Type of sharing, see \\link ShareType \\endlink enum."]
+    pub eShareType: ZOOMSDK_ShareType,
+    pub ut: ZOOMSDK_tagShareInfo__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union ZOOMSDK_tagShareInfo__bindgen_ty_1 {
+    #[doc = "<Handle of sharing application or white-board. It is invalid unless the value of the eShareType is SHARE_TYPE_AS or SHARE_TYPE_WB."]
+    pub hwndSharedApp: HWND,
+    #[doc = "<The ID of screen to be shared. It is invalid unless the value of the eShareType is SHARE_TYPE_DS."]
+    pub monitorID: *const zchar_t,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_tagShareInfo__bindgen_ty_1"]
+        [::std::mem::size_of::<ZOOMSDK_tagShareInfo__bindgen_ty_1>() - 8usize];
+    ["Alignment of ZOOMSDK_tagShareInfo__bindgen_ty_1"]
+        [::std::mem::align_of::<ZOOMSDK_tagShareInfo__bindgen_ty_1>() - 8usize];
+    ["Offset of field: ZOOMSDK_tagShareInfo__bindgen_ty_1::hwndSharedApp"]
+        [::std::mem::offset_of!(ZOOMSDK_tagShareInfo__bindgen_ty_1, hwndSharedApp) - 0usize];
+    ["Offset of field: ZOOMSDK_tagShareInfo__bindgen_ty_1::monitorID"]
+        [::std::mem::offset_of!(ZOOMSDK_tagShareInfo__bindgen_ty_1, monitorID) - 0usize];
+};
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_tagShareInfo"][::std::mem::size_of::<ZOOMSDK_tagShareInfo>() - 16usize];
+    ["Alignment of ZOOMSDK_tagShareInfo"][::std::mem::align_of::<ZOOMSDK_tagShareInfo>() - 8usize];
+    ["Offset of field: ZOOMSDK_tagShareInfo::eShareType"]
+        [::std::mem::offset_of!(ZOOMSDK_tagShareInfo, eShareType) - 0usize];
+    ["Offset of field: ZOOMSDK_tagShareInfo::ut"]
+        [::std::mem::offset_of!(ZOOMSDK_tagShareInfo, ut) - 8usize];
+};
+#[doc = " \\struct tagShareInfo\n\\brief Information of current sharing.\nHere are more detailed structural descriptions."]
+pub type ZOOMSDK_ShareInfo = ZOOMSDK_tagShareInfo;
+#[repr(C)]
+pub struct ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Reminder handler of switching from multi-share to single share.\n"]
+#[repr(C)]
+#[derive(Debug)]
+pub struct ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler {
+    pub vtable_: *const ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler"]
+        [::std::mem::size_of::<ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler>() - 8usize];
+    ["Alignment of ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler"]
+        [::std::mem::align_of::<ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler>() - 8usize];
+};
+#[repr(C)]
+pub struct ZOOMSDK_IMeetingShareCtrlEvent__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Callback event of meeting share controller.\n"]
+#[repr(C)]
+#[derive(Debug)]
+pub struct ZOOMSDK_IMeetingShareCtrlEvent {
+    pub vtable_: *const ZOOMSDK_IMeetingShareCtrlEvent__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IMeetingShareCtrlEvent"]
+        [::std::mem::size_of::<ZOOMSDK_IMeetingShareCtrlEvent>() - 8usize];
+    ["Alignment of ZOOMSDK_IMeetingShareCtrlEvent"]
+        [::std::mem::align_of::<ZOOMSDK_IMeetingShareCtrlEvent>() - 8usize];
+};
+#[repr(C)]
+pub struct ZOOMSDK_IMeetingShareController__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Meeting share controller interface.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ZOOMSDK_IMeetingShareController {
+    pub vtable_: *const ZOOMSDK_IMeetingShareController__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IMeetingShareController"]
+        [::std::mem::size_of::<ZOOMSDK_IMeetingShareController>() - 8usize];
+    ["Alignment of ZOOMSDK_IMeetingShareController"]
+        [::std::mem::align_of::<ZOOMSDK_IMeetingShareController>() - 8usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IZoomSDKShareSourceHelper {
@@ -5262,6 +5420,12 @@ extern "C" {
     ) -> *mut ZOOMSDK_IMeetingRecordingController;
 }
 extern "C" {
+    #[doc = " \\brief Get the sharing controller interface.\n \\return If the function succeeds, the return value is a pointer to IMeetingVideoController. Otherwise returns NULL."]
+    pub fn meeting_get_meeting_share_controller(
+        meeting_service: *mut ZOOMSDK_IMeetingService,
+    ) -> *mut ZOOMSDK_IMeetingShareController;
+}
+extern "C" {
     #[doc = " \\brief Get audio setting interface.\n \\return If the function succeeds, the return value an object pointer to IAudioSettingContext.\n Otherwise failed, returns NULL.\n For more details, see \\link IAudioSettingContext \\endlink."]
     pub fn get_audio_settings(
         setting_service: *mut ZOOMSDK_ISettingService,
@@ -5644,6 +5808,14 @@ extern "C" {
     ) -> *mut ZOOMSDK_IChatMsgInfo;
 }
 extern "C" {
+    #[doc = " \\brief Set meeting share controller callback event handler.\n \\param pEvent A pointer to the IMeetingShareCtrlEvent that receives sharing event.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
+    #[link_name = "\u{1}_Z17sharing_set_eventPN7ZOOMSDK23IMeetingShareControllerEPv"]
+    pub fn sharing_set_event(
+        controller: *mut ZOOMSDK_IMeetingShareController,
+        arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+extern "C" {
     pub fn init_video_to_virtual_webcam(
         meeting_service: *mut ZOOMSDK_IMeetingService,
         ptr_to_rust: *mut ::std::os::raw::c_void,
@@ -5766,12 +5938,14 @@ extern "C" {
 pub struct exported_video_raw_data {
     pub data: *mut ::std::os::raw::c_char,
     pub time: i64,
-    pub len: ::std::os::raw::c_uint,
+    pub len: u32,
     pub user_id: u32,
+    pub width: u32,
+    pub height: u32,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of exported_video_raw_data"][::std::mem::size_of::<exported_video_raw_data>() - 24usize];
+    ["Size of exported_video_raw_data"][::std::mem::size_of::<exported_video_raw_data>() - 32usize];
     ["Alignment of exported_video_raw_data"]
         [::std::mem::align_of::<exported_video_raw_data>() - 8usize];
     ["Offset of field: exported_video_raw_data::data"]
@@ -5782,6 +5956,10 @@ const _: () = {
         [::std::mem::offset_of!(exported_video_raw_data, len) - 16usize];
     ["Offset of field: exported_video_raw_data::user_id"]
         [::std::mem::offset_of!(exported_video_raw_data, user_id) - 20usize];
+    ["Offset of field: exported_video_raw_data::width"]
+        [::std::mem::offset_of!(exported_video_raw_data, width) - 24usize];
+    ["Offset of field: exported_video_raw_data::height"]
+        [::std::mem::offset_of!(exported_video_raw_data, height) - 28usize];
 };
 extern "C" {
     pub fn video_helper_create_delegate(
@@ -5828,6 +6006,13 @@ extern "C" {
         controller: *mut ZOOMSDK_IMeetingParticipantsController,
         len: *mut ::std::os::raw::c_uint,
     ) -> *mut participant;
+}
+extern "C" {
+    #[doc = " \\brief Get the information of specified user.\n \\param userid Specify the user ID for which you want to get the information.\n \\return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \\link IUserInfo \\endlink.\n Otherwise the function fails, and the return value is NULL.\n \\remarks Valid for both ZOOM style and user custom interface mode. Valid for both normal user and webinar attendee."]
+    pub fn meeting_participants_get_user_by_id(
+        controller: *mut ZOOMSDK_IMeetingParticipantsController,
+        userid: ::std::os::raw::c_uint,
+    ) -> *mut ZOOMSDK_IUserInfo;
 }
 extern "C" {
     #[doc = " @brief Free Participants list\n @param m A Pointer to the struct participant array\n @return void"]

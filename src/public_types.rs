@@ -5,13 +5,16 @@ use super::*;
 /// Main Error type
 #[derive(Debug, Copy, Clone)]
 pub enum ZoomRsError {
+    /// Error form SDK CPP.
     Sdk(SdkError),
+    /// Just a Null pointer detected.
     NullPtr,
 }
 
 /// Result from Zoom SDK
 pub type SdkResult<T> = Result<T, ZoomRsError>;
 
+/// Common Result form the library.
 pub struct ZoomSdkResult<T>(pub u32, pub T);
 
 impl<T> From<ZoomSdkResult<T>> for SdkResult<T> {
@@ -148,8 +151,11 @@ pub struct SdkInitParam {
 pub struct SdkRawDataOptions {
     /// false -- YUV420data, true -- intermediate data
     pub enable_rawdata_intermediate_mode: bool,
+    /// Memory mode for raw video.
     pub video_rawdata_memory_mode: SdkRawDataMemoryMode,
+    /// Memory mode for raw share.
     pub share_rawdata_memory_mode: SdkRawDataMemoryMode,
+    /// Memory mode for raw audio
     pub audio_rawdata_memory_mode: SdkRawDataMemoryMode,
 }
 
@@ -169,8 +175,10 @@ impl From<SdkRawDataOptions> for ZOOMSDK_RawDataOptions {
 #[derive(Default, Debug, Copy, Clone)]
 #[repr(u32)]
 pub enum SdkRawDataMemoryMode {
+    /// The stack is used form rawdata. Fast.
     #[default]
     Stack = ZOOMSDK_ZoomSDKRawDataMemoryMode_ZoomSDKRawDataMemoryModeStack,
+    /// The Heap is user from rawdata. Slow but extensive.
     Heap = ZOOMSDK_ZoomSDKRawDataMemoryMode_ZoomSDKRawDataMemoryModeHeap,
 }
 

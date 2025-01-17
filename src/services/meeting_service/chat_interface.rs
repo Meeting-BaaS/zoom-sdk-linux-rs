@@ -22,7 +22,7 @@ impl<'a> ChatInterface<'a> {
         }
     }
     /// Send chat message [str]
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub fn send_message(&mut self, message: String) -> SdkResult<()> {
         if message.len() == 0 {
             return Ok(());

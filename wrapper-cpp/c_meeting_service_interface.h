@@ -47,4 +47,10 @@ extern "C" ZOOMSDK::IMeetingRecordingController* meeting_get_meeting_recording_c
     ZOOMSDK::IMeetingService* meeting_service
 );
 
+/// \brief Get the sharing controller interface.
+/// \return If the function succeeds, the return value is a pointer to IMeetingVideoController. Otherwise returns NULL.
+extern "C" ZOOMSDK::IMeetingShareController* meeting_get_meeting_share_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+);
+
 #endif

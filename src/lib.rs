@@ -42,6 +42,8 @@
 //! ```c
 //! ```
 //! Add `#include <ctime>` to meeting_ai_companion_interface.h & meeting_chat_interface.h
+#![deny(missing_docs)]
+
 #[allow(nonstandard_style)]
 #[allow(unused)]
 mod bindings;
@@ -53,18 +55,23 @@ use std::pin::Pin;
 use auth_service::AuthService;
 use bindings::*;
 
+/// Allows obtaining a new JWT token.
 pub mod jwt_helper;
 pub use jwt_helper::generate_jwt;
+/// Parse the meeting URL.
 pub mod meeting_url;
 pub use meeting_url::parse;
 
+/// This module contains the types exported by the library.
 pub mod public_types;
 use meeting_service::MeetingService;
 pub use public_types::*;
 
+/// This module contains all the root services of the SDK.
 pub mod services;
 pub use services::*;
 
+/// This module handles the raw audio and video data received by the SDK.
 pub mod rawdata;
 
 pub use glib;
@@ -218,7 +225,7 @@ impl<'a> Instance<'a> {
     /// Get ZOOM last error interface.
     /// - If the function succeeds, the return value is an interface of ZOOM last error.
     /// - If the function fails or there is no error, the return value is NULL.
-    /// - TODO : Understand this function
+    /// TODO : Implements the corresponding cpp boilerplate.
     pub fn get_zoom_last_error(&self) -> SdkResult<()> {
         let ptr: *const ZOOMSDK_IZoomLastError = unsafe { ZOOMSDK_GetZoomLastError() };
         if ptr.is_null() {
@@ -229,7 +236,7 @@ impl<'a> Instance<'a> {
     }
     /// Call the method to switch sdk domain
     /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
-    /// - TODO : Check function behavior
+    /// TODO : Check function behavior.
     pub fn switch_domain(&mut self, new_domain: Pin<CString>, force: bool) -> SdkResult<()> {
         let res: SdkResult<()> = ZoomSdkResult(
             unsafe { ZOOMSDK_SwitchDomain(new_domain.as_ptr(), force) },
@@ -246,7 +253,7 @@ impl<'a> Instance<'a> {
 /// Clean up ZOOM SDK  
 /// - [`Instance`] Zoom SDK instance given to this function.
 /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
-// TODO : FIX SEGFAULT
+// TODO : Fix segfault if we use it.
 pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
     tracing::info!("calling cleanup SDK");
     let ret = ZoomSdkResult(unsafe { ZOOMSDK_CleanUPSDK() }, ()).into();

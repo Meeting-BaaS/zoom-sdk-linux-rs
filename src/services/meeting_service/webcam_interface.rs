@@ -19,7 +19,7 @@ pub trait VideoToWebcam: Debug {
 }
 
 /// Get WebCam injection boilerplates.
-/// - If the function succeeds, the return value is Ok(, otherwise failed, see [SdkError] for details
+/// - If the function succeeds, the return value is Ok(, otherwise failed, see [crate::SdkError] for details
 pub fn new_webcam_injection_boitlerplate(
     meeting_service: &mut ZOOMSDK_IMeetingService,
     ctx: Box<dyn VideoToWebcam>,
@@ -44,7 +44,7 @@ pub fn new_webcam_injection_boitlerplate(
 impl CamInterface {
     /// Use this method to send 640*480 YUV420 data to camera.
     /// - Unsafe as fuck -> Ensure you that [CamInterface] is always valid.
-    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [SdkError] for details.
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
     pub unsafe fn send_video_buffer(&mut self, framebuffer: *const i8) -> SdkResult<()> {
         ZoomSdkResult(play_video_to_virtual_webcam(self.0, framebuffer), ()).into()
     }

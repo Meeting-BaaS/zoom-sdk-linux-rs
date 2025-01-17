@@ -54,6 +54,7 @@ impl<'a> ParticipantsInterface<'a> {
 }
 
 impl<'a> Participant<'a> {
+    /// Retrieve the user ID of the participant.
     #[inline(always)]
     pub fn get_user_id(&self) -> i32 {
         self.user_id

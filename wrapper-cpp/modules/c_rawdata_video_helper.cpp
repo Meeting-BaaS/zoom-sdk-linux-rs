@@ -5,9 +5,9 @@
 
 extern "C" void on_raw_data_frame_received(void *ptr, struct exported_video_raw_data *data);
 
-extern "C" void on_raw_data_status_changed(void *ptr, bool status);
+extern "C" void on_raw_data_status_changed(void *ptr, bool status, int64_t time);
 
-extern "C" void on_renderer_be_destroyed(void *ptr);
+extern "C" void on_renderer_be_destroyed(void *ptr, int64_t time);
 
 class ZoomSDKRendererDelegate : public ZOOMSDK::IZoomSDKRendererDelegate {
 public:
@@ -20,22 +20,27 @@ public:
         using namespace std::chrono;
         int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
-        printf("width=%i, height=%i\n", data->GetStreamWidth(), data->GetStreamHeight());
-
         struct exported_video_raw_data exported_data = {
             data: data->GetBuffer(),
             time: timestamp,
             len: data->GetBufferLen(),
             user_id: data->GetSourceID(),
-            // user_id: user_id,
+            width: data->GetStreamWidth(),
+            height: data->GetStreamHeight(),
         };
         on_raw_data_frame_received(ptr_to_rust, &exported_data);
     }
     void onRawDataStatusChanged(RawDataStatus status) override {
-        on_raw_data_status_changed(ptr_to_rust, status == RawData_On ? true : false);
+        using namespace std::chrono;
+        int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+
+        on_raw_data_status_changed(ptr_to_rust, status == RawData_On ? true : false, timestamp);
     }
     void onRendererBeDestroyed() override {
-        on_renderer_be_destroyed(ptr_to_rust);
+        using namespace std::chrono;
+        int64_t timestamp = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+
+        on_renderer_be_destroyed(ptr_to_rust, timestamp);
     }
 private:
     void *ptr_to_rust;

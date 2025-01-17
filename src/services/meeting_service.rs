@@ -7,16 +7,24 @@ use std::sync::{Arc, Mutex};
 use crate::SdkError;
 use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 
+/// Allows sending messages.
 pub mod chat_interface;
+/// Allows obtaining information about the participants.
 pub mod participants_interface;
+/// Allows managing, starting, and stopping the recording.
 pub mod recording_controller;
+/// Allows obtaining the events necessary for screen sharing.
+pub mod sharing_controller;
+/// Allows injecting an image into the bot webcam.
 pub mod webcam_interface;
 
 pub use chat_interface::ChatInterface;
 pub use participants_interface::ParticipantsInterface;
 pub use recording_controller::RecordingController;
+pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};
 
+/// Main instance of the meeting.
 #[derive(Debug)]
 pub struct MeetingService<'a> {
     // Inner stuff
@@ -27,18 +35,20 @@ pub struct MeetingService<'a> {
     recording_controller: Option<RecordingController<'a>>,
     participants_interface: Option<ParticipantsInterface<'a>>,
     chat_interface: Option<ChatInterface<'a>>,
+    sharing_controller: Option<SharingController<'a>>,
 
     // Exception Class II
     camera_mutex: Option<Arc<Mutex<Box<dyn VideoToWebcam>>>>,
 }
 
+/// This trait handles all events related to the meeting
 pub trait MeetingServiceEvent: Debug {
     /// Meeting status changed callback.
     /// - [MeetingStatus] The value of meeting. For more details.  
     /// - [i32] Detailed reasons for special meeting status.  
     /// - If the status is [MeetingStatus::MeetingStatusFailed], the value of result is one of those listed in MeetingFailCode enum.  
     /// - If the status is [MeetingStatus::MeetingStatusEnded], the value of result is one of those listed in MeetingEndReason.
-    fn on_meeting_status_changed(&mut self, _status: MeetingStatus, _result: i32) {}
+    fn on_meeting_status_changed(&mut self, _status: MeetingStatus, _result: MeetingFailCode) {}
 
     /// Meeting statistics warning notification callback.  
     /// - [StatisticsWarningType] The warning type of the meeting statistics.
@@ -77,6 +87,7 @@ impl<'a> MeetingService<'a> {
                 evt_mutex: None,
                 ref_meeting_service: unsafe { ptr.as_mut() }.unwrap(),
                 recording_controller: None,
+                sharing_controller: None,
                 participants_interface: None,
                 chat_interface: None,
                 camera_mutex: None,
@@ -159,14 +170,34 @@ impl<'a> MeetingService<'a> {
         }
         self.recording_controller.as_mut().unwrap()
     }
+    /// Get Sharing Controller.
+    pub fn sharing_ctrl(&mut self) -> &mut SharingController<'a> {
+        if self.sharing_controller.is_none() {
+            self.sharing_controller =
+                Some(SharingController::new(self.ref_meeting_service).unwrap());
+            self.sharing_controller
+                .as_ref()
+                .expect("Cannot create SharingController");
+        }
+        self.sharing_controller.as_mut().unwrap()
+    }
     /// Initialize WebCam Injection.
-    pub fn set_webcam_injection(&mut self, ctx: Box<dyn VideoToWebcam>) -> SdkResult<()> {
-        if let Some(camera_mutex) = new_webcam_injection_boitlerplate(self.ref_meeting_service, ctx)
-        {
-            self.camera_mutex = Some(camera_mutex);
-            Ok(())
-        } else {
-            Err(ZoomRsError::NullPtr)
+    pub fn set_webcam_injection(&mut self, ctx: Option<Box<dyn VideoToWebcam>>) -> SdkResult<()> {
+        match ctx {
+            None => {
+                // TODO : Check is CAM is always OFF.
+                Ok(())
+            }
+            Some(ctx) => {
+                if let Some(camera_mutex) =
+                    new_webcam_injection_boitlerplate(self.ref_meeting_service, ctx)
+                {
+                    self.camera_mutex = Some(camera_mutex);
+                    Ok(())
+                } else {
+                    Err(ZoomRsError::NullPtr)
+                }
+            }
         }
     }
 }
@@ -189,7 +220,14 @@ extern "C" fn on_meeting_status_changed(
     status: ZOOMSDK_MeetingStatus,
     result: c_int,
 ) {
-    (*convert(ptr).lock().unwrap()).on_meeting_status_changed(status.into(), result as i32);
+    let result: MeetingFailCode = match (result as u32).try_into() {
+        Ok(fail_code) => fail_code,
+        Err(e) => {
+            tracing::error!("{}", e);
+            MeetingFailCode::Unknown
+        }
+    };
+    (*convert(ptr).lock().unwrap()).on_meeting_status_changed(status.into(), result);
 }
 
 #[tracing::instrument(ret)]
@@ -417,4 +455,173 @@ pub struct JoinParam<'a> {
     pub username: &'a CStr,
     /// Meeting password.
     pub password: Option<&'a CStr>,
+}
+
+/// Meeting failure code.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum MeetingFailCode {
+    /// Start meeting successfully
+    Success = ZOOMSDK_MeetingFailCode_MEETING_SUCCESS,
+    /// Network error
+    NetworkError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR,
+    /// Reconnect error
+    ReconnectError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR,
+    /// Multi-media Router error
+    MMRError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MMR_ERR,
+    /// Password is wrong
+    PasswordError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_PASSWORD_ERR,
+    /// Session error
+    SessionError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_SESSION_ERR,
+    /// Meeting is over
+    MeetingOver = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_OVER,
+    /// Meeting has not begun
+    MeetingNotStarted = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_NOT_START,
+    /// Meeting does not exist
+    MeetingNotExist = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_NOT_EXIST,
+    /// The capacity of meeting is full
+    MeetingUserFull = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_USER_FULL,
+    /// The client is incompatible
+    ClientIncompatible = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CLIENT_INCOMPATIBLE,
+    /// The Multi-media router is not found
+    NoMMR = ZOOMSDK_MeetingFailCode_MEETING_FAIL_NO_MMR,
+    /// The meeting is locked
+    MeetingLocked = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONFLOCKED,
+    /// Meeting restricted by same account
+    MeetingRestricted = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_RESTRICTED,
+    /// Meeting restricted (JBH - Join Before Host)
+    MeetingRestrictedJBH = ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_RESTRICTED_JBH,
+    /// Unable to send web request
+    CannotEmitWebRequest = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CANNOT_EMIT_WEBREQUEST,
+    /// Token expired
+    TokenExpired = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CANNOT_START_TOKENEXPIRE,
+    /// Video hardware/software error
+    VideoError = ZOOMSDK_MeetingFailCode_SESSION_VIDEO_ERR,
+    /// Audio autostart error
+    AudioAutoStartError = ZOOMSDK_MeetingFailCode_SESSION_AUDIO_AUTOSTARTERR,
+    /// Webinar registration full
+    WebinarRegisterFull = ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_FULL,
+    /// Webinar host registration
+    WebinarHostRegister = ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_HOSTREGISTER,
+    /// Webinar panelist registration
+    WebinarPanelistRegister = ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_PANELISTREGISTER,
+    /// Webinar denied email
+    WebinarDeniedEmail = ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_DENIED_EMAIL,
+    /// Login required
+    EnforceLogin = ZOOMSDK_MeetingFailCode_MEETING_FAIL_ENFORCE_LOGIN,
+    /// Certificate changed
+    CertificateChanged = ZOOMSDK_MeetingFailCode_CONF_FAIL_ZC_CERTIFICATE_CHANGED,
+    /// Vanity URL not exist
+    VanityNotExist = ZOOMSDK_MeetingFailCode_CONF_FAIL_VANITY_NOT_EXIST,
+    /// Join webinar with same email
+    JoinWebinarSameEmail = ZOOMSDK_MeetingFailCode_CONF_FAIL_JOIN_WEBINAR_WITHSAMEEMAIL,
+    /// Host not allowed to start meeting
+    DisallowHostMeeting = ZOOMSDK_MeetingFailCode_CONF_FAIL_DISALLOW_HOST_MEETING,
+    /// Write config file error
+    WriteConfigFile = ZOOMSDK_MeetingFailCode_MEETING_FAIL_WRITE_CONFIG_FILE,
+    /// Forbidden to join internal meeting
+    ForbidJoinInternalMeeting =
+        ZOOMSDK_MeetingFailCode_MEETING_FAIL_FORBID_TO_JOIN_INTERNAL_MEETING,
+    /// Removed by host
+    RemovedByHost = ZOOMSDK_MeetingFailCode_CONF_FAIL_REMOVED_BY_HOST,
+    /// Host disallow outside user join
+    HostDisallowOutsideUserJoin =
+        ZOOMSDK_MeetingFailCode_MEETING_FAIL_HOST_DISALLOW_OUTSIDE_USER_JOIN,
+    /// Unable to join external meeting
+    UnableJoinExternalMeeting =
+        ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNABLE_TO_JOIN_EXTERNAL_MEETING,
+    /// Blocked by account admin
+    BlockedByAccountAdmin = ZOOMSDK_MeetingFailCode_MEETING_FAIL_BLOCKED_BY_ACCOUNT_ADMIN,
+    /// Need sign in for private meeting
+    NeedSignInPrivateMeeting =
+        ZOOMSDK_MeetingFailCode_MEETING_FAIL_NEED_SIGN_IN_FOR_PRIVATE_MEETING,
+    /// App privilege token error
+    AppPrivilegeTokenError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR,
+    /// JMAK user email not match
+    JMAKUserEmailNotMatch = ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH,
+    /// Unknown error
+    Unknown = ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNKNOWN,
+}
+
+#[allow(non_upper_case_globals)]
+impl TryFrom<u32> for MeetingFailCode {
+    type Error = &'static str;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            ZOOMSDK_MeetingFailCode_MEETING_SUCCESS => Ok(Self::Success),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR => Ok(Self::NetworkError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR => Ok(Self::ReconnectError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MMR_ERR => Ok(Self::MMRError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_PASSWORD_ERR => Ok(Self::PasswordError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_SESSION_ERR => Ok(Self::SessionError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_OVER => Ok(Self::MeetingOver),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_NOT_START => Ok(Self::MeetingNotStarted),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_NOT_EXIST => Ok(Self::MeetingNotExist),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_USER_FULL => Ok(Self::MeetingUserFull),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CLIENT_INCOMPATIBLE => {
+                Ok(Self::ClientIncompatible)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_NO_MMR => Ok(Self::NoMMR),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONFLOCKED => Ok(Self::MeetingLocked),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_RESTRICTED => Ok(Self::MeetingRestricted),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_MEETING_RESTRICTED_JBH => {
+                Ok(Self::MeetingRestrictedJBH)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CANNOT_EMIT_WEBREQUEST => {
+                Ok(Self::CannotEmitWebRequest)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CANNOT_START_TOKENEXPIRE => Ok(Self::TokenExpired),
+            ZOOMSDK_MeetingFailCode_SESSION_VIDEO_ERR => Ok(Self::VideoError),
+            ZOOMSDK_MeetingFailCode_SESSION_AUDIO_AUTOSTARTERR => Ok(Self::AudioAutoStartError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_FULL => {
+                Ok(Self::WebinarRegisterFull)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_HOSTREGISTER => {
+                Ok(Self::WebinarHostRegister)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_PANELISTREGISTER => {
+                Ok(Self::WebinarPanelistRegister)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_REGISTERWEBINAR_DENIED_EMAIL => {
+                Ok(Self::WebinarDeniedEmail)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_ENFORCE_LOGIN => Ok(Self::EnforceLogin),
+            ZOOMSDK_MeetingFailCode_CONF_FAIL_ZC_CERTIFICATE_CHANGED => {
+                Ok(Self::CertificateChanged)
+            }
+            ZOOMSDK_MeetingFailCode_CONF_FAIL_VANITY_NOT_EXIST => Ok(Self::VanityNotExist),
+            ZOOMSDK_MeetingFailCode_CONF_FAIL_JOIN_WEBINAR_WITHSAMEEMAIL => {
+                Ok(Self::JoinWebinarSameEmail)
+            }
+            ZOOMSDK_MeetingFailCode_CONF_FAIL_DISALLOW_HOST_MEETING => {
+                Ok(Self::DisallowHostMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_WRITE_CONFIG_FILE => Ok(Self::WriteConfigFile),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_FORBID_TO_JOIN_INTERNAL_MEETING => {
+                Ok(Self::ForbidJoinInternalMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_CONF_FAIL_REMOVED_BY_HOST => Ok(Self::RemovedByHost),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_HOST_DISALLOW_OUTSIDE_USER_JOIN => {
+                Ok(Self::HostDisallowOutsideUserJoin)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNABLE_TO_JOIN_EXTERNAL_MEETING => {
+                Ok(Self::UnableJoinExternalMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_BLOCKED_BY_ACCOUNT_ADMIN => {
+                Ok(Self::BlockedByAccountAdmin)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_NEED_SIGN_IN_FOR_PRIVATE_MEETING => {
+                Ok(Self::NeedSignInPrivateMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR => {
+                Ok(Self::AppPrivilegeTokenError)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH => {
+                Ok(Self::JMAKUserEmailNotMatch)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNKNOWN => Ok(Self::Unknown),
+            _ => Err("Invalid meeting fail code"),
+        }
+    }
 }

@@ -50,11 +50,9 @@ class ZoomSDKVideoSource: public ZOOMSDK::IZoomSDKVideoSource {
             (void) _suggest_cap;
         }
 	    void onStartSend() override{
-            printf("ZoomSDKVideoSource::onStartSend()\n");
             video_source_started(ptr_to_rust_, video_sender_);
         }
 	    void onStopSend() override {
-            printf("ZoomSDKVideoSource::onStopSend()\n");
             video_source_stopped(ptr_to_rust_);
         }
 	    void onUninitialized() override {

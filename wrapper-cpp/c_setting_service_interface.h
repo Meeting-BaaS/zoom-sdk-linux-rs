@@ -46,4 +46,12 @@ extern "C" ZOOMSDK::SDKError set_suppress_background_noise_level(
     ZOOMSDK::Suppress_Background_Noise_Level level
 );
 
+/// \brief Set the volume of the selected mic.
+/// \param value Specify the volume of the mic that varies between 0 and 255.
+/// The SDK will enable the default mic if there is no mic selected via SelectMic().
+extern "C" ZOOMSDK::SDKError set_mic_volume(
+    ZOOMSDK::IAudioSettingContext* audio_setting,
+    FLOAT level
+);
+
 #endif

@@ -43,3 +43,10 @@ extern "C" ZOOMSDK::SDKError set_suppress_background_noise_level(
 ) {
     return audio_setting->SetSuppressBackgroundNoiseLevel(level);
 }
+
+extern "C" ZOOMSDK::SDKError set_mic_volume(
+    ZOOMSDK::IAudioSettingContext* audio_setting,
+    FLOAT level
+) {
+    return audio_setting->SetMicVol(level);
+}

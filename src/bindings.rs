@@ -5476,6 +5476,13 @@ extern "C" {
         level: ZOOMSDK_Suppress_Background_Noise_Level,
     ) -> ZOOMSDK_SDKError;
 }
+extern "C" {
+    #[doc = " \\brief Set the volume of the selected mic.\n \\param value Specify the volume of the mic that varies between 0 and 255.\n The SDK will enable the default mic if there is no mic selected via SelectMic()."]
+    pub fn set_mic_volume(
+        audio_setting: *mut ZOOMSDK_IAudioSettingContext,
+        level: FLOAT,
+    ) -> ZOOMSDK_SDKError;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct timeval {

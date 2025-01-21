@@ -37,7 +37,12 @@ class ZoomSDKVideoSource: public ZOOMSDK::IZoomSDKVideoSource {
             ZOOMSDK::VideoSourceCapability& _suggest_cap)
         {
             printf("ZoomSDKVideoSource::onInitialize()\n");
-            (void) _support_cap_list;
+            unsigned int count = _support_cap_list->GetCount();
+            printf("video source capability:\n");
+            for (unsigned int i = 0; i < count; i += 1) {
+                auto cap = _support_cap_list->GetItem(i);
+                printf("%ifps %ix%i\n", cap.frame, cap.width, cap.height);
+            }
             (void) _suggest_cap;
             video_sender_ = sender;
         }

@@ -4,6 +4,10 @@
 #include <cstdlib>
 
 extern "C" ZOOMSDK::IAudioSettingContext* get_audio_settings(ZOOMSDK::ISettingService* setting_service) {
+    // auto video_settings = setting_service->GetVideoSettings();
+    // printf("HD-ENABLED: %u\n", video_settings->IsHDVideoEnabled());
+    // video_settings->EnableHDVideo(true);
+    // printf("HD-ENABLED: %u\n", video_settings->IsHDVideoEnabled());
     return setting_service->GetAudioSettings();
 }
 

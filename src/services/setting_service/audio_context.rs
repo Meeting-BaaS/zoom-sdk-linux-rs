@@ -95,11 +95,7 @@ impl<'a> AudioContext<'a> {
     /// [f32] value Specify the volume of the mic that varies between 0 and 255.
     /// The SDK will enable the default mic if there is no mic selected via SelectMic().
     pub fn set_mic_volume(&mut self, level: f32) -> SdkResult<()> {
-        ZoomSdkResult(
-            unsafe { set_mic_volume(self.ref_audio_context, level) },
-            (),
-        )
-        .into()
+        ZoomSdkResult(unsafe { set_mic_volume(self.ref_audio_context, level) }, ()).into()
     }
 }
 

@@ -61,4 +61,8 @@ extern "C" unsigned int get_user_id(ZOOMSDK::IUserInfo *user_info);
 /// \remarks Valid for both ZOOM style and user custom interface mode..
 extern "C" ZOOMSDK::IUserInfo *get_my_self_user(ZOOMSDK::IMeetingParticipantsController *controller);
 
+/// \brief Check whether the current meeting allows participants to send local recording privilege request, it can only be used in regular meeetings(no webinar or bo).
+/// \return If allows participants to send request, the return value is true.
+extern "C" bool is_participant_request_local_recording_allowed(ZOOMSDK::IMeetingParticipantsController *controller);
+
 #endif

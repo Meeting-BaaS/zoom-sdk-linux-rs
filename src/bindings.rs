@@ -6050,6 +6050,12 @@ extern "C" {
     ) -> *mut ZOOMSDK_IUserInfo;
 }
 extern "C" {
+    #[doc = " \\brief Check whether the current meeting allows participants to send local recording privilege request, it can only be used in regular meeetings(no webinar or bo).\n \\return If allows participants to send request, the return value is true."]
+    pub fn is_participant_request_local_recording_allowed(
+        controller: *mut ZOOMSDK_IMeetingParticipantsController,
+    ) -> bool;
+}
+extern "C" {
     #[doc = " \\brief Send a request to enable the SDK to start local recording.\n \\return If the function succeeds, the return value is SDKErr_Success and the SDK will send the request.\n Otherwise it fails and the request will not be sent. To get extended error information, see \\link SDKError \\endlink enum."]
     pub fn recording_request_local_recording_privilege(
         ctrl: *mut ZOOMSDK_IMeetingRecordingController,

@@ -51,6 +51,11 @@ impl<'a> ParticipantsInterface<'a> {
         let this = unsafe { get_my_self_user(self.ref_participants_controler) };
         unsafe { get_user_id(this) as i32 }
     }
+
+    /// Checj if participants can request local recording
+    pub fn is_participant_request_local_recording_allowed(&mut self) -> bool {
+        unsafe { is_participant_request_local_recording_allowed(self.ref_participants_controler) }
+    }
 }
 
 impl<'a> Participant<'a> {

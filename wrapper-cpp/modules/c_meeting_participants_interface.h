@@ -55,6 +55,11 @@ extern "C" int meeting_participants_get_audio_voice_level(ZOOMSDK::IUserInfo *us
 /// \remarks Valid for both normal user and webinar attendee.
 extern "C" unsigned int get_user_id(ZOOMSDK::IUserInfo *user_info);
 
+/// @brief Check if a participant is the host
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true is the user is the host
+extern "C" bool is_host(ZOOMSDK::IUserInfo *user_info);
+
 /// \brief Get the information of current user.
 /// \return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \link IUserInfo \endlink.
 /// Otherwise failed, the return value is NULL.

@@ -64,6 +64,13 @@ impl<'a> Participant<'a> {
     pub fn get_user_id(&self) -> i32 {
         self.user_id
     }
+
+    /// Check if a participant is the host
+    /// - [bool], true is the user is the host.
+    pub fn is_host(&self) -> bool {
+        unsafe { is_host(self.inner.as_ptr()) }
+    }
+
     /// Check if a participant is talking.
     /// - [bool], true is the user is talking.
     pub fn is_talking(&self) -> bool {

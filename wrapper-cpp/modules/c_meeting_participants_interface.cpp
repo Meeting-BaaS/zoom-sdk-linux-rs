@@ -64,6 +64,11 @@ extern "C" unsigned int get_user_id(ZOOMSDK::IUserInfo *user_info) {
     return user_info->GetUserID();
 }
 
+
+extern "C" bool is_host(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsHost();
+}
+
 extern "C" ZOOMSDK::IUserInfo *get_my_self_user(ZOOMSDK::IMeetingParticipantsController *controller) {
     return controller->GetMySelfUser();
 }

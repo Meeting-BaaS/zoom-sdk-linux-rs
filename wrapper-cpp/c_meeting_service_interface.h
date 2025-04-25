@@ -53,4 +53,10 @@ extern "C" ZOOMSDK::IMeetingShareController* meeting_get_meeting_share_controlle
     ZOOMSDK::IMeetingService* meeting_service
 );
 
+/// \brief Get the audio controller interface.
+/// \return If the function succeeds, the return value is a pointer to IMeetingAudioController. Otherwise returns NULL.
+extern "C" ZOOMSDK::IMeetingAudioController *meeting_get_meeting_audio_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+);
+
 #endif

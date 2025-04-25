@@ -112,3 +112,9 @@ extern "C" ZOOMSDK::IMeetingShareController* meeting_get_meeting_share_controlle
 ) {
     return meeting_service->GetMeetingShareController();
 }
+
+extern "C" ZOOMSDK::IMeetingAudioController *meeting_get_meeting_audio_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+) {
+    return meeting_service->GetMeetingAudioController();
+}

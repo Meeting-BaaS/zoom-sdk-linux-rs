@@ -7,6 +7,8 @@ use std::sync::{Arc, Mutex};
 use crate::SdkError;
 use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
 
+/// Sub-service for controlling audio
+pub mod audio_controller;
 /// Allows sending messages.
 pub mod chat_interface;
 /// Allows obtaining information about the participants.
@@ -18,6 +20,7 @@ pub mod sharing_controller;
 /// Allows injecting an image into the bot webcam.
 pub mod webcam_interface;
 
+pub use audio_controller::AudioController;
 pub use chat_interface::ChatInterface;
 pub use participants_interface::ParticipantsInterface;
 pub use recording_controller::RecordingController;
@@ -36,6 +39,7 @@ pub struct MeetingService<'a> {
     participants_interface: Option<ParticipantsInterface<'a>>,
     chat_interface: Option<ChatInterface<'a>>,
     sharing_controller: Option<SharingController<'a>>,
+    audio_controller: Option<AudioController<'a>>,
 
     // Exception Class II
     camera_mutex: Option<Arc<Mutex<Box<dyn VideoToWebcam>>>>,
@@ -91,6 +95,7 @@ impl<'a> MeetingService<'a> {
                 participants_interface: None,
                 chat_interface: None,
                 camera_mutex: None,
+                audio_controller: None,
             })
         } else {
             Err(ZoomRsError::Sdk(ret.into()))
@@ -180,6 +185,16 @@ impl<'a> MeetingService<'a> {
                 .expect("Cannot create SharingController");
         }
         self.sharing_controller.as_mut().unwrap()
+    }
+    /// Get Audio Controller.
+    pub fn audio_ctrl(&mut self) -> &mut AudioController<'a> {
+        if self.audio_controller.is_none() {
+            self.audio_controller = Some(AudioController::new(self.ref_meeting_service).unwrap());
+            self.audio_controller
+                .as_ref()
+                .expect("Cannot create AudioController");
+        }
+        self.audio_controller.as_mut().unwrap()
     }
     /// Initialize WebCam Injection.
     pub fn set_webcam_injection(&mut self, ctx: Option<Box<dyn VideoToWebcam>>) -> SdkResult<()> {

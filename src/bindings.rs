@@ -124,7 +124,6 @@ pub const __USE_GNU: u32 = 1;
 pub const __USE_FORTIFY_LEVEL: u32 = 0;
 pub const __GLIBC_USE_DEPRECATED_GETS: u32 = 0;
 pub const __GLIBC_USE_DEPRECATED_SCANF: u32 = 0;
-pub const __GLIBC_USE_C2X_STRTOL: u32 = 1;
 pub const _STDC_PREDEF_H: u32 = 1;
 pub const __STDC_IEC_559__: u32 = 1;
 pub const __STDC_IEC_60559_BFP__: u32 = 201404;
@@ -133,7 +132,7 @@ pub const __STDC_IEC_60559_COMPLEX__: u32 = 201404;
 pub const __STDC_ISO_10646__: u32 = 201706;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 39;
+pub const __GLIBC_MINOR__: u32 = 36;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI: u32 = 0;
@@ -157,7 +156,6 @@ pub const _BITS_TIME64_H: u32 = 1;
 pub const _BITS_WCHAR_H: u32 = 1;
 pub const _BITS_STDINT_INTN_H: u32 = 1;
 pub const _BITS_STDINT_UINTN_H: u32 = 1;
-pub const _BITS_STDINT_LEAST_H: u32 = 1;
 pub const INT8_MIN: i32 = -128;
 pub const INT16_MIN: i32 = -32768;
 pub const INT32_MIN: i32 = -2147483648;
@@ -343,8 +341,8 @@ pub const F_TEST: u32 = 3;
 pub const CLOSE_RANGE_UNSHARE: u32 = 2;
 pub const CLOSE_RANGE_CLOEXEC: u32 = 4;
 pub const _GLIBCXX_CXX_CONFIG_H: u32 = 1;
-pub const _GLIBCXX_RELEASE: u32 = 14;
-pub const __GLIBCXX__: u32 = 20240908;
+pub const _GLIBCXX_RELEASE: u32 = 12;
+pub const __GLIBCXX__: u32 = 20220819;
 pub const _GLIBCXX_HAVE_ATTRIBUTE_VISIBILITY: u32 = 1;
 pub const _GLIBCXX_USE_DEPRECATED: u32 = 1;
 pub const _GLIBCXX_EXTERN_TEMPLATE: u32 = 1;
@@ -356,8 +354,6 @@ pub const _GLIBCXX_VERBOSE_ASSERT: u32 = 1;
 pub const _GLIBCXX_USE_ALLOCATOR_NEW: u32 = 1;
 pub const _GLIBCXX_OS_DEFINES: u32 = 1;
 pub const __NO_CTYPE: u32 = 1;
-pub const _GLIBCXX_HAVE_FLOAT128_MATH: u32 = 1;
-pub const _GLIBCXX_MAY_HAVE___CXA_THREAD_ATEXIT_IMPL: u32 = 1;
 pub const _GLIBCXX_GTHREAD_USE_WEAK: u32 = 0;
 pub const _GLIBCXX_CPU_DEFINES: u32 = 1;
 pub const _GLIBCXX_USE_STD_SPEC_FUNCS: u32 = 1;
@@ -367,12 +363,14 @@ pub const _GLIBCXX_FLOAT_IS_IEEE_BINARY32: u32 = 1;
 pub const _GLIBCXX_DOUBLE_IS_IEEE_BINARY64: u32 = 1;
 pub const _GLIBCXX_HAVE_BUILTIN_HAS_UNIQ_OBJ_REP: u32 = 1;
 pub const _GLIBCXX_HAVE_BUILTIN_IS_AGGREGATE: u32 = 1;
+pub const _GLIBCXX_HAVE_BUILTIN_IS_SAME: u32 = 1;
 pub const _GLIBCXX_HAVE_BUILTIN_LAUNDER: u32 = 1;
-pub const _PSTL_VERSION: u32 = 17000;
-pub const _PSTL_VERSION_MAJOR: u32 = 17;
+pub const _PSTL_VERSION: u32 = 12000;
+pub const _PSTL_VERSION_MAJOR: u32 = 12;
 pub const _PSTL_VERSION_MINOR: u32 = 0;
 pub const _PSTL_VERSION_PATCH: u32 = 0;
 pub const _PSTL_USAGE_WARNINGS: u32 = 0;
+pub const _PSTL_UDR_PRESENT: u32 = 0;
 pub const _PSTL_PRAGMA_LOCATION: &[u8; 26] = b" [Parallel STL message]: \0";
 pub const _GLIBCXX_HAVE_ACOSF: u32 = 1;
 pub const _GLIBCXX_HAVE_ACOSL: u32 = 1;
@@ -388,7 +386,6 @@ pub const _GLIBCXX_HAVE_ATANF: u32 = 1;
 pub const _GLIBCXX_HAVE_ATANL: u32 = 1;
 pub const _GLIBCXX_HAVE_ATOMIC_LOCK_POLICY: u32 = 1;
 pub const _GLIBCXX_HAVE_AT_QUICK_EXIT: u32 = 1;
-pub const _GLIBCXX_HAVE_C99_FLT_EVAL_TYPES: u32 = 1;
 pub const _GLIBCXX_HAVE_CEILF: u32 = 1;
 pub const _GLIBCXX_HAVE_CEILL: u32 = 1;
 pub const _GLIBCXX_HAVE_COMPLEX_H: u32 = 1;
@@ -452,7 +449,6 @@ pub const _GLIBCXX_HAVE_LOG10F: u32 = 1;
 pub const _GLIBCXX_HAVE_LOG10L: u32 = 1;
 pub const _GLIBCXX_HAVE_LOGF: u32 = 1;
 pub const _GLIBCXX_HAVE_LOGL: u32 = 1;
-pub const _GLIBCXX_HAVE_LSEEK: u32 = 1;
 pub const _GLIBCXX_HAVE_MBSTATE_T: u32 = 1;
 pub const _GLIBCXX_HAVE_MEMALIGN: u32 = 1;
 pub const _GLIBCXX_HAVE_MEMORY_H: u32 = 1;
@@ -483,7 +479,6 @@ pub const _GLIBCXX_HAVE_SINL: u32 = 1;
 pub const _GLIBCXX_HAVE_SOCKATMARK: u32 = 1;
 pub const _GLIBCXX_HAVE_SQRTF: u32 = 1;
 pub const _GLIBCXX_HAVE_SQRTL: u32 = 1;
-pub const _GLIBCXX_HAVE_STACKTRACE: u32 = 1;
 pub const _GLIBCXX_HAVE_STDALIGN_H: u32 = 1;
 pub const _GLIBCXX_HAVE_STDBOOL_H: u32 = 1;
 pub const _GLIBCXX_HAVE_STDINT_H: u32 = 1;
@@ -500,7 +495,6 @@ pub const _GLIBCXX_HAVE_SYMLINK: u32 = 1;
 pub const _GLIBCXX_HAVE_SYMVER_SYMBOL_RENAMING_RUNTIME_SUPPORT: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_IOCTL_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_IPC_H: u32 = 1;
-pub const _GLIBCXX_HAVE_SYS_MMAN_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_PARAM_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_RESOURCE_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_SDT_H: u32 = 1;
@@ -554,11 +548,10 @@ pub const _GLIBCXX98_USE_C99_STDIO: u32 = 1;
 pub const _GLIBCXX98_USE_C99_STDLIB: u32 = 1;
 pub const _GLIBCXX98_USE_C99_WCHAR: u32 = 1;
 pub const _GLIBCXX_ATOMIC_BUILTINS: u32 = 1;
-pub const _GLIBCXX_CAN_ALIGNAS_DESTRUCTIVE_SIZE: u32 = 1;
 pub const _GLIBCXX_FULLY_DYNAMIC_STRING: u32 = 0;
 pub const _GLIBCXX_HAS_GTHREADS: u32 = 1;
+pub const _GLIBCXX_HOSTED: u32 = 1;
 pub const _GLIBCXX_RES_LIMITS: u32 = 1;
-pub const _GLIBCXX_STATIC_TZDATA: u32 = 1;
 pub const _GLIBCXX_STDIO_EOF: i32 = -1;
 pub const _GLIBCXX_STDIO_SEEK_CUR: u32 = 1;
 pub const _GLIBCXX_STDIO_SEEK_END: u32 = 2;
@@ -566,41 +559,28 @@ pub const _GLIBCXX_SYMVER: u32 = 1;
 pub const _GLIBCXX_SYMVER_GNU: u32 = 1;
 pub const _GLIBCXX_USE_C11_UCHAR_CXX11: u32 = 1;
 pub const _GLIBCXX_USE_C99: u32 = 1;
-pub const _GLIBCXX_USE_C99_COMPLEX_ARC: u32 = 1;
 pub const _GLIBCXX_USE_C99_COMPLEX_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_CTYPE: u32 = 1;
 pub const _GLIBCXX_USE_C99_CTYPE_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_FENV: u32 = 1;
 pub const _GLIBCXX_USE_C99_FENV_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_INTTYPES: u32 = 1;
 pub const _GLIBCXX_USE_C99_INTTYPES_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_INTTYPES_WCHAR_T: u32 = 1;
 pub const _GLIBCXX_USE_C99_INTTYPES_WCHAR_T_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_MATH_FUNCS: u32 = 1;
 pub const _GLIBCXX_USE_C99_MATH_TR1: u32 = 1;
-pub const _GLIBCXX_USE_C99_STDINT: u32 = 1;
 pub const _GLIBCXX_USE_C99_STDINT_TR1: u32 = 1;
-pub const _GLIBCXX_USE_CHDIR: u32 = 1;
-pub const _GLIBCXX_USE_CHMOD: u32 = 1;
 pub const _GLIBCXX_USE_CLOCK_MONOTONIC: u32 = 1;
 pub const _GLIBCXX_USE_CLOCK_REALTIME: u32 = 1;
 pub const _GLIBCXX_USE_DECIMAL_FLOAT: u32 = 1;
 pub const _GLIBCXX_USE_DEV_RANDOM: u32 = 1;
 pub const _GLIBCXX_USE_FCHMOD: u32 = 1;
 pub const _GLIBCXX_USE_FCHMODAT: u32 = 1;
-pub const _GLIBCXX_USE_FSEEKO_FTELLO: u32 = 1;
-pub const _GLIBCXX_USE_GETCWD: u32 = 1;
 pub const _GLIBCXX_USE_GETTIMEOFDAY: u32 = 1;
 pub const _GLIBCXX_USE_GET_NPROCS: u32 = 1;
-pub const _GLIBCXX_USE_INIT_PRIORITY_ATTRIBUTE: u32 = 1;
 pub const _GLIBCXX_USE_LFS: u32 = 1;
 pub const _GLIBCXX_USE_LONG_LONG: u32 = 1;
 pub const _GLIBCXX_USE_LSTAT: u32 = 1;
-pub const _GLIBCXX_USE_MKDIR: u32 = 1;
 pub const _GLIBCXX_USE_NANOSLEEP: u32 = 1;
 pub const _GLIBCXX_USE_NLS: u32 = 1;
-pub const _GLIBCXX_USE_NL_LANGINFO_L: u32 = 1;
 pub const _GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT: u32 = 1;
+pub const _GLIBCXX_USE_PTHREAD_MUTEX_CLOCKLOCK: u32 = 1;
 pub const _GLIBCXX_USE_PTHREAD_RWLOCK_CLOCKLOCK: u32 = 1;
 pub const _GLIBCXX_USE_PTHREAD_RWLOCK_T: u32 = 1;
 pub const _GLIBCXX_USE_RANDOM_TR1: u32 = 1;
@@ -618,80 +598,7 @@ pub const _GLIBCXX_USE_WCHAR_T: u32 = 1;
 pub const _GLIBCXX_VERBOSE: u32 = 1;
 pub const _GLIBCXX_X86_RDRAND: u32 = 1;
 pub const _GLIBCXX_X86_RDSEED: u32 = 1;
-pub const _GLIBCXX_ZONEINFO_DIR: &[u8; 20] = b"/usr/share/zoneinfo\0";
 pub const _GTHREAD_USE_MUTEX_TIMEDLOCK: u32 = 1;
-pub const __glibcxx_incomplete_container_elements: u32 = 201505;
-pub const __glibcxx_uncaught_exceptions: u32 = 201411;
-pub const __glibcxx_allocator_traits_is_always_equal: u32 = 201411;
-pub const __glibcxx_is_null_pointer: u32 = 201309;
-pub const __glibcxx_result_of_sfinae: u32 = 201210;
-pub const __glibcxx_shared_ptr_arrays: u32 = 201611;
-pub const __glibcxx_is_swappable: u32 = 201603;
-pub const __glibcxx_void_t: u32 = 201411;
-pub const __glibcxx_enable_shared_from_this: u32 = 201603;
-pub const __glibcxx_math_spec_funcs: u32 = 201003;
-pub const __glibcxx_exchange_function: u32 = 201304;
-pub const __glibcxx_integer_sequence: u32 = 201304;
-pub const __glibcxx_integral_constant_callable: u32 = 201304;
-pub const __glibcxx_is_final: u32 = 201402;
-pub const __glibcxx_make_reverse_iterator: u32 = 201402;
-pub const __glibcxx_null_iterators: u32 = 201304;
-pub const __glibcxx_transformation_trait_aliases: u32 = 201304;
-pub const __glibcxx_transparent_operators: u32 = 201510;
-pub const __glibcxx_tuple_element_t: u32 = 201402;
-pub const __glibcxx_tuples_by_type: u32 = 201304;
-pub const __glibcxx_robust_nonmodifying_seq_ops: u32 = 201304;
-pub const __glibcxx_to_chars: u32 = 201611;
-pub const __glibcxx_chrono_udls: u32 = 201304;
-pub const __glibcxx_complex_udls: u32 = 201309;
-pub const __glibcxx_generic_associative_lookup: u32 = 201304;
-pub const __glibcxx_make_unique: u32 = 201304;
-pub const __glibcxx_quoted_string_io: u32 = 201304;
-pub const __glibcxx_shared_timed_mutex: u32 = 201402;
-pub const __glibcxx_string_udls: u32 = 201304;
-pub const __glibcxx_addressof_constexpr: u32 = 201603;
-pub const __glibcxx_any: u32 = 201606;
-pub const __glibcxx_apply: u32 = 201603;
-pub const __glibcxx_as_const: u32 = 201510;
-pub const __glibcxx_atomic_is_always_lock_free: u32 = 201603;
-pub const __glibcxx_bool_constant: u32 = 201505;
-pub const __glibcxx_byte: u32 = 201603;
-pub const __glibcxx_has_unique_object_representations: u32 = 201606;
-pub const __glibcxx_invoke: u32 = 201411;
-pub const __glibcxx_is_aggregate: u32 = 201703;
-pub const __glibcxx_is_invocable: u32 = 201703;
-pub const __glibcxx_launder: u32 = 201606;
-pub const __glibcxx_logical_traits: u32 = 201510;
-pub const __glibcxx_make_from_tuple: u32 = 201606;
-pub const __glibcxx_not_fn: u32 = 201603;
-pub const __glibcxx_type_trait_variable_templates: u32 = 201510;
-pub const __glibcxx_variant: u32 = 202102;
-pub const __glibcxx_lcm: u32 = 201606;
-pub const __glibcxx_gcd: u32 = 201606;
-pub const __glibcxx_gcd_lcm: u32 = 201606;
-pub const __glibcxx_raw_memory_algorithms: u32 = 201606;
-pub const __glibcxx_array_constexpr: u32 = 201803;
-pub const __glibcxx_nonmember_container_access: u32 = 201411;
-pub const __glibcxx_clamp: u32 = 201603;
-pub const __glibcxx_sample: u32 = 201603;
-pub const __glibcxx_boyer_moore_searcher: u32 = 201603;
-pub const __glibcxx_chrono: u32 = 201611;
-pub const __glibcxx_execution: u32 = 201902;
-pub const __glibcxx_filesystem: u32 = 201703;
-pub const __glibcxx_hypot: u32 = 201603;
-pub const __glibcxx_map_try_emplace: u32 = 201411;
-pub const __glibcxx_math_special_functions: u32 = 201603;
-pub const __glibcxx_memory_resource: u32 = 201603;
-pub const __glibcxx_node_extract: u32 = 201606;
-pub const __glibcxx_parallel_algorithm: u32 = 201603;
-pub const __glibcxx_scoped_lock: u32 = 201703;
-pub const __glibcxx_shared_mutex: u32 = 201505;
-pub const __glibcxx_shared_ptr_weak_type: u32 = 201606;
-pub const __glibcxx_string_view: u32 = 201803;
-pub const __glibcxx_unordered_map_try_emplace: u32 = 201411;
-pub const __glibcxx_optional: u32 = 201606;
-pub const __glibcxx_constexpr_char_traits: u32 = 201611;
-pub const __glibcxx_constexpr_string: u32 = 201611;
 pub const _STRING_H: u32 = 1;
 pub const _BITS_TYPES_LOCALE_T_H: u32 = 1;
 pub const _BITS_TYPES___LOCALE_T_H: u32 = 1;
@@ -1815,15 +1722,6 @@ extern "C" {
 }
 pub type std_nullptr_t = *const ::std::os::raw::c_void;
 extern "C" {
-    #[link_name = "\u{1}_ZSt21__glibcxx_assert_failPKciS0_S0_"]
-    pub fn std___glibcxx_assert_fail(
-        __file: *const ::std::os::raw::c_char,
-        __line: ::std::os::raw::c_int,
-        __function: *const ::std::os::raw::c_char,
-        __condition: *const ::std::os::raw::c_char,
-    ) -> !;
-}
-extern "C" {
     pub fn memcpy(
         __dest: *mut ::std::os::raw::c_void,
         __src: *const ::std::os::raw::c_void,
@@ -2215,20 +2113,6 @@ extern "C" {
         __src: *const ::std::os::raw::c_char,
         __n: usize,
     ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strlcpy(
-        __dest: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: usize,
-    ) -> usize;
-}
-extern "C" {
-    pub fn strlcat(
-        __dest: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: usize,
-    ) -> usize;
 }
 extern "C" {
     pub fn strverscmp(
@@ -4638,6 +4522,92 @@ const _: () = {
     ["Alignment of ZOOMSDK_IMeetingShareController"]
         [::std::mem::align_of::<ZOOMSDK_IMeetingShareController>() - 8usize];
 };
+#[doc = "<Initialization."]
+pub const ZOOMSDK_AudioStatus_Audio_None: ZOOMSDK_AudioStatus = 0;
+#[doc = "<Muted status."]
+pub const ZOOMSDK_AudioStatus_Audio_Muted: ZOOMSDK_AudioStatus = 1;
+#[doc = "<Unmuted status."]
+pub const ZOOMSDK_AudioStatus_Audio_UnMuted: ZOOMSDK_AudioStatus = 2;
+#[doc = "<Muted by the host."]
+pub const ZOOMSDK_AudioStatus_Audio_Muted_ByHost: ZOOMSDK_AudioStatus = 3;
+#[doc = "<Unmuted by the host."]
+pub const ZOOMSDK_AudioStatus_Audio_UnMuted_ByHost: ZOOMSDK_AudioStatus = 4;
+#[doc = "<The host mutes all."]
+pub const ZOOMSDK_AudioStatus_Audio_MutedAll_ByHost: ZOOMSDK_AudioStatus = 5;
+#[doc = "<The host unmutes all."]
+pub const ZOOMSDK_AudioStatus_Audio_UnMutedAll_ByHost: ZOOMSDK_AudioStatus = 6;
+#[doc = " \\enum AudioStatus\n\\brief Define the audio status of the user.\nHere are more detailed structural descriptions."]
+pub type ZOOMSDK_AudioStatus = ::std::os::raw::c_uint;
+#[doc = "<Normal audio type."]
+pub const ZOOMSDK_AudioType_AUDIOTYPE_NONE: ZOOMSDK_AudioType = 0;
+#[doc = "<In VoIP mode."]
+pub const ZOOMSDK_AudioType_AUDIOTYPE_VOIP: ZOOMSDK_AudioType = 1;
+#[doc = "<In telephone mode."]
+pub const ZOOMSDK_AudioType_AUDIOTYPE_PHONE: ZOOMSDK_AudioType = 2;
+#[doc = "<Unknown mode."]
+pub const ZOOMSDK_AudioType_AUDIOTYPE_UNKNOWN: ZOOMSDK_AudioType = 3;
+#[doc = " \\enum AudioType\n\\brief Define the audio type of the user.\nHere are more detailed structural descriptions."]
+pub type ZOOMSDK_AudioType = ::std::os::raw::c_uint;
+#[repr(C)]
+pub struct ZOOMSDK_IRequestStartAudioHandler__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Process after the user receives the requirement from the host to turn on the audio."]
+#[repr(C)]
+#[derive(Debug)]
+pub struct ZOOMSDK_IRequestStartAudioHandler {
+    pub vtable_: *const ZOOMSDK_IRequestStartAudioHandler__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IRequestStartAudioHandler"]
+        [::std::mem::size_of::<ZOOMSDK_IRequestStartAudioHandler>() - 8usize];
+    ["Alignment of ZOOMSDK_IRequestStartAudioHandler"]
+        [::std::mem::align_of::<ZOOMSDK_IRequestStartAudioHandler>() - 8usize];
+};
+#[repr(C)]
+pub struct ZOOMSDK_IUserAudioStatus__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief User audio status interface."]
+#[repr(C)]
+#[derive(Debug)]
+pub struct ZOOMSDK_IUserAudioStatus {
+    pub vtable_: *const ZOOMSDK_IUserAudioStatus__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IUserAudioStatus"]
+        [::std::mem::size_of::<ZOOMSDK_IUserAudioStatus>() - 8usize];
+    ["Alignment of ZOOMSDK_IUserAudioStatus"]
+        [::std::mem::align_of::<ZOOMSDK_IUserAudioStatus>() - 8usize];
+};
+#[repr(C)]
+pub struct ZOOMSDK_IMeetingAudioCtrlEvent__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Meeting audio callback event\n"]
+#[repr(C)]
+#[derive(Debug)]
+pub struct ZOOMSDK_IMeetingAudioCtrlEvent {
+    pub vtable_: *const ZOOMSDK_IMeetingAudioCtrlEvent__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IMeetingAudioCtrlEvent"]
+        [::std::mem::size_of::<ZOOMSDK_IMeetingAudioCtrlEvent>() - 8usize];
+    ["Alignment of ZOOMSDK_IMeetingAudioCtrlEvent"]
+        [::std::mem::align_of::<ZOOMSDK_IMeetingAudioCtrlEvent>() - 8usize];
+};
+#[repr(C)]
+pub struct ZOOMSDK_IMeetingAudioController__bindgen_vtable(::std::os::raw::c_void);
+#[doc = " \\brief Meeting audio controller interface.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ZOOMSDK_IMeetingAudioController {
+    pub vtable_: *const ZOOMSDK_IMeetingAudioController__bindgen_vtable,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ZOOMSDK_IMeetingAudioController"]
+        [::std::mem::size_of::<ZOOMSDK_IMeetingAudioController>() - 8usize];
+    ["Alignment of ZOOMSDK_IMeetingAudioController"]
+        [::std::mem::align_of::<ZOOMSDK_IMeetingAudioController>() - 8usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IZoomSDKShareSourceHelper {
@@ -5017,92 +4987,6 @@ const _: () = {
         [::std::mem::size_of::<ZOOMSDK_IZoomSDKRenderer>() - 8usize];
     ["Alignment of ZOOMSDK_IZoomSDKRenderer"]
         [::std::mem::align_of::<ZOOMSDK_IZoomSDKRenderer>() - 8usize];
-};
-#[doc = "<Initialization."]
-pub const ZOOMSDK_AudioStatus_Audio_None: ZOOMSDK_AudioStatus = 0;
-#[doc = "<Muted status."]
-pub const ZOOMSDK_AudioStatus_Audio_Muted: ZOOMSDK_AudioStatus = 1;
-#[doc = "<Unmuted status."]
-pub const ZOOMSDK_AudioStatus_Audio_UnMuted: ZOOMSDK_AudioStatus = 2;
-#[doc = "<Muted by the host."]
-pub const ZOOMSDK_AudioStatus_Audio_Muted_ByHost: ZOOMSDK_AudioStatus = 3;
-#[doc = "<Unmuted by the host."]
-pub const ZOOMSDK_AudioStatus_Audio_UnMuted_ByHost: ZOOMSDK_AudioStatus = 4;
-#[doc = "<The host mutes all."]
-pub const ZOOMSDK_AudioStatus_Audio_MutedAll_ByHost: ZOOMSDK_AudioStatus = 5;
-#[doc = "<The host unmutes all."]
-pub const ZOOMSDK_AudioStatus_Audio_UnMutedAll_ByHost: ZOOMSDK_AudioStatus = 6;
-#[doc = " \\enum AudioStatus\n\\brief Define the audio status of the user.\nHere are more detailed structural descriptions."]
-pub type ZOOMSDK_AudioStatus = ::std::os::raw::c_uint;
-#[doc = "<Normal audio type."]
-pub const ZOOMSDK_AudioType_AUDIOTYPE_NONE: ZOOMSDK_AudioType = 0;
-#[doc = "<In VoIP mode."]
-pub const ZOOMSDK_AudioType_AUDIOTYPE_VOIP: ZOOMSDK_AudioType = 1;
-#[doc = "<In telephone mode."]
-pub const ZOOMSDK_AudioType_AUDIOTYPE_PHONE: ZOOMSDK_AudioType = 2;
-#[doc = "<Unknown mode."]
-pub const ZOOMSDK_AudioType_AUDIOTYPE_UNKNOWN: ZOOMSDK_AudioType = 3;
-#[doc = " \\enum AudioType\n\\brief Define the audio type of the user.\nHere are more detailed structural descriptions."]
-pub type ZOOMSDK_AudioType = ::std::os::raw::c_uint;
-#[repr(C)]
-pub struct ZOOMSDK_IRequestStartAudioHandler__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " \\brief Process after the user receives the requirement from the host to turn on the audio."]
-#[repr(C)]
-#[derive(Debug)]
-pub struct ZOOMSDK_IRequestStartAudioHandler {
-    pub vtable_: *const ZOOMSDK_IRequestStartAudioHandler__bindgen_vtable,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of ZOOMSDK_IRequestStartAudioHandler"]
-        [::std::mem::size_of::<ZOOMSDK_IRequestStartAudioHandler>() - 8usize];
-    ["Alignment of ZOOMSDK_IRequestStartAudioHandler"]
-        [::std::mem::align_of::<ZOOMSDK_IRequestStartAudioHandler>() - 8usize];
-};
-#[repr(C)]
-pub struct ZOOMSDK_IUserAudioStatus__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " \\brief User audio status interface."]
-#[repr(C)]
-#[derive(Debug)]
-pub struct ZOOMSDK_IUserAudioStatus {
-    pub vtable_: *const ZOOMSDK_IUserAudioStatus__bindgen_vtable,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of ZOOMSDK_IUserAudioStatus"]
-        [::std::mem::size_of::<ZOOMSDK_IUserAudioStatus>() - 8usize];
-    ["Alignment of ZOOMSDK_IUserAudioStatus"]
-        [::std::mem::align_of::<ZOOMSDK_IUserAudioStatus>() - 8usize];
-};
-#[repr(C)]
-pub struct ZOOMSDK_IMeetingAudioCtrlEvent__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " \\brief Meeting audio callback event\n"]
-#[repr(C)]
-#[derive(Debug)]
-pub struct ZOOMSDK_IMeetingAudioCtrlEvent {
-    pub vtable_: *const ZOOMSDK_IMeetingAudioCtrlEvent__bindgen_vtable,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of ZOOMSDK_IMeetingAudioCtrlEvent"]
-        [::std::mem::size_of::<ZOOMSDK_IMeetingAudioCtrlEvent>() - 8usize];
-    ["Alignment of ZOOMSDK_IMeetingAudioCtrlEvent"]
-        [::std::mem::align_of::<ZOOMSDK_IMeetingAudioCtrlEvent>() - 8usize];
-};
-#[repr(C)]
-pub struct ZOOMSDK_IMeetingAudioController__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " \\brief Meeting audio controller interface.\n"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ZOOMSDK_IMeetingAudioController {
-    pub vtable_: *const ZOOMSDK_IMeetingAudioController__bindgen_vtable,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of ZOOMSDK_IMeetingAudioController"]
-        [::std::mem::size_of::<ZOOMSDK_IMeetingAudioController>() - 8usize];
-    ["Alignment of ZOOMSDK_IMeetingAudioController"]
-        [::std::mem::align_of::<ZOOMSDK_IMeetingAudioController>() - 8usize];
 };
 pub const ZOOMSDK_RecordingStatus_Recording_Start: ZOOMSDK_RecordingStatus = 0;
 #[doc = "Start recording on local computer or on cloud."]
@@ -5542,6 +5426,12 @@ extern "C" {
     ) -> *mut ZOOMSDK_IMeetingShareController;
 }
 extern "C" {
+    #[doc = " \\brief Get the audio controller interface.\n \\return If the function succeeds, the return value is a pointer to IMeetingAudioController. Otherwise returns NULL."]
+    pub fn meeting_get_meeting_audio_controller(
+        meeting_service: *mut ZOOMSDK_IMeetingService,
+    ) -> *mut ZOOMSDK_IMeetingAudioController;
+}
+extern "C" {
     #[doc = " \\brief Get audio setting interface.\n \\return If the function succeeds, the return value an object pointer to IAudioSettingContext.\n Otherwise failed, returns NULL.\n For more details, see \\link IAudioSettingContext \\endlink."]
     pub fn get_audio_settings(
         setting_service: *mut ZOOMSDK_ISettingService,
@@ -5936,6 +5826,12 @@ extern "C" {
     pub fn sharing_set_event(
         controller: *mut ZOOMSDK_IMeetingShareController,
         arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+extern "C" {
+    pub fn meeting_unmute_microphone(
+        audio_controler: *mut ZOOMSDK_IMeetingAudioController,
+        userid: ::std::os::raw::c_uint,
     ) -> ZOOMSDK_SDKError;
 }
 extern "C" {

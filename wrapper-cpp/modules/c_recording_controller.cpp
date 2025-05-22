@@ -42,6 +42,8 @@ extern "C" void on_recording_privilege_request_status(void *ptr_to_rust, ZOOMSDK
 
 extern "C" void on_recording_status(void *ptr_to_rust, ZOOMSDK::RecordingStatus status, int64_t timestamp);
 
+extern "C" void on_recording_privilege_changed(void *ptr_to_rust, bool can_rec);
+
 class C_MeetingRecordingCtrlEvent: public ZOOMSDK::IMeetingRecordingCtrlEvent {
     public:
         C_MeetingRecordingCtrlEvent(void *ptr) {
@@ -64,7 +66,7 @@ class C_MeetingRecordingCtrlEvent: public ZOOMSDK::IMeetingRecordingCtrlEvent {
 	    /// \brief Callback event that the recording authority changes.
 	    /// \param bCanRec TRUE indicates to enable to record.
 	    void onRecordPrivilegeChanged(bool bCanRec) {
-            printf("Recording privilega changed : %i\n", bCanRec);
+            on_recording_privilege_changed(ptr_to_rust, bCanRec);
         }
 	    /// \brief Callback event that the status of request local recording privilege.
 	    /// \param status Value of request local recording privilege status. For more details, see \link RequestLocalRecordingStatus \endlink enum.

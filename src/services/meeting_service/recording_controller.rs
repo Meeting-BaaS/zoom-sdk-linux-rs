@@ -11,6 +11,10 @@ pub trait RecordingControllerEvent: std::fmt::Debug {
     /// Callback event that the status of my local recording changes.
     /// - [RecordingStatus] of recording status. For more details, see \link RecordingStatus \endlink enum.
     fn on_recording_status(&mut self, _status: RecordingStatus, _time: i64) {}
+
+    /// Callback event that the recording authority changes.
+    /// - [bool] TRUE indicates to enable to record.
+    fn on_recording_privilege_changed(&mut self, _can_rec: bool) {}
 }
 
 #[tracing::instrument(ret)]
@@ -28,6 +32,13 @@ extern "C" fn on_recording_privilege_request_status(
 extern "C" fn on_recording_status(ptr: *const u8, status: ZOOMSDK_RecordingStatus, time: i64) {
     tracing::info!("Entering on_recording_status");
     (*convert(ptr).lock().unwrap()).on_recording_status(status.into(), time);
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_recording_privilege_changed(ptr: *const u8, can_rec: bool) {
+    tracing::info!("Entering on_recording_privilege_changed");
+    (*convert(ptr).lock().unwrap()).on_recording_privilege_changed(can_rec);
 }
 
 #[inline]

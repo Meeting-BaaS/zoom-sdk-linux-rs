@@ -4,3 +4,4 @@ zoom-meeting-sdk-linux/libmpg123.so
 libwrapper.a
 target/
 !.gitkeep
+*.so*

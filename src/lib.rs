@@ -33,7 +33,7 @@
 //! The Zoom SDK includes modified Qt libraries that are essential for proper execution. Use the following command to launch your Rust project, ensuring the modified Qt libraries are included in the library path:
 //!
 //! ```bash
-//! LD_LIBRARY_PATH=zoom-meeting-sdk-linux/qt_libs/Qt/lib:$LD_LIBRARY_PATH cargo run
+//! LD_LIBRARY_PATH=zoom-meeting-sdk-linux/qt_libs/Qt/lib:$LD_LIBRARY_PATH cargo test
 //! ```
 //!
 //! With these steps, you should be able to compile and run your Rust application with the Zoom SDK on Linux. Enjoy integrating advanced video conferencing features with Rust!

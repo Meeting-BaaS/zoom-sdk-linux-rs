@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 const MEETINGSDK_LIBNAME: &'static str = "meetingsdk";
-const MEETINGSDK_PATH: &'static str = "zoom-sdk-linux-rs/zoom-meeting-sdk-linux";
-// const MEETINGSDK_PATH: &'static str = "zoom-meeting-sdk-linux"; // STANDALONE LIB
+// const MEETINGSDK_PATH: &'static str = "zoom-sdk-linux-rs/zoom-meeting-sdk-linux";
+ const MEETINGSDK_PATH: &'static str = "zoom-meeting-sdk-linux"; // STANDALONE LIB
 
 fn main() {
     // Link zoom sdk library

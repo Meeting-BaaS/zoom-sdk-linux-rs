@@ -110,12 +110,12 @@ pub enum MicDriver {
     Default,
 }
 
-impl TryFrom<MicDriver> for &'static str {
+impl TryFrom<MicDriver> for String {
     type Error = &'static str;
     fn try_from(driver: MicDriver) -> Result<Self, Self::Error> {
         match driver {
-            MicDriver::Pulse => Ok("pulse:virtual_mic"),
-            MicDriver::SndAloop => Ok("hw:Loopback,1"),
+            MicDriver::Pulse => Ok("pulse:".to_string() + &std::env::var("VIRTUAL_MIC").unwrap_or("virtual_mic".into())),
+            MicDriver::SndAloop => Ok("hw:Loopback,1".to_string()),
             MicDriver::Default => Err("No Sense"),
         }
     }

@@ -124,7 +124,6 @@ pub const __USE_GNU: u32 = 1;
 pub const __USE_FORTIFY_LEVEL: u32 = 0;
 pub const __GLIBC_USE_DEPRECATED_GETS: u32 = 0;
 pub const __GLIBC_USE_DEPRECATED_SCANF: u32 = 0;
-pub const __GLIBC_USE_C2X_STRTOL: u32 = 1;
 pub const _STDC_PREDEF_H: u32 = 1;
 pub const __STDC_IEC_559__: u32 = 1;
 pub const __STDC_IEC_60559_BFP__: u32 = 201404;
@@ -133,7 +132,7 @@ pub const __STDC_IEC_60559_COMPLEX__: u32 = 201404;
 pub const __STDC_ISO_10646__: u32 = 201706;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 39;
+pub const __GLIBC_MINOR__: u32 = 36;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI: u32 = 0;
@@ -157,7 +156,6 @@ pub const _BITS_TIME64_H: u32 = 1;
 pub const _BITS_WCHAR_H: u32 = 1;
 pub const _BITS_STDINT_INTN_H: u32 = 1;
 pub const _BITS_STDINT_UINTN_H: u32 = 1;
-pub const _BITS_STDINT_LEAST_H: u32 = 1;
 pub const INT8_MIN: i32 = -128;
 pub const INT16_MIN: i32 = -32768;
 pub const INT32_MIN: i32 = -2147483648;
@@ -343,8 +341,8 @@ pub const F_TEST: u32 = 3;
 pub const CLOSE_RANGE_UNSHARE: u32 = 2;
 pub const CLOSE_RANGE_CLOEXEC: u32 = 4;
 pub const _GLIBCXX_CXX_CONFIG_H: u32 = 1;
-pub const _GLIBCXX_RELEASE: u32 = 13;
-pub const __GLIBCXX__: u32 = 20240904;
+pub const _GLIBCXX_RELEASE: u32 = 12;
+pub const __GLIBCXX__: u32 = 20220819;
 pub const _GLIBCXX_HAVE_ATTRIBUTE_VISIBILITY: u32 = 1;
 pub const _GLIBCXX_USE_DEPRECATED: u32 = 1;
 pub const _GLIBCXX_EXTERN_TEMPLATE: u32 = 1;
@@ -356,7 +354,6 @@ pub const _GLIBCXX_VERBOSE_ASSERT: u32 = 1;
 pub const _GLIBCXX_USE_ALLOCATOR_NEW: u32 = 1;
 pub const _GLIBCXX_OS_DEFINES: u32 = 1;
 pub const __NO_CTYPE: u32 = 1;
-pub const _GLIBCXX_HAVE_FLOAT128_MATH: u32 = 1;
 pub const _GLIBCXX_GTHREAD_USE_WEAK: u32 = 0;
 pub const _GLIBCXX_CPU_DEFINES: u32 = 1;
 pub const _GLIBCXX_USE_STD_SPEC_FUNCS: u32 = 1;
@@ -482,7 +479,6 @@ pub const _GLIBCXX_HAVE_SINL: u32 = 1;
 pub const _GLIBCXX_HAVE_SOCKATMARK: u32 = 1;
 pub const _GLIBCXX_HAVE_SQRTF: u32 = 1;
 pub const _GLIBCXX_HAVE_SQRTL: u32 = 1;
-pub const _GLIBCXX_HAVE_STACKTRACE: u32 = 1;
 pub const _GLIBCXX_HAVE_STDALIGN_H: u32 = 1;
 pub const _GLIBCXX_HAVE_STDBOOL_H: u32 = 1;
 pub const _GLIBCXX_HAVE_STDINT_H: u32 = 1;
@@ -499,7 +495,6 @@ pub const _GLIBCXX_HAVE_SYMLINK: u32 = 1;
 pub const _GLIBCXX_HAVE_SYMVER_SYMBOL_RENAMING_RUNTIME_SUPPORT: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_IOCTL_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_IPC_H: u32 = 1;
-pub const _GLIBCXX_HAVE_SYS_MMAN_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_PARAM_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_RESOURCE_H: u32 = 1;
 pub const _GLIBCXX_HAVE_SYS_SDT_H: u32 = 1;
@@ -553,11 +548,10 @@ pub const _GLIBCXX98_USE_C99_STDIO: u32 = 1;
 pub const _GLIBCXX98_USE_C99_STDLIB: u32 = 1;
 pub const _GLIBCXX98_USE_C99_WCHAR: u32 = 1;
 pub const _GLIBCXX_ATOMIC_BUILTINS: u32 = 1;
-pub const _GLIBCXX_CAN_ALIGNAS_DESTRUCTIVE_SIZE: u32 = 1;
 pub const _GLIBCXX_FULLY_DYNAMIC_STRING: u32 = 0;
 pub const _GLIBCXX_HAS_GTHREADS: u32 = 1;
+pub const _GLIBCXX_HOSTED: u32 = 1;
 pub const _GLIBCXX_RES_LIMITS: u32 = 1;
-pub const _GLIBCXX_STATIC_TZDATA: u32 = 1;
 pub const _GLIBCXX_STDIO_EOF: i32 = -1;
 pub const _GLIBCXX_STDIO_SEEK_CUR: u32 = 1;
 pub const _GLIBCXX_STDIO_SEEK_END: u32 = 2;
@@ -572,23 +566,17 @@ pub const _GLIBCXX_USE_C99_INTTYPES_TR1: u32 = 1;
 pub const _GLIBCXX_USE_C99_INTTYPES_WCHAR_T_TR1: u32 = 1;
 pub const _GLIBCXX_USE_C99_MATH_TR1: u32 = 1;
 pub const _GLIBCXX_USE_C99_STDINT_TR1: u32 = 1;
-pub const _GLIBCXX_USE_CHDIR: u32 = 1;
-pub const _GLIBCXX_USE_CHMOD: u32 = 1;
 pub const _GLIBCXX_USE_CLOCK_MONOTONIC: u32 = 1;
 pub const _GLIBCXX_USE_CLOCK_REALTIME: u32 = 1;
 pub const _GLIBCXX_USE_DECIMAL_FLOAT: u32 = 1;
 pub const _GLIBCXX_USE_DEV_RANDOM: u32 = 1;
 pub const _GLIBCXX_USE_FCHMOD: u32 = 1;
 pub const _GLIBCXX_USE_FCHMODAT: u32 = 1;
-pub const _GLIBCXX_USE_FSEEKO_FTELLO: u32 = 1;
-pub const _GLIBCXX_USE_GETCWD: u32 = 1;
 pub const _GLIBCXX_USE_GETTIMEOFDAY: u32 = 1;
 pub const _GLIBCXX_USE_GET_NPROCS: u32 = 1;
-pub const _GLIBCXX_USE_INIT_PRIORITY_ATTRIBUTE: u32 = 1;
 pub const _GLIBCXX_USE_LFS: u32 = 1;
 pub const _GLIBCXX_USE_LONG_LONG: u32 = 1;
 pub const _GLIBCXX_USE_LSTAT: u32 = 1;
-pub const _GLIBCXX_USE_MKDIR: u32 = 1;
 pub const _GLIBCXX_USE_NANOSLEEP: u32 = 1;
 pub const _GLIBCXX_USE_NLS: u32 = 1;
 pub const _GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT: u32 = 1;
@@ -610,7 +598,6 @@ pub const _GLIBCXX_USE_WCHAR_T: u32 = 1;
 pub const _GLIBCXX_VERBOSE: u32 = 1;
 pub const _GLIBCXX_X86_RDRAND: u32 = 1;
 pub const _GLIBCXX_X86_RDSEED: u32 = 1;
-pub const _GLIBCXX_ZONEINFO_DIR: &[u8; 20] = b"/usr/share/zoneinfo\0";
 pub const _GTHREAD_USE_MUTEX_TIMEDLOCK: u32 = 1;
 pub const _STRING_H: u32 = 1;
 pub const _BITS_TYPES_LOCALE_T_H: u32 = 1;
@@ -2126,20 +2113,6 @@ extern "C" {
         __src: *const ::std::os::raw::c_char,
         __n: usize,
     ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strlcpy(
-        __dest: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: usize,
-    ) -> usize;
-}
-extern "C" {
-    pub fn strlcat(
-        __dest: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: usize,
-    ) -> usize;
 }
 extern "C" {
     pub fn strverscmp(

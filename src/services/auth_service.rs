@@ -124,7 +124,7 @@ impl<'a> AuthService<'a> {
     }
     /// Get login account information.  
     /// - [AccountInfo] If you has logged in your account successfully, otherwise is None.
-    pub fn get_account_info(&mut self) -> Option<AccountInfo> {
+    pub fn get_account_info(&mut self) -> Option<AccountInfo<'_>> {
         let ptr = unsafe { auth_get_account_info(self.ptr_auth_service) };
         account_info_from_ptr_accountinfo(ptr)
     }

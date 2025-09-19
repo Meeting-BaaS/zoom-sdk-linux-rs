@@ -16,7 +16,7 @@ struct Payload {
 }
 
 /// Generate a zoom JWT Token.
-#[tracing::instrument(ret)]
+#[tracing::instrument(ret, level = "debug", skip(sdk_secret))]
 pub fn generate_jwt(sdk_key: &str, sdk_secret: &str) -> Result<String, Box<dyn std::error::Error>> {
     let header = Header {
         algorithm: AlgorithmType::Hs256,

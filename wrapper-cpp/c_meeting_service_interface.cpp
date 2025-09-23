@@ -64,7 +64,7 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     unsigned long int mid,
     zchar_t *userName,
     zchar_t *psw,
-    zchar_t *zoom_user_token
+    zchar_t *zoom_access_token
 ) {
     ZOOMSDK::JoinParam joinParam;
     joinParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;
@@ -79,6 +79,7 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     param.webinarToken = nullptr;
     param.isVideoOff = false;
     param.isAudioOff = false;
+    param.userZAK = zoom_access_token;
 
     return meeting_service->Join(joinParam);
 }

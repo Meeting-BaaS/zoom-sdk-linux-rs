@@ -17,7 +17,7 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     unsigned long int mid,
     zchar_t *userName,
     zchar_t *psw,
-    zchar_t *zoom_user_token
+    zchar_t *zoom_access_token
 );
 
 /// \brief Leave meeting.

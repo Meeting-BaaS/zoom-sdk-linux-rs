@@ -127,9 +127,9 @@ impl<'a> MeetingService<'a> {
                         Some(ptr) => ptr.as_ptr(),
                         None => CStr::from_bytes_with_nul_unchecked(b"\0").as_ptr(),
                     } as *mut _,
-                    match join_params.zoom_user_token {
+                    match join_params.zoom_access_token {
                         Some(ptr) => ptr.as_ptr(),
-                        None => std:ptr::null(),
+                        None => std::ptr::null(),
                     } as *mut _,
                 )
             },
@@ -474,8 +474,8 @@ pub struct JoinParam<'a> {
     pub username: &'a CStr,
     /// Meeting password.
     pub password: Option<&'a CStr>,
-    /// Zoom user token.
-    pub zoom_user_token: Option<&'a CStr>,
+    /// Zoom access token.
+    pub zoom_access_token: Option<&'a CStr>,
 }
 
 /// Meeting failure code.

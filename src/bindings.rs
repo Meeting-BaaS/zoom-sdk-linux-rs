@@ -5458,6 +5458,7 @@ unsafe extern "C" {
         mid: ::std::os::raw::c_ulong,
         userName: *mut zchar_t,
         psw: *mut zchar_t,
+        zoom_user_token: *mut zchar_t,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {

@@ -63,7 +63,8 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     ZOOMSDK::IMeetingService* meeting_service,
     unsigned long int mid,
     zchar_t *userName,
-    zchar_t *psw
+    zchar_t *psw,
+    zchar_t *zoom_user_token
 ) {
     ZOOMSDK::JoinParam joinParam;
     joinParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;

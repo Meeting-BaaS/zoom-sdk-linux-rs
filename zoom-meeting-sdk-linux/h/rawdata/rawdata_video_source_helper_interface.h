@@ -1,3 +1,8 @@
+/**
+ * @file rawdata_video_source_helper_interface.h
+ * @brief Raw Data Video Source Helper Interface.
+ */
+ 
 #ifndef _RAWDATA_VIDEO_SOURCE_HELPER_INTERFACE_H_
 #define _RAWDATA_VIDEO_SOURCE_HELPER_INTERFACE_H_
 #include "zoom_sdk_def.h"
@@ -75,8 +80,15 @@ class IZoomSDKVideoSourceHelper
 {
 public:
 	virtual ~IZoomSDKVideoSourceHelper(){}
-    virtual SDKError setPreProcessor(IZoomSDKPreProcessor* processor) = 0;		//Set a PreProcessor to edit the zoom camera video source before send to other.
-    virtual SDKError setExternalVideoSource(IZoomSDKVideoSource* source) = 0;   //Set external video source for capture video by self.
+	/**
+	 * @brief Set a PreProcessor to edit the zoom camera video source before send to other.
+	 */
+    virtual SDKError setPreProcessor(IZoomSDKPreProcessor* processor) = 0;		
+	
+	/**
+	 * @brief Set external video source for capture video by self.
+	 */
+    virtual SDKError setExternalVideoSource(IZoomSDKVideoSource* source) = 0;  
 };
 END_ZOOM_SDK_NAMESPACE
 #endif

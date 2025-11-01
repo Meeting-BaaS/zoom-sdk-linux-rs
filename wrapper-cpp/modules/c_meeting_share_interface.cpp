@@ -1,10 +1,12 @@
 #include "c_meeting_share_interface.h"
 
-extern "C" void on_sharing_status(void *ptr, ZOOMSDK::SharingStatus status, unsigned int userId);
+extern "C" void on_sharing_status(void *ptr, ZOOMSDK::ZoomSDKSharingSourceInfo *shareInfo);
+
+extern "C" void on_failed_to_start_share(void *ptr);
 
 extern "C" void on_lock_share_status(void *ptr, bool bLocked);
 
-extern "C" void on_share_content_notification(void *ptr, ZOOMSDK::ShareInfo *shareInfo);
+extern "C" void on_share_content_notification(void *ptr, ZOOMSDK::ZoomSDKSharingSourceInfo *shareInfo);
 
 extern "C" void on_multi_share_switch_to_single_share_need_confirm(void *ptr, ZOOMSDK::IShareSwitchMultiToSingleConfirmHandler* handler_);
 
@@ -13,6 +15,8 @@ extern "C" void on_share_setting_type_changed_notification(void *ptr, ZOOMSDK::S
 extern "C" void on_shared_video_ended(void *ptr);
 
 extern "C" void on_video_file_share_play_error(void *ptr, ZOOMSDK::ZoomSDKVideoFileSharePlayError error);
+
+extern "C" void on_optimizing_share_for_video_clip_status_changed(void *ptr, ZOOMSDK::ZoomSDKSharingSourceInfo *shareInfo);
 
 class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
     public:
@@ -23,11 +27,14 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
         }
 
 	    /// \brief Callback event of the changed sharing status.
-	    /// \param status The values of sharing status. For more details, see \link SharingStatus \endlink enum.
-	    /// \param userId Sharer ID.
-	    /// \remarks The userId changes according to the status value. When the status value is the Sharing_Self_Send_Begin or Sharing_Self_Send_End, the userId is the user own ID. Otherwise, the value of userId is the sharer ID.
-	    void onSharingStatus(ZOOMSDK::SharingStatus status, unsigned int userId) override {
-            return on_sharing_status(ptr_to_rust, status, userId);
+	    /// \param shareInfo Sharing information.
+	    void onSharingStatus(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
+            return on_sharing_status(ptr_to_rust, &shareInfo);
+        }
+
+	    /// \brief Callback event of failure to start sharing.
+	    void onFailedToStartShare() override {
+            return on_failed_to_start_share(ptr_to_rust);
         }
 
 	    /// \brief Callback event of locked share status.
@@ -37,8 +44,8 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
         }
 
 	    /// \brief Callback event of changed sharing information.
-	    /// \param shareInfo Sharing information. For more details, see \link ShareInfo \endlink structure.
-	    void onShareContentNotification(ZOOMSDK::ShareInfo& shareInfo) override {
+	    /// \param shareInfo Sharing information.
+	    void onShareContentNotification(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
             return on_share_content_notification(ptr_to_rust, &shareInfo);
         }
 
@@ -63,6 +70,12 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
 	    /// \param error The error type. For more details, see \link ZoomSDKVideoFileSharePlayError \endlink structure.
 	    void onVideoFileSharePlayError(ZOOMSDK::ZoomSDKVideoFileSharePlayError error) override {
             return on_video_file_share_play_error(ptr_to_rust, error);
+        }
+
+	    /// \brief Callback event of the changed optimizing video status.
+	    /// \param shareInfo Sharing information.
+	    void onOptimizingShareForVideoClipStatusChanged(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
+            return on_optimizing_share_for_video_clip_status_changed(ptr_to_rust, &shareInfo);
         }
 
     private:

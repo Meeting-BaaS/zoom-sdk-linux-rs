@@ -78,6 +78,13 @@ pub trait MeetingServiceEvent: Debug {
     /// The new join user can not join meeting, but they can watch the meeting live stream.  
     /// - [str] The live stream URL to watch the meeting live stream.
     fn on_meeting_full_to_watch_live_stream(&mut self, _s_live_stream_url: &str) {}
+
+    /// Callback event when the user's network status changes.  
+    /// - [MeetingComponentType] The data type whose network quality changed.
+    /// - [ConnectionQuality] The new network quality level for the specified data type.
+    /// - [u32] The user whose network quality changed.
+    /// - [bool] This data is uplink or downlink.
+    fn on_user_network_status_changed(&mut self, _type: MeetingComponentType, _level: ConnectionQuality, _user_id: u32, _uplink: bool) {}
 }
 
 impl<'a> MeetingService<'a> {
@@ -340,6 +347,23 @@ extern "C" fn on_meeting_full_to_watch_live_stream(
     }
 }
 
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_user_network_status_changed(
+    ptr: *const u8,
+    component_type: ZOOMSDK_MeetingComponentType,
+    quality: ZOOMSDK_ConnectionQuality,
+    user_id: u32,
+    uplink: c_int,
+) {
+    (*convert(ptr).lock().unwrap()).on_user_network_status_changed(
+        component_type.into(),
+        quality.into(),
+        user_id,
+        uplink != 0,
+    );
+}
+
 #[inline]
 fn convert(ptr: *const u8) -> Arc<Mutex<Box<dyn MeetingServiceEvent>>> {
     let ptr: *const Mutex<Box<dyn MeetingServiceEvent>> = ptr as *const _;
@@ -484,8 +508,8 @@ pub struct JoinParam<'a> {
 pub enum MeetingFailCode {
     /// Start meeting successfully
     Success = ZOOMSDK_MeetingFailCode_MEETING_SUCCESS,
-    /// Network error
-    NetworkError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR,
+    /// Connection error
+    ConnectionError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONNECTION_ERR,
     /// Reconnect error
     ReconnectError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR,
     /// Multi-media Router error
@@ -571,7 +595,7 @@ impl TryFrom<u32> for MeetingFailCode {
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         match value {
             ZOOMSDK_MeetingFailCode_MEETING_SUCCESS => Ok(Self::Success),
-            ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR => Ok(Self::NetworkError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONNECTION_ERR => Ok(Self::ConnectionError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR => Ok(Self::ReconnectError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_MMR_ERR => Ok(Self::MMRError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_PASSWORD_ERR => Ok(Self::PasswordError),
@@ -643,6 +667,66 @@ impl TryFrom<u32> for MeetingFailCode {
             }
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNKNOWN => Ok(Self::Unknown),
             _ => Err("Invalid meeting fail code"),
+        }
+    }
+}
+
+/// Meeting component type for network quality monitoring.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum MeetingComponentType {
+    /// Default component type.
+    Def = ZOOMSDK_MeetingComponentType_MeetingComponentType_Def,
+    /// Audio.
+    Audio = ZOOMSDK_MeetingComponentType_MeetingComponentType_AUDIO,
+    /// Video.
+    Video = ZOOMSDK_MeetingComponentType_MeetingComponentType_VIDEO,
+    /// Share application.
+    Share = ZOOMSDK_MeetingComponentType_MeetingComponentType_SHARE,
+    /// Unexpected result from SDK
+    Unexpected = ZOOMSDK_MeetingComponentType_MeetingComponentType_SHARE + 1,
+}
+
+impl From<u32> for MeetingComponentType {
+    fn from(u: u32) -> Self {
+        match u {
+            u if u <= ZOOMSDK_MeetingComponentType_MeetingComponentType_SHARE => unsafe {
+                std::mem::transmute::<u32, Self>(u)
+            },
+            _ => Self::Unexpected,
+        }
+    }
+}
+
+/// Connection quality levels.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum ConnectionQuality {
+    /// Unknown connection status
+    Unknown = ZOOMSDK_ConnectionQuality_Conn_Quality_Unknown,
+    /// The connection quality is very poor.
+    VeryBad = ZOOMSDK_ConnectionQuality_Conn_Quality_Very_Bad,
+    /// The connection quality is poor.
+    Bad = ZOOMSDK_ConnectionQuality_Conn_Quality_Bad,
+    /// The connection quality is not good.
+    NotGood = ZOOMSDK_ConnectionQuality_Conn_Quality_Not_Good,
+    /// The connection quality is normal.
+    Normal = ZOOMSDK_ConnectionQuality_Conn_Quality_Normal,
+    /// The connection quality is good.
+    Good = ZOOMSDK_ConnectionQuality_Conn_Quality_Good,
+    /// The connection quality is excellent.
+    Excellent = ZOOMSDK_ConnectionQuality_Conn_Quality_Excellent,
+    /// Unexpected result from SDK
+    Unexpected = ZOOMSDK_ConnectionQuality_Conn_Quality_Excellent + 1,
+}
+
+impl From<u32> for ConnectionQuality {
+    fn from(u: u32) -> Self {
+        match u {
+            u if u <= ZOOMSDK_ConnectionQuality_Conn_Quality_Excellent => unsafe {
+                std::mem::transmute::<u32, Self>(u)
+            },
+            _ => Self::Unexpected,
         }
     }
 }

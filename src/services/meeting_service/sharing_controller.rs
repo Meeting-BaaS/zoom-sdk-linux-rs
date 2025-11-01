@@ -3,19 +3,21 @@ use std::sync::{Arc, Mutex};
 use crate::{bindings::*, SdkResult, ZoomSdkResult};
 
 /// Information about the sharing.
-pub type ShareInfo = ZOOMSDK_ShareInfo;
+pub type ShareInfo = ZOOMSDK_ZoomSDKSharingSourceInfo;
 /// Obscure pointer of the SDK.
 pub type ShareSwitchMultitoSingleConfirmHandler = ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler;
 
 /// This trait handles events related to sharing.
 pub trait SharingControllerEvent: std::fmt::Debug {
     /// Callback event of the changed sharing status.
-    /// - status The values of sharing status. For more details, see \link SharingStatus \endlink enum.
-    /// - [u32] Sharer ID.
+    /// - [ShareInfo] Sharing information containing status and user ID.
     /// The userId changes according to the status value. When the status value is
     /// the Sharing_Self_Send_Begin or Sharing_Self_Send_End, the userId is the user own ID.
     /// Otherwise, the value of userId is the sharer ID.
-    fn on_sharing_status(&mut self, _status: SharingStatus, _user_id: u32) {}
+    fn on_sharing_status(&mut self, _share_info: &ShareInfo) {}
+
+    /// Callback event of failure to start sharing.
+    fn on_failed_to_start_share(&mut self) {}
 
     /// Callback event of locked share status.
     /// - [bool] TRUE indicates that it is locked. FALSE unlocked.
@@ -44,13 +46,28 @@ pub trait SharingControllerEvent: std::fmt::Debug {
     /// Callback event of the video file playback error.
     /// - [SharingPlayError] The error type. For more details,
     fn on_video_file_share_play_error(&mut self, _error: SharingPlayError) {}
+
+    /// Callback event of the changed optimizing video status.
+    /// - [ShareInfo] Sharing information.
+    fn on_optimizing_share_for_video_clip_status_changed(&mut self, _share_info: &ShareInfo) {}
 }
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_sharing_status(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32) {
+extern "C" fn on_sharing_status(ptr: *const u8, share_info: *const ZOOMSDK_ZoomSDKSharingSourceInfo) {
     tracing::debug!("Entering on_sharing_status");
-    (*convert(ptr).try_lock().unwrap()).on_sharing_status(status.into(), user_id);
+    if share_info.is_null() {
+        tracing::warn!("Null pointer detected!");
+    } else {
+        (*convert(ptr).try_lock().unwrap())
+            .on_sharing_status(unsafe { share_info.as_ref() }.unwrap());
+    }
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_failed_to_start_share(ptr: *const u8) {
+    (*convert(ptr).lock().unwrap()).on_failed_to_start_share();
 }
 
 #[tracing::instrument(ret)]
@@ -61,7 +78,7 @@ extern "C" fn on_lock_share_status(ptr: *const u8, locked: bool) {
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_share_content_notification(ptr: *const u8, share_info: *const ZOOMSDK_ShareInfo) {
+extern "C" fn on_share_content_notification(ptr: *const u8, share_info: *const ZOOMSDK_ZoomSDKSharingSourceInfo) {
     if share_info.is_null() {
         tracing::warn!("Null pointer detected!");
     } else {
@@ -107,6 +124,17 @@ extern "C" fn on_video_file_share_play_error(
 ) {
     tracing::debug!("Entering on_sharing_status");
     (*convert(ptr).try_lock().unwrap()).on_video_file_share_play_error(error.into());
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_optimizing_share_for_video_clip_status_changed(ptr: *const u8, share_info: *const ZOOMSDK_ZoomSDKSharingSourceInfo) {
+    if share_info.is_null() {
+        tracing::warn!("Null pointer detected!");
+    } else {
+        (*convert(ptr).lock().unwrap())
+            .on_optimizing_share_for_video_clip_status_changed(unsafe { share_info.as_ref() }.unwrap());
+    }
 }
 
 #[inline]

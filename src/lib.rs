@@ -134,6 +134,7 @@ pub fn init_sdk<'a, 'b>(init_param: SdkInitParam) -> SdkResult<Pin<Box<Instance<
             uiLogFileSize: init_param.ui_log_file_size,
             rawdataOpts: init_param.rawdata_opts.into(),
             wrapperType: init_param.wrapper_type as i32,
+            obConfigOpts: unsafe { std::mem::zeroed() }, // Initialize with default/zero values
         },
         meeting_service: None,
         auth_service: None,

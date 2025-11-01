@@ -14,6 +14,8 @@ extern "C" void on_meeting_topic_changed(void *ptr, const zchar_t* sTopic);
 
 extern "C" void on_meeting_full_to_watch_live_stream(void *ptr, const zchar_t* sLiveStreamUrl);
 
+extern "C" void on_user_network_status_changed(void *ptr, ZOOMSDK::MeetingComponentType type, ZOOMSDK::ConnectionQuality level, unsigned int userId, int uplink);
+
 class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
     public:
         ~C_MeetingServiceEvent() override {}
@@ -46,8 +48,12 @@ class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
             return on_meeting_topic_changed(ptr_to_rust, sTopic);
         }
 
-	    void onMeetingFullToWatchLiveStream(const zchar_t* sLiveStreamUrl) {
+	void onMeetingFullToWatchLiveStream(const zchar_t* sLiveStreamUrl) {
             return on_meeting_full_to_watch_live_stream(ptr_to_rust, sLiveStreamUrl);
+        }
+
+	void onUserNetworkStatusChanged(ZOOMSDK::MeetingComponentType type, ZOOMSDK::ConnectionQuality level, unsigned int userId, bool uplink) {
+            return on_user_network_status_changed(ptr_to_rust, type, level, userId, uplink ? 1 : 0);
         }
 
     private:

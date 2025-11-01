@@ -42,7 +42,8 @@ public:
         struct exported_audio_raw_data data = provide(rawdata);
         on_one_way_audio_raw_data(ptr_to_rust, &data, user_id);
     }
-    void onShareAudioRawDataReceived(AudioRawData* rawdata) {
+    void onShareAudioRawDataReceived(AudioRawData* rawdata, uint32_t user_id) override {
+        (void) user_id; // Unused parameter
         // TODO : May crash with segfault
         struct exported_audio_raw_data data = provide(rawdata);
         int32_t res = on_share_audio_raw_data(ptr_to_rust, &data);

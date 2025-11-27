@@ -69,6 +69,22 @@ extern "C" bool is_host(ZOOMSDK::IUserInfo *user_info) {
     return user_info->IsHost();
 }
 
+extern "C" const zchar_t* meeting_participants_get_avatar_path(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetAvatarPath();
+}
+
+extern "C" const zchar_t* meeting_participants_get_persistent_id(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetPersistentId();
+}
+
+extern "C" const zchar_t* meeting_participants_get_customer_key(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetCustomerKey();
+}
+
+extern "C" int meeting_participants_get_user_role(ZOOMSDK::IUserInfo *user_info) {
+    return static_cast<int>(user_info->GetUserRole());
+}
+
 extern "C" ZOOMSDK::IUserInfo *get_my_self_user(ZOOMSDK::IMeetingParticipantsController *controller) {
     return controller->GetMySelfUser();
 }

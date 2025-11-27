@@ -4,6 +4,18 @@ use std::fmt;
 
 use crate::{bindings::*, SdkResult, ZoomRsError};
 
+// External C functions for new PII methods
+extern "C" {
+    /// Get the avatar file path for a user.
+    pub fn meeting_participants_get_avatar_path(user_info: *mut ZOOMSDK_IUserInfo) -> *const zchar_t;
+    /// Get the persistent ID for a user (unique across meetings).
+    pub fn meeting_participants_get_persistent_id(user_info: *mut ZOOMSDK_IUserInfo) -> *const zchar_t;
+    /// Get the customer key for a user (if assigned in join parameters).
+    pub fn meeting_participants_get_customer_key(user_info: *mut ZOOMSDK_IUserInfo) -> *const zchar_t;
+    /// Get the user role (0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE).
+    pub fn meeting_participants_get_user_role(user_info: *mut ZOOMSDK_IUserInfo) -> i32;
+}
+
 /// Main interface to get info and to manipulate [Participant].
 pub struct ParticipantsInterface<'a> {
     ref_participants_controler: &'a mut ZOOMSDK_IMeetingParticipantsController,
@@ -94,6 +106,50 @@ impl<'a> Participant<'a> {
     /// - [i32] The mic level of the user.
     pub fn get_audio_voice_level(&self) -> i32 {
         unsafe { meeting_participants_get_audio_voice_level(self.inner.as_ptr()) }
+    }
+
+    /// Get the avatar file path matched with the current user information.
+    /// - [Option<&str>] The avatar file path, or None if not available.
+    pub fn get_avatar_path(&self) -> Option<&str> {
+        unsafe {
+            let ptr = meeting_participants_get_avatar_path(self.inner.as_ptr());
+            if ptr.is_null() {
+                return None;
+            }
+            CStr::from_ptr(ptr).to_str().ok()
+        }
+    }
+
+    /// Get the user persistent id matched with the current user information.
+    /// This is a unique identifier that persists across meetings.
+    /// - [Option<&str>] The persistent ID, or None if not available.
+    pub fn get_persistent_id(&self) -> Option<&str> {
+        unsafe {
+            let ptr = meeting_participants_get_persistent_id(self.inner.as_ptr());
+            if ptr.is_null() {
+                return None;
+            }
+            CStr::from_ptr(ptr).to_str().ok()
+        }
+    }
+
+    /// Get the customer_key matched with the current user information.
+    /// This is a custom key assigned in the join meeting parameter.
+    /// - [Option<&str>] The customer key, or None if not assigned.
+    pub fn get_customer_key(&self) -> Option<&str> {
+        unsafe {
+            let ptr = meeting_participants_get_customer_key(self.inner.as_ptr());
+            if ptr.is_null() {
+                return None;
+            }
+            CStr::from_ptr(ptr).to_str().ok()
+        }
+    }
+
+    /// Get the type of role of the user.
+    /// Returns: 0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE
+    pub fn get_user_role(&self) -> i32 {
+        unsafe { meeting_participants_get_user_role(self.inner.as_ptr()) }
     }
 }
 

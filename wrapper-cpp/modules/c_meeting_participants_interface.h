@@ -60,6 +60,26 @@ extern "C" unsigned int get_user_id(ZOOMSDK::IUserInfo *user_info);
 /// @return Boolean, true is the user is the host
 extern "C" bool is_host(ZOOMSDK::IUserInfo *user_info);
 
+/// @brief Get the avatar file path matched with the current user information.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return If the function succeeds, the return value is the avatar file path. Otherwise NULL.
+extern "C" const zchar_t* meeting_participants_get_avatar_path(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Get the user persistent id matched with the current user information.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return If the function succeeds, the return value is the user persistent id. Otherwise NULL.
+extern "C" const zchar_t* meeting_participants_get_persistent_id(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Get the customer_key matched with the current user information.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return If the function succeeds, the return value is the customer_key. Otherwise NULL.
+extern "C" const zchar_t* meeting_participants_get_customer_key(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Get the type of role of the user specified by the current information.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return The role of the user (0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE)
+extern "C" int meeting_participants_get_user_role(ZOOMSDK::IUserInfo *user_info);
+
 /// \brief Get the information of current user.
 /// \return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \link IUserInfo \endlink.
 /// Otherwise failed, the return value is NULL.

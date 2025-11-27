@@ -4,7 +4,7 @@ use std::fmt;
 
 use crate::{bindings::*, SdkResult, ZoomRsError};
 
-// External C functions for new PII methods
+// External C functions for participant info methods
 extern "C" {
     /// Get the avatar file path for a user.
     pub fn meeting_participants_get_avatar_path(user_info: *mut ZOOMSDK_IUserInfo) -> *const zchar_t;
@@ -14,6 +14,20 @@ extern "C" {
     pub fn meeting_participants_get_customer_key(user_info: *mut ZOOMSDK_IUserInfo) -> *const zchar_t;
     /// Get the user role (0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE).
     pub fn meeting_participants_get_user_role(user_info: *mut ZOOMSDK_IUserInfo) -> i32;
+    /// Get audio join type (0=UNKNOWN, 1=VOIP, 2=PHONE, 3=UNKNOWN_H323_OR_SIP, 4=H323, 5=SIP).
+    pub fn meeting_participants_get_audio_join_type(user_info: *mut ZOOMSDK_IUserInfo) -> i32;
+    /// Check if user is a pure phone user (dialed in, no app).
+    pub fn meeting_participants_is_pure_phone_user(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
+    /// Check if user has a camera device.
+    pub fn meeting_participants_has_camera(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
+    /// Check if user's audio is muted.
+    pub fn meeting_participants_is_audio_muted(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
+    /// Check if user's video is on.
+    pub fn meeting_participants_is_video_on(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
+    /// Check if user is in waiting room.
+    pub fn meeting_participants_is_in_waiting_room(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
+    /// Check if user has hand raised.
+    pub fn meeting_participants_is_raise_hand(user_info: *mut ZOOMSDK_IUserInfo) -> bool;
 }
 
 /// Main interface to get info and to manipulate [Participant].
@@ -150,6 +164,42 @@ impl<'a> Participant<'a> {
     /// Returns: 0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE
     pub fn get_user_role(&self) -> i32 {
         unsafe { meeting_participants_get_user_role(self.inner.as_ptr()) }
+    }
+
+    /// Get the audio join type of the user.
+    /// Returns: 0=UNKNOWN, 1=VOIP, 2=PHONE, 3=UNKNOWN_H323_OR_SIP, 4=H323, 5=SIP
+    pub fn get_audio_join_type(&self) -> i32 {
+        unsafe { meeting_participants_get_audio_join_type(self.inner.as_ptr()) }
+    }
+
+    /// Check if user is a pure phone user (dialed in by phone, no app).
+    pub fn is_pure_phone_user(&self) -> bool {
+        unsafe { meeting_participants_is_pure_phone_user(self.inner.as_ptr()) }
+    }
+
+    /// Check if user has a camera device.
+    pub fn has_camera(&self) -> bool {
+        unsafe { meeting_participants_has_camera(self.inner.as_ptr()) }
+    }
+
+    /// Check if user's audio is muted.
+    pub fn is_audio_muted(&self) -> bool {
+        unsafe { meeting_participants_is_audio_muted(self.inner.as_ptr()) }
+    }
+
+    /// Check if user's video is on.
+    pub fn is_video_on(&self) -> bool {
+        unsafe { meeting_participants_is_video_on(self.inner.as_ptr()) }
+    }
+
+    /// Check if user is in waiting room.
+    pub fn is_in_waiting_room(&self) -> bool {
+        unsafe { meeting_participants_is_in_waiting_room(self.inner.as_ptr()) }
+    }
+
+    /// Check if user has hand raised.
+    pub fn is_raise_hand(&self) -> bool {
+        unsafe { meeting_participants_is_raise_hand(self.inner.as_ptr()) }
     }
 }
 

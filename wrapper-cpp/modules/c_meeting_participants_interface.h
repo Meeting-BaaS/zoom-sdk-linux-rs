@@ -80,6 +80,41 @@ extern "C" const zchar_t* meeting_participants_get_customer_key(ZOOMSDK::IUserIn
 /// @return The role of the user (0=NONE, 1=HOST, 2=COHOST, 3=PANELIST, 4=BREAKOUT_MODERATOR, 5=ATTENDEE)
 extern "C" int meeting_participants_get_user_role(ZOOMSDK::IUserInfo *user_info);
 
+/// @brief Get the audio type of the user when joining the meeting.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return The audio join type (0=CYCXING_AUDIO_TYPE_UNKNOWN, 1=CYCXING_AUDIO_TYPE_VOIP, 2=CYCXING_AUDIO_TYPE_PHONE, 3=CYCXING_AUDIO_TYPE_UNKNOW_H323_OR_SIP, 4=CYCXING_AUDIO_TYPE_H323, 5=CYCXING_AUDIO_TYPE_SIP)
+extern "C" int meeting_participants_get_audio_join_type(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant is a pure phone user (dialed in, no app).
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user joined by phone only
+extern "C" bool meeting_participants_is_pure_phone_user(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant has a camera device.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user has a camera
+extern "C" bool meeting_participants_has_camera(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant's audio is muted.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user's audio is muted
+extern "C" bool meeting_participants_is_audio_muted(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant's video is on.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user's video is on
+extern "C" bool meeting_participants_is_video_on(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant is in the waiting room.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user is in the waiting room
+extern "C" bool meeting_participants_is_in_waiting_room(ZOOMSDK::IUserInfo *user_info);
+
+/// @brief Check if a participant has their hand raised.
+/// @param user_info A Pointer to ZOOMSDK::IUserInfo
+/// @return Boolean, true if the user has their hand raised
+extern "C" bool meeting_participants_is_raise_hand(ZOOMSDK::IUserInfo *user_info);
+
 /// \brief Get the information of current user.
 /// \return If the function succeeds, the return value is a pointer to the IUserInfo. For more details, see \link IUserInfo \endlink.
 /// Otherwise failed, the return value is NULL.

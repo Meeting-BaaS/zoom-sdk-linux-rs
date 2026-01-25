@@ -121,7 +121,8 @@ impl<'a> MeetingService<'a> {
             unsafe {
                 meeting_join(
                     self.ref_meeting_service,
-                    join_params.meeting_id as u64,
+                    join_params.meeting_id.map(|id| id as u64).unwrap_or(0),
+                    join_params.vanity_id.map(|v| v.as_ptr()).unwrap_or(std::ptr::null()) as *mut _,
                     join_params.username.as_ptr() as *mut _,
                     match join_params.password {
                         Some(ptr) => ptr.as_ptr(),
@@ -468,8 +469,10 @@ pub struct MeetingParameter<'a> {
 /// The parameters of non-login user when joins the meeting.
 #[derive(Debug, Clone)]
 pub struct JoinParam<'a> {
-    /// Meeting number,
-    pub meeting_id: usize,
+    /// Meeting number (for numeric meeting IDs)
+    pub meeting_id: Option<usize>,
+    /// Vanity ID (for Personal Meeting Room URLs, e.g., "audiencelab")
+    pub vanity_id: Option<&'a CStr>,
     /// Username when logged in the meeting.
     pub username: &'a CStr,
     /// Meeting password.

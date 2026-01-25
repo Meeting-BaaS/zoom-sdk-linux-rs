@@ -5483,6 +5483,7 @@ unsafe extern "C" {
     pub fn meeting_join(
         meeting_service: *mut ZOOMSDK_IMeetingService,
         mid: ::std::os::raw::c_ulong,
+        vanity_id: *mut zchar_t,
         userName: *mut zchar_t,
         psw: *mut zchar_t,
         zoom_access_token: *mut zchar_t,

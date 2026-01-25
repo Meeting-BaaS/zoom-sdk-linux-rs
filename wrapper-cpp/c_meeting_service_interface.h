@@ -15,6 +15,7 @@ extern "C" ZOOMSDK::SDKError meeting_set_event(ZOOMSDK::IMeetingService* meeting
 extern "C" ZOOMSDK::SDKError meeting_join(
     ZOOMSDK::IMeetingService* meeting_service,
     unsigned long int mid,
+    zchar_t *vanity_id,
     zchar_t *userName,
     zchar_t *psw,
     zchar_t *zoom_access_token

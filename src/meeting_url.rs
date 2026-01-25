@@ -1,33 +1,51 @@
 use regex::Regex;
 
 /// Parse Zoom meeting URL
+/// Returns (meeting_id_or_vanity_id, password)
+/// For PMR URLs (with /my/), returns the vanity ID as the first element
+/// For standard URLs, returns the numeric meeting ID as the first element
 pub fn parse(meeting_url: &str) -> Option<(String, Option<String>)> {
     url::Url::parse(meeting_url)
         .map(|_url| {
+            // Extract password first (works for both formats)
+            let password = {
+                let re =
+                    Regex::new(r"(?i)(?:pwd=|pwd%3D|Passcode:\s?)([^\s&\)]+)").unwrap();
+                re.captures(meeting_url)
+                    .map(|captures| captures.get(1).map(|pwd| pwd.as_str().to_string()))
+                    .flatten()
+            };
+
             meeting_url
                 .split_once(&"zoom.us".to_lowercase())
                 .map(|(_, suffix)| {
-                    suffix
-                        .split("/")
-                        .nth(2)
-                        .map(|second_group| {
-                            second_group
-                                .chars()
-                                .take_while(|c| c.is_digit(10))
-                                .collect::<String>()
-                        })
-                        .filter(|s| !s.is_empty())
+                    let parts: Vec<&str> = suffix.split("/").collect();
+                    
+                    // Check if this is a Personal Meeting Room URL (contains /my/)
+                    if parts.len() >= 3 && parts[1].to_lowercase() == "my" {
+                        // Extract vanity ID (the part after /my/)
+                        parts.get(2)
+                            .map(|vanity_id| {
+                                // Remove query parameters if present
+                                vanity_id.split("?").next().unwrap_or(vanity_id).to_string()
+                            })
+                            .filter(|s| !s.is_empty())
+                            .map(|vanity_id| (vanity_id, password))
+                    } else {
+                        // Standard meeting URL - extract numeric meeting ID
+                        parts
+                            .get(2)
+                            .map(|second_group| {
+                                second_group
+                                    .chars()
+                                    .take_while(|c| c.is_digit(10))
+                                    .collect::<String>()
+                            })
+                            .filter(|s| !s.is_empty())
+                            .map(|meeting_id| (meeting_id, password))
+                    }
                 })
                 .flatten()
-                .map(|meeting_id| {
-                    (meeting_id, {
-                        let re =
-                            Regex::new(r"(?i)(?:pwd=|pwd%3D|Passcode:\s?)([^\s&\)]+)").unwrap();
-                        re.captures(meeting_url)
-                            .map(|captures| captures.get(1).map(|pwd| pwd.as_str().to_string()))
-                            .flatten()
-                    })
-                })
         })
         .ok()
         .flatten()
@@ -181,16 +199,24 @@ mod test_parsing {
             ))
         );
     }
-    // #[test]
-    // fn personal_meeting_room_url() {
-    //     let url = "https://zoom.us/my/voelker.ai";
-    //     assert_eq!(parse(url), Some(("voelker.ai".into(), None)));
-    // }
-    // #[test]
-    // fn personal_meeting_room_url_with_subdomain() {
-    //     let url = "https://turing.zoom.us/my/marco.santos.turing";
-    //     assert_eq!(parse(url), Some(("marco.santos.turing".into(), None)));
-    // }
+    #[test]
+    fn personal_meeting_room_url() {
+        let url = "https://zoom.us/my/voelker.ai";
+        assert_eq!(parse(url), Some(("voelker.ai".into(), None)));
+    }
+    #[test]
+    fn personal_meeting_room_url_with_subdomain() {
+        let url = "https://turing.zoom.us/my/marco.santos.turing";
+        assert_eq!(parse(url), Some(("marco.santos.turing".into(), None)));
+    }
+    #[test]
+    fn personal_meeting_room_url_with_password() {
+        let url = "https://us06web.zoom.us/my/audiencelab?pwd=YMTT1l9sJNYChkBfhBnuST2nSJQsD6.1";
+        assert_eq!(
+            parse(url),
+            Some(("audiencelab".into(), Some("YMTT1l9sJNYChkBfhBnuST2nSJQsD6.1".into())))
+        );
+    }
     // #[test]
     // fn should_parse_password_appended_without_parentheses() {
     //     let url = "https://us06web.zoom.us/j/3290230144?pwd=esnQHAW0JYGE3jUbNQjkTjZmeNs6FQ.1Passcode: 497810";

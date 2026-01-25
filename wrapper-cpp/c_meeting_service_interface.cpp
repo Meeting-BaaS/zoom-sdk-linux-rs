@@ -62,6 +62,7 @@ extern "C" ZOOMSDK::SDKError meeting_set_event(ZOOMSDK::IMeetingService* meeting
 extern "C" ZOOMSDK::SDKError meeting_join(
     ZOOMSDK::IMeetingService* meeting_service,
     unsigned long int mid,
+    zchar_t *vanity_id,
     zchar_t *userName,
     zchar_t *psw,
     zchar_t *zoom_access_token
@@ -74,7 +75,7 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     param.meetingNumber = mid;
     param.userName = userName;
     param.psw = psw;
-    param.vanityID = nullptr;
+    param.vanityID = vanity_id;  // Use vanity_id if provided (for PMR URLs), nullptr otherwise
     param.customer_key = nullptr;
     param.webinarToken = nullptr;
     param.isVideoOff = false;

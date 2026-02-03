@@ -44,7 +44,7 @@ extern "C" ZOOMSDK::SDKError recording_set_event(ZOOMSDK::IMeetingRecordingContr
 /// \brief Determine if the specified user is enabled to start raw recording.
 /// \return If the function succeeds, the return value is SDKErr_Success.
 /// Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
-extern "C" bool recording_can_start_raw_recording(ZOOMSDK::IMeetingRecordingController *ctrl);
+extern "C" ZOOMSDK::SDKError recording_can_start_raw_recording(ZOOMSDK::IMeetingRecordingController *ctrl);
 
 /// \brief Start rawdata recording.
 /// \return If the function succeeds, the return value is SDKErr_Success.

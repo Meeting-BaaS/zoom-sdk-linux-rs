@@ -18,7 +18,7 @@ extern "C" ZOOMSDK::SDKError recording_stop_recording(ZOOMSDK::IMeetingRecording
     return (ctrl->StopRecording(*stopTimestamp));
 }
 
-extern "C" bool recording_can_start_raw_recording(ZOOMSDK::IMeetingRecordingController *ctrl) {
+extern "C" ZOOMSDK::SDKError recording_can_start_raw_recording(ZOOMSDK::IMeetingRecordingController *ctrl) {
     return ctrl->CanStartRawRecording();
 }
 

@@ -121,10 +121,15 @@ impl<'a> RecordingController<'a> {
         )
         .into()
     }
-    /// ask if raw recording is possible.
-    /// - [true] if possible.
-    pub fn can_start_raw_recording(&mut self) -> bool {
-        unsafe { recording_can_start_raw_recording(self.ref_recording_controller) }
+    /// Ask if raw recording is possible.
+    /// - If the function succeeds (SDKErr_Success), raw recording can be started.
+    /// - If the function fails, raw recording cannot be started, see [crate::SdkError] for details.
+    pub fn can_start_raw_recording(&mut self) -> SdkResult<()> {
+        ZoomSdkResult(
+            unsafe { recording_can_start_raw_recording(self.ref_recording_controller) },
+            (),
+        )
+        .into()
     }
     /// Start raw recording.
     /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.

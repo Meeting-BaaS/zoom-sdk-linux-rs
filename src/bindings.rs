@@ -6745,7 +6745,7 @@ unsafe extern "C" {
     #[doc = " \\brief Determine if the specified user is enabled to start raw recording.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
     pub fn recording_can_start_raw_recording(
         ctrl: *mut ZOOMSDK_IMeetingRecordingController,
-    ) -> bool;
+    ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
     #[doc = " \\brief Start rawdata recording.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]

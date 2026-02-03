@@ -133,6 +133,9 @@ pub fn init_sdk<'a, 'b>(init_param: SdkInitParam) -> SdkResult<Pin<Box<Instance<
             enableLogByDefault: init_param.enable_log_by_default,
             uiLogFileSize: init_param.ui_log_file_size,
             rawdataOpts: init_param.rawdata_opts.into(),
+            obConfigOpts: ZOOMSDK_tagConfigurableOptions {
+                sdkPathPostfix: std::ptr::null(),
+            },
             wrapperType: init_param.wrapper_type as i32,
         },
         meeting_service: None,

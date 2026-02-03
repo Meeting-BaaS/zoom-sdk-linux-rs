@@ -18,7 +18,8 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     zchar_t *vanity_id,
     zchar_t *userName,
     zchar_t *psw,
-    zchar_t *zoom_access_token
+    zchar_t *zoom_access_token,
+    zchar_t *on_behalf_token
 );
 
 /// \brief Leave meeting.

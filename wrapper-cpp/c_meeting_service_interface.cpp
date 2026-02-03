@@ -50,6 +50,10 @@ class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
             return on_meeting_full_to_watch_live_stream(ptr_to_rust, sLiveStreamUrl);
         }
 
+	    void onUserNetworkStatusChanged(ZOOMSDK::MeetingComponentType type, ZOOMSDK::ConnectionQuality level, unsigned int userId, bool uplink) {
+            // Not forwarded to Rust - network status monitoring not needed
+        }
+
     private:
         void *ptr_to_rust;
 };
@@ -65,7 +69,8 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     zchar_t *vanity_id,
     zchar_t *userName,
     zchar_t *psw,
-    zchar_t *zoom_access_token
+    zchar_t *zoom_access_token,
+    zchar_t *on_behalf_token
 ) {
     ZOOMSDK::JoinParam joinParam;
     joinParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;
@@ -81,6 +86,7 @@ extern "C" ZOOMSDK::SDKError meeting_join(
     param.isVideoOff = false;
     param.isAudioOff = false;
     param.userZAK = zoom_access_token;
+    param.onBehalfToken = on_behalf_token;
 
     return meeting_service->Join(joinParam);
 }

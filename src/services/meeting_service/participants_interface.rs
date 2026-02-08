@@ -1,12 +1,63 @@
 use std::cell::Cell;
 use std::ffi::CStr;
 use std::fmt;
+use std::sync::{Arc, Mutex};
 
-use crate::{bindings::*, SdkResult, ZoomRsError};
+use crate::{bindings::*, SdkResult, ZoomRsError, ZoomSdkResult};
+
+/// This trait handles events related to participants.
+pub trait ParticipantsEvent: std::fmt::Debug + Send {
+    /// Callback event when users join the meeting.
+    /// - [Vec<u32>] List of user IDs that joined.
+    fn on_user_join(&mut self, _user_ids: Vec<u32>) {}
+
+    /// Callback event when users leave the meeting.
+    /// - [Vec<u32>] List of user IDs that left.
+    fn on_user_left(&mut self, _user_ids: Vec<u32>) {}
+
+    /// Callback event when the host changes.
+    /// - [u32] The new host's user ID.
+    fn on_host_change(&mut self, _new_host_id: u32) {}
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_user_join(ptr: *const u8, user_ids: *const u32, count: u32) {
+    tracing::info!("Entering on_user_join with {} users", count);
+    let user_ids_vec: Vec<u32> = (0..count as usize)
+        .map(|i| unsafe { *user_ids.add(i) })
+        .collect();
+    (*convert_participants(ptr).lock().unwrap()).on_user_join(user_ids_vec);
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_user_left(ptr: *const u8, user_ids: *const u32, count: u32) {
+    tracing::info!("Entering on_user_left with {} users", count);
+    let user_ids_vec: Vec<u32> = (0..count as usize)
+        .map(|i| unsafe { *user_ids.add(i) })
+        .collect();
+    (*convert_participants(ptr).lock().unwrap()).on_user_left(user_ids_vec);
+}
+
+#[tracing::instrument(ret)]
+#[no_mangle]
+extern "C" fn on_host_change(ptr: *const u8, new_host_id: u32) {
+    tracing::info!("Entering on_host_change with new_host_id={}", new_host_id);
+    (*convert_participants(ptr).lock().unwrap()).on_host_change(new_host_id);
+}
+
+#[inline]
+fn convert_participants(ptr: *const u8) -> Arc<Mutex<Box<dyn ParticipantsEvent>>> {
+    let ptr: *const Mutex<Box<dyn ParticipantsEvent>> = ptr as *const _;
+    unsafe { Arc::increment_strong_count(ptr) }; // Avoid freeing Arc after Drop
+    unsafe { Arc::from_raw(ptr) }
+}
 
 /// Main interface to get info and to manipulate [Participant].
 pub struct ParticipantsInterface<'a> {
     ref_participants_controler: &'a mut ZOOMSDK_IMeetingParticipantsController,
+    evt_mutex: Option<Arc<Mutex<Box<dyn ParticipantsEvent>>>>,
 }
 
 impl<'a> fmt::Debug for ParticipantsInterface<'a> {
@@ -43,6 +94,7 @@ impl<'a> ParticipantsInterface<'a> {
         } else {
             Some(Self {
                 ref_participants_controler: unsafe { ptr.as_mut() }.unwrap(),
+                evt_mutex: None,
             })
         }
     }
@@ -52,9 +104,23 @@ impl<'a> ParticipantsInterface<'a> {
         unsafe { get_user_id(this) as i32 }
     }
 
-    /// Checj if participants can request local recording
+    /// Check if participants can request local recording
     pub fn is_participant_request_local_recording_allowed(&mut self) -> bool {
         unsafe { is_participant_request_local_recording_allowed(self.ref_participants_controler) }
+    }
+
+    /// Set the participants controller callback event handler.
+    /// - [ParticipantsEvent] A pointer to receive participant events (onUserJoin, onUserLeft, onHostChange).
+    /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
+    pub fn set_event(&mut self, ctx: Box<dyn ParticipantsEvent>) -> SdkResult<()> {
+        self.evt_mutex = Some(Arc::new(Mutex::new(ctx)));
+        let ptr = Arc::as_ptr(&self.evt_mutex.as_ref().unwrap()) as *mut _;
+        tracing::info!("Setting participants event handler: {:?}", ptr);
+        ZoomSdkResult(
+            unsafe { participants_set_event(self.ref_participants_controler, ptr) },
+            (),
+        )
+        .into()
     }
 }
 

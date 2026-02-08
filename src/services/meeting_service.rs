@@ -22,7 +22,7 @@ pub mod webcam_interface;
 
 pub use audio_controller::AudioController;
 pub use chat_interface::ChatInterface;
-pub use participants_interface::ParticipantsInterface;
+pub use participants_interface::{ParticipantsEvent, ParticipantsInterface};
 pub use recording_controller::RecordingController;
 pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};

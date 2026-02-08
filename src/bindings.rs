@@ -6697,6 +6697,13 @@ unsafe extern "C" {
     ) -> bool;
 }
 unsafe extern "C" {
+    #[doc = " @brief Set the event handler for participant events (onUserJoin, onUserLeft, onHostChange)\n @param controller A Pointer to ZOOMSDK::IMeetingParticipantsController\n @param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ParticipantsEvent>>)\n @return SDKError indicating success or failure"]
+    pub fn participants_set_event(
+        controller: *mut ZOOMSDK_IMeetingParticipantsController,
+        arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+unsafe extern "C" {
     #[doc = " \\brief Send a request to enable the SDK to start local recording.\n \\return If the function succeeds, the return value is SDKErr_Success and the SDK will send the request.\n Otherwise it fails and the request will not be sent. To get extended error information, see \\link SDKError \\endlink enum."]
     pub fn recording_request_local_recording_privilege(
         ctrl: *mut ZOOMSDK_IMeetingRecordingController,

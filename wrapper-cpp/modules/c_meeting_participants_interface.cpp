@@ -69,6 +69,50 @@ extern "C" bool is_host(ZOOMSDK::IUserInfo *user_info) {
     return user_info->IsHost();
 }
 
+extern "C" const zchar_t* meeting_participants_get_avatar_path(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetAvatarPath();
+}
+
+extern "C" const zchar_t* meeting_participants_get_persistent_id(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetPersistentId();
+}
+
+extern "C" const zchar_t* meeting_participants_get_customer_key(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->GetCustomerKey();
+}
+
+extern "C" int meeting_participants_get_user_role(ZOOMSDK::IUserInfo *user_info) {
+    return static_cast<int>(user_info->GetUserRole());
+}
+
+extern "C" int meeting_participants_get_audio_join_type(ZOOMSDK::IUserInfo *user_info) {
+    return static_cast<int>(user_info->GetAudioJoinType());
+}
+
+extern "C" bool meeting_participants_is_pure_phone_user(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsPurePhoneUser();
+}
+
+extern "C" bool meeting_participants_has_camera(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->HasCamera();
+}
+
+extern "C" bool meeting_participants_is_audio_muted(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsAudioMuted();
+}
+
+extern "C" bool meeting_participants_is_video_on(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsVideoOn();
+}
+
+extern "C" bool meeting_participants_is_in_waiting_room(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsInWaitingRoom();
+}
+
+extern "C" bool meeting_participants_is_raise_hand(ZOOMSDK::IUserInfo *user_info) {
+    return user_info->IsRaiseHand();
+}
+
 extern "C" ZOOMSDK::IUserInfo *get_my_self_user(ZOOMSDK::IMeetingParticipantsController *controller) {
     return controller->GetMySelfUser();
 }

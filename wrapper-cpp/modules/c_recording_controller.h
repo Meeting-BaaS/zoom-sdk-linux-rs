@@ -3,6 +3,11 @@
 
 #include "../../zoom-meeting-sdk-linux/h/meeting_service_components/meeting_recording_interface.h"
 
+/// \brief Determine if the host supports receiving local recording privilege requests.
+/// \return If the host supports it, the return value is SDKErr_Success.
+/// Otherwise failed (e.g., host is using Zoom Rooms which cannot display the permission dialog).
+extern "C" ZOOMSDK::SDKError recording_is_support_request_local_recording_privilege(ZOOMSDK::IMeetingRecordingController *ctrl);
+
 /// \brief Send a request to enable the SDK to start local recording.
 /// \return If the function succeeds, the return value is SDKErr_Success and the SDK will send the request.
 /// Otherwise it fails and the request will not be sent. To get extended error information, see \link SDKError \endlink enum.

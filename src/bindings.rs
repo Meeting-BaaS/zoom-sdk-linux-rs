@@ -6704,6 +6704,12 @@ unsafe extern "C" {
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
+    #[doc = " \\brief Determine if the host supports receiving local recording privilege requests.\n \\return If the host supports it, the return value is SDKErr_Success.\n Otherwise failed (e.g., host is using Zoom Rooms which cannot display the permission dialog)."]
+    pub fn recording_is_support_request_local_recording_privilege(
+        ctrl: *mut ZOOMSDK_IMeetingRecordingController,
+    ) -> ZOOMSDK_SDKError;
+}
+unsafe extern "C" {
     #[doc = " \\brief Send a request to enable the SDK to start local recording.\n \\return If the function succeeds, the return value is SDKErr_Success and the SDK will send the request.\n Otherwise it fails and the request will not be sent. To get extended error information, see \\link SDKError \\endlink enum."]
     pub fn recording_request_local_recording_privilege(
         ctrl: *mut ZOOMSDK_IMeetingRecordingController,

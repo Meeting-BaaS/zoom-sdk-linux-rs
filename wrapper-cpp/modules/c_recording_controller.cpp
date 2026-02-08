@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <chrono>
 
+extern "C" ZOOMSDK::SDKError recording_is_support_request_local_recording_privilege(ZOOMSDK::IMeetingRecordingController *ctrl) {
+    return (ctrl->IsSupportRequestLocalRecordingPrivilege());
+}
+
 extern "C" ZOOMSDK::SDKError recording_request_local_recording_privilege(ZOOMSDK::IMeetingRecordingController *ctrl) {
     return (ctrl->RequestLocalRecordingPrivilege());
 }

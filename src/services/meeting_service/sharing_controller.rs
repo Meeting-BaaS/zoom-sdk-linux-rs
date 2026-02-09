@@ -2,8 +2,6 @@ use std::sync::{Arc, Mutex};
 
 use crate::{bindings::*, SdkResult, ZoomSdkResult};
 
-/// Information about the sharing.
-pub type ShareInfo = ZOOMSDK_ShareInfo;
 /// Obscure pointer of the SDK.
 pub type ShareSwitchMultitoSingleConfirmHandler = ZOOMSDK_IShareSwitchMultiToSingleConfirmHandler;
 
@@ -22,8 +20,7 @@ pub trait SharingControllerEvent: std::fmt::Debug {
     fn on_lock_share_status(&mut self, _locked: bool) {}
 
     /// Callback event of changed sharing information.
-    /// - [ShareInfo] Sharing information.
-    fn on_share_content_notification(&mut self, _share_info: &ShareInfo) {}
+    fn on_share_content_notification(&mut self, _status: SharingStatus, _user_id: u32) {}
 
     /// Callback event of switching multi-participants share to one participant share.
     /// - [ShareSwitchMultitoSingleConfirmHandler] An object pointer used by user to complete
@@ -61,13 +58,9 @@ extern "C" fn on_lock_share_status(ptr: *const u8, locked: bool) {
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_share_content_notification(ptr: *const u8, share_info: *const ZOOMSDK_ShareInfo) {
-    if share_info.is_null() {
-        tracing::warn!("Null pointer detected!");
-    } else {
-        (*convert(ptr).lock().unwrap())
-            .on_share_content_notification(unsafe { share_info.as_ref() }.unwrap());
-    }
+extern "C" fn on_share_content_notification(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32) {
+    (*convert(ptr).lock().unwrap())
+        .on_share_content_notification(status.into(), user_id);
 }
 
 #[tracing::instrument(ret)]

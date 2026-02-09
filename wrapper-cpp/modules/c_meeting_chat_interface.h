@@ -1,6 +1,7 @@
 #ifndef _C_MEETING_CHAT_INTERFACE_H_
 #define _C_MEETING_CHAT_INTERFACE_H_
 
+#include <ctime>  // Required for time_t used in meeting_chat_interface.h
 #include "../../zoom-meeting-sdk-linux/h/meeting_service_components/meeting_chat_interface.h"
 
 extern "C" ZOOMSDK::IChatMsgInfoBuilder *meeting_get_chat_message_builder(

@@ -70,4 +70,10 @@ extern "C" ZOOMSDK::IUserInfo *get_my_self_user(ZOOMSDK::IMeetingParticipantsCon
 /// \return If allows participants to send request, the return value is true.
 extern "C" bool is_participant_request_local_recording_allowed(ZOOMSDK::IMeetingParticipantsController *controller);
 
+/// @brief Set the event handler for participant events (onUserJoin, onUserLeft, onHostChange)
+/// @param controller A Pointer to ZOOMSDK::IMeetingParticipantsController
+/// @param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ParticipantsEvent>>)
+/// @return SDKError indicating success or failure
+extern "C" ZOOMSDK::SDKError participants_set_event(ZOOMSDK::IMeetingParticipantsController *controller, void *arc_ptr);
+
 #endif

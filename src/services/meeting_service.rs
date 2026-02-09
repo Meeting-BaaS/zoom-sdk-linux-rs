@@ -22,7 +22,7 @@ pub mod webcam_interface;
 
 pub use audio_controller::AudioController;
 pub use chat_interface::ChatInterface;
-pub use participants_interface::ParticipantsInterface;
+pub use participants_interface::{ParticipantsEvent, ParticipantsInterface};
 pub use recording_controller::RecordingController;
 pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};
@@ -129,6 +129,10 @@ impl<'a> MeetingService<'a> {
                         None => CStr::from_bytes_with_nul_unchecked(b"\0").as_ptr(),
                     } as *mut _,
                     match join_params.zoom_access_token {
+                        Some(ptr) => ptr.as_ptr(),
+                        None => std::ptr::null(),
+                    } as *mut _,
+                    match join_params.on_behalf_token {
                         Some(ptr) => ptr.as_ptr(),
                         None => std::ptr::null(),
                     } as *mut _,
@@ -479,6 +483,8 @@ pub struct JoinParam<'a> {
     pub password: Option<&'a CStr>,
     /// Zoom access token.
     pub zoom_access_token: Option<&'a CStr>,
+    /// On Behalf Of token for OBF authorization.
+    pub on_behalf_token: Option<&'a CStr>,
 }
 
 /// Meeting failure code.
@@ -487,8 +493,8 @@ pub struct JoinParam<'a> {
 pub enum MeetingFailCode {
     /// Start meeting successfully
     Success = ZOOMSDK_MeetingFailCode_MEETING_SUCCESS,
-    /// Network error
-    NetworkError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR,
+    /// Connection error
+    ConnectionError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONNECTION_ERR,
     /// Reconnect error
     ReconnectError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR,
     /// Multi-media Router error
@@ -561,6 +567,8 @@ pub enum MeetingFailCode {
         ZOOMSDK_MeetingFailCode_MEETING_FAIL_NEED_SIGN_IN_FOR_PRIVATE_MEETING,
     /// App privilege token error
     AppPrivilegeTokenError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR,
+    /// Authorized user not in meeting (OBF token required user not present)
+    AuthorizedUserNotInMeeting = ZOOMSDK_MeetingFailCode_MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING,
     /// JMAK user email not match
     JMAKUserEmailNotMatch = ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH,
     /// Unknown error
@@ -574,7 +582,7 @@ impl TryFrom<u32> for MeetingFailCode {
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         match value {
             ZOOMSDK_MeetingFailCode_MEETING_SUCCESS => Ok(Self::Success),
-            ZOOMSDK_MeetingFailCode_MEETING_FAIL_NETWORK_ERR => Ok(Self::NetworkError),
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_CONNECTION_ERR => Ok(Self::ConnectionError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_RECONNECT_ERR => Ok(Self::ReconnectError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_MMR_ERR => Ok(Self::MMRError),
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_PASSWORD_ERR => Ok(Self::PasswordError),
@@ -640,6 +648,9 @@ impl TryFrom<u32> for MeetingFailCode {
             }
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR => {
                 Ok(Self::AppPrivilegeTokenError)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING => {
+                Ok(Self::AuthorizedUserNotInMeeting)
             }
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH => {
                 Ok(Self::JMAKUserEmailNotMatch)

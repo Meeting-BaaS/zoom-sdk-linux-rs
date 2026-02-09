@@ -121,10 +121,25 @@ impl<'a> RecordingController<'a> {
         )
         .into()
     }
-    /// ask if raw recording is possible.
-    /// - [true] if possible.
-    pub fn can_start_raw_recording(&mut self) -> bool {
-        unsafe { recording_can_start_raw_recording(self.ref_recording_controller) }
+    /// Check if the host's client supports receiving local recording privilege requests.
+    /// - If the function succeeds (SDKErr_Success), the host can receive and respond to recording requests.
+    /// - If the function fails, the host's client cannot display the permission dialog (e.g., Zoom Rooms).
+    pub fn is_support_request_local_recording_privilege(&mut self) -> SdkResult<()> {
+        ZoomSdkResult(
+            unsafe { recording_is_support_request_local_recording_privilege(self.ref_recording_controller) },
+            (),
+        )
+        .into()
+    }
+    /// Ask if raw recording is possible.
+    /// - If the function succeeds (SDKErr_Success), raw recording can be started.
+    /// - If the function fails, raw recording cannot be started, see [crate::SdkError] for details.
+    pub fn can_start_raw_recording(&mut self) -> SdkResult<()> {
+        ZoomSdkResult(
+            unsafe { recording_can_start_raw_recording(self.ref_recording_controller) },
+            (),
+        )
+        .into()
     }
     /// Start raw recording.
     /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.

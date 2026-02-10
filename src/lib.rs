@@ -283,7 +283,7 @@ impl<'a> Drop for Instance<'a> {
         // 4. Destroy network connection helper if it was created (main.rs may have already destroyed it)
         if !self.ptr_network_conn_helper.is_null() {
             let result = unsafe { ZOOMSDK_DestroyNetworkConnectionHelper(self.ptr_network_conn_helper) };
-            if result != 0 {
+            if result != ZOOMSDK_SDKError_SDKERR_SUCCESS {
                 tracing::warn!("DestroyNetworkConnectionHelper returned {:?}", result);
             }
             self.ptr_network_conn_helper = std::ptr::null_mut();
@@ -291,7 +291,7 @@ impl<'a> Drop for Instance<'a> {
 
         // 5. Required by Zoom SDK: global cleanup after all services are destroyed (avoids post-exit SIGSEGV)
         let err = unsafe { ZOOMSDK_CleanUPSDK() };
-        if err != 0 {
+        if err != ZOOMSDK_SDKError_SDKERR_SUCCESS {
             tracing::warn!("ZOOMSDK_CleanUPSDK returned {:?}", err);
         } else {
             tracing::info!("ZOOMSDK_CleanUPSDK succeeded");

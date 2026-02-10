@@ -111,7 +111,13 @@ impl Drop for Renderer {
             tracing::warn!("Error when unsubscribing delegate: {:?}", e);
         }
         tracing::info!("Flushing renderer...");
-        self.evt_mutex.lock().unwrap().flush();
+        match self.evt_mutex.lock() {
+            Ok(mut evt) => evt.flush(),
+            Err(poisoned) => {
+                tracing::warn!("evt_mutex poisoned during renderer drop, flushing anyway");
+                poisoned.into_inner().flush();
+            }
+        }
         // Demos' route: never call ZOOMSDK_destroyRenderer; SDK owns teardown (avoids double-free on disconnect).
         self.renderer = None;
         tracing::info!("Renderer instance droped!");

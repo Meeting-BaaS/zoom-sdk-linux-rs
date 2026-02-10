@@ -29,6 +29,8 @@ pub struct Renderer {
     #[allow(dead_code)]
     delegate: *mut ZOOMSDK_IZoomSDKRendererDelegate,
     evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
+    /// Set when the SDK calls onRendererBeDestroyed; we then skip unSubscribe/destroy in Drop.
+    destroyed_by_sdk: bool,
 }
 
 impl Renderer {
@@ -53,6 +55,7 @@ impl Renderer {
                 renderer: Some(renderer),
                 delegate,
                 evt_mutex,
+                destroyed_by_sdk: false,
             }
         })
     }
@@ -86,17 +89,22 @@ impl Renderer {
     }
 
     /// The renderer is not valid anymore according to documentation.
-    /// Notify the current renderer object is going to be destroyed.
-    /// After you handle this callback, you should never user this renderer object any more.
-    /// virtual void onRendererBeDestroyed() = 0;
+    /// Called when the SDK fires onRendererBeDestroyed (e.g. on meeting disconnect).
+    /// After this, we must not call unSubscribe or destroy; Drop will no-op (Attendee-style).
     pub fn invalid(&mut self) {
+        self.destroyed_by_sdk = true;
         self.renderer = None;
-        tracing::warn!("Invalid Renderer Pointer");
+        tracing::warn!("Invalid Renderer Pointer (SDK destroyed renderer)");
     }
 }
 
 impl Drop for Renderer {
     fn drop(&mut self) {
+        // Attendee-style: if SDK already destroyed the renderer (onRendererBeDestroyed), do nothing.
+        if self.destroyed_by_sdk {
+            tracing::info!("Renderer drop: SDK already destroyed renderer, skipping unSubscribe/destroy");
+            return;
+        }
         tracing::info!("Droping renderer !");
         let r = self.unsubscribe_delegate();
         if let Err(e) = r {
@@ -104,17 +112,8 @@ impl Drop for Renderer {
         }
         tracing::info!("Flushing renderer...");
         self.evt_mutex.lock().unwrap().flush();
-        tracing::info!("Destroying renderer...");
-        match self.renderer {
-            Some(renderer) => {
-                tracing::debug!("ZOOMSDK_destroyRenderer");
-                let ret = unsafe { ZOOMSDK_destroyRenderer(renderer) };
-                if ret != 0 {
-                    tracing::warn!("Error when destroying renderer: {:?}", ret);
-                }
-            }
-            None => tracing::error!("Renderer is invalid"),
-        }
+        // Demos' route: never call ZOOMSDK_destroyRenderer; SDK owns teardown (avoids double-free on disconnect).
+        self.renderer = None;
         tracing::info!("Renderer instance droped!");
     }
 }

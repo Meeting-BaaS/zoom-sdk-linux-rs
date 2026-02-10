@@ -264,10 +264,38 @@ pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
     ret
 }
 
-/// Drop boilerplate for Instance
+/// Drop boilerplate for Instance.
+/// Teardown order must match Zoom samples to avoid SIGSEGV: destroy services explicitly, then CleanUPSDK().
+/// See: meetingsdk-headless-linux-sample (Zoom::clean), meetingsdk-linux-raw-recording-sample (CleanSDK).
 impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
-        tracing::info!("Zoom SDK instance droped!");
+        tracing::info!("Zoom SDK instance teardown starting");
+
+        // 1. Destroy meeting service first (releases meeting/recording state). Drop runs MeetingService::drop -> DestroyMeetingService.
+        let _ = self.meeting_service.take();
+
+        // 2. Destroy setting service (SettingService::drop -> DestroySettingService)
+        let _ = self.setting_service.take();
+
+        // 3. Destroy auth service (AuthService::drop -> DestroyAuthService)
+        let _ = self.auth_service.take();
+
+        // 4. Destroy network connection helper if it was created (main.rs may have already destroyed it)
+        if !self.ptr_network_conn_helper.is_null() {
+            let result = unsafe { ZOOMSDK_DestroyNetworkConnectionHelper(self.ptr_network_conn_helper) };
+            if result != 0 {
+                tracing::warn!("DestroyNetworkConnectionHelper returned {:?}", result);
+            }
+            self.ptr_network_conn_helper = std::ptr::null_mut();
+        }
+
+        // 5. Required by Zoom SDK: global cleanup after all services are destroyed (avoids post-exit SIGSEGV)
+        let err = unsafe { ZOOMSDK_CleanUPSDK() };
+        if err != 0 {
+            tracing::warn!("ZOOMSDK_CleanUPSDK returned {:?}", err);
+        } else {
+            tracing::info!("ZOOMSDK_CleanUPSDK succeeded");
+        }
     }
 }
 

@@ -51,6 +51,10 @@ class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
         }
 
 	    void onUserNetworkStatusChanged(ZOOMSDK::MeetingComponentType type, ZOOMSDK::ConnectionQuality level, unsigned int userId, bool uplink) {
+            (void)type;
+            (void)level;
+            (void)userId;
+            (void)uplink;
             // Not forwarded to Rust - network status monitoring not needed
         }
 

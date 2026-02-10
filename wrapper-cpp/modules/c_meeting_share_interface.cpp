@@ -55,6 +55,7 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
         }
 
 	    void onOptimizingShareForVideoClipStatusChanged(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
+            (void)shareInfo;
             // Not forwarded to Rust
         }
 

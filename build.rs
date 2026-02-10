@@ -8,10 +8,6 @@ fn main() {
     // Link zoom sdk library
     println!("cargo:rustc-link-search=native={}", MEETINGSDK_PATH);
     println!("cargo:rustc-link-lib=dylib={}", MEETINGSDK_LIBNAME);
-    println!(
-        "cargo:warning=cargo:rustc-link-lib=dylib={}",
-        MEETINGSDK_LIBNAME
-    );
     println!("cargo:rustc-link-arg=-Wl,-rpath,{}", MEETINGSDK_PATH); // Hack for linking dyn lib.so
 
     let cpp_files = [

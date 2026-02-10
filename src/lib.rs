@@ -253,15 +253,12 @@ impl<'a> Instance<'a> {
     }
 }
 
-/// Clean up ZOOM SDK  
-/// - [`Instance`] Zoom SDK instance given to this function.
-/// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
-// TODO : Fix segfault if we use it.
+/// Clean up ZOOM SDK by dropping the instance.
+/// Teardown (destroy services, then CleanUPSDK) is performed by [`Instance::drop`].
+/// This function must not call ZOOMSDK_CleanUPSDK() itself, or it would run twice when the passed instance is dropped.
 pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
-    tracing::info!("calling cleanup SDK");
-    let ret = ZoomSdkResult(unsafe { ZOOMSDK_CleanUPSDK() }, ()).into();
-    tracing::info!("After cleanup SDK");
-    ret
+    // Instance::drop will destroy services and call CleanUPSDK once. Just dropping is sufficient.
+    Ok(())
 }
 
 /// Drop boilerplate for Instance.
@@ -270,6 +267,7 @@ pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
 impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
         tracing::info!("Zoom SDK instance teardown starting");
+        // Teardown order matches Zoom demos: destroy services first, then CleanUPSDK() once.
 
         // 1. Destroy meeting service first (releases meeting/recording state). Drop runs MeetingService::drop -> DestroyMeetingService.
         let _ = self.meeting_service.take();

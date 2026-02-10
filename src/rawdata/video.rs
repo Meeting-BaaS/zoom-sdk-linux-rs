@@ -26,6 +26,7 @@ pub trait RawVideoEvent: Debug {
 #[derive(Debug)]
 pub struct Renderer {
     renderer: Option<*mut ZOOMSDK_IZoomSDKRenderer>,
+    /// Delegate created by video_helper_create_delegate (in C wrapper). Never freed here; see TODO in Drop.
     #[allow(dead_code)]
     delegate: *mut ZOOMSDK_IZoomSDKRendererDelegate,
     evt_mutex: Arc<Mutex<Box<dyn RawVideoEvent>>>,
@@ -100,6 +101,8 @@ impl Renderer {
 
 impl Drop for Renderer {
     fn drop(&mut self) {
+        // TODO: delegate (from video_helper_create_delegate) is never freed; C++ has same leak (wrapper-cpp/modules/c_rawdata_video_helper.cpp).
+        // We rely on SDK-owned renderer teardown (destroyed_by_sdk, renderer = None) and do not call ZOOMSDK_destroyRenderer to avoid double-free.
         // Attendee-style: if SDK already destroyed the renderer (onRendererBeDestroyed), do nothing.
         if self.destroyed_by_sdk {
             tracing::info!("Renderer drop: SDK already destroyed renderer, skipping unSubscribe/destroy");

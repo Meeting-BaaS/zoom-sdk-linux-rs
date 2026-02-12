@@ -125,6 +125,9 @@ pub struct Instance<'a> {
 
     // Dont use it
     new_domain: Option<Pin<CString>>,
+
+    // True after cleanup_sdk() has run — prevents Drop from double-cleaning.
+    cleaned_up: bool,
 }
 
 /// Initialize ZOOM SDK  
@@ -165,6 +168,7 @@ pub fn init_sdk<'a, 'b>(init_param: SdkInitParam) -> SdkResult<Pin<Box<Instance<
         setting_service: None,
         ptr_network_conn_helper: std::ptr::null_mut(),
         new_domain: None,
+        cleaned_up: false,
     });
     let ref_init = &mut out.raw_init_parameters;
     ZoomSdkResult(unsafe { ZOOMSDK_InitSDK(ref_init) }, out).into()
@@ -259,6 +263,54 @@ impl<'a> Instance<'a> {
             unimplemented!()
         }
     }
+    /// Destroy all SDK services and call CleanUPSDK().
+    ///
+    /// Must be called as soon as the meeting ends, BEFORE any long-running
+    /// post-processing (video thread join, FFmpeg, S3 uploads).  This matches
+    /// the Attendee pattern: adapter.cleanup() runs right after meeting ends,
+    /// then file uploads happen afterward.
+    ///
+    /// After this, Drop is a no-op (safe to let Instance go out of scope).
+    pub fn cleanup_sdk(&mut self) {
+        if self.cleaned_up {
+            tracing::info!("cleanup_sdk: already cleaned up, skipping");
+            return;
+        }
+        self.cleaned_up = true;
+        tracing::info!("cleanup_sdk: destroying services and cleaning up SDK");
+
+        // 1. Destroy meeting service (MeetingService::drop -> DestroyMeetingService)
+        let _ = self.meeting_service.take();
+
+        // 2. Destroy setting service (SettingService::drop -> DestroySettingService)
+        let _ = self.setting_service.take();
+
+        // 3. Destroy auth service (AuthService::drop -> DestroyAuthService)
+        let _ = self.auth_service.take();
+
+        // 4. Destroy network connection helper
+        if !self.ptr_network_conn_helper.is_null() {
+            let result = unsafe { ZOOMSDK_DestroyNetworkConnectionHelper(self.ptr_network_conn_helper) };
+            if result != ZOOMSDK_SDKError_SDKERR_SUCCESS {
+                tracing::warn!("DestroyNetworkConnectionHelper returned {:?}", result);
+            }
+            self.ptr_network_conn_helper = std::ptr::null_mut();
+        }
+
+        // 5. Mark teardown so any subsequent Drop impls (AudioRawDataHelper,
+        //    Renderer) that run after this point skip SDK calls — the SDK
+        //    is no longer in a valid state after CleanUPSDK().
+        mark_sdk_teardown();
+
+        // 6. CleanUPSDK — global SDK cleanup after all services are destroyed
+        let err = unsafe { ZOOMSDK_CleanUPSDK() };
+        if err != ZOOMSDK_SDKError_SDKERR_SUCCESS {
+            tracing::warn!("ZOOMSDK_CleanUPSDK returned {:?}", err);
+        } else {
+            tracing::info!("ZOOMSDK_CleanUPSDK succeeded");
+        }
+    }
+
     /// Call the method to switch sdk domain
     /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
     /// TODO : Check function behavior.
@@ -276,65 +328,17 @@ impl<'a> Instance<'a> {
 }
 
 /// Clean up ZOOM SDK by dropping the instance.
-/// Teardown (destroy services, then CleanUPSDK) is performed by [`Instance::drop`].
-/// This function must not call ZOOMSDK_CleanUPSDK() itself, or it would run twice when the passed instance is dropped.
+/// Teardown (destroy services, then CleanUPSDK) is performed by [`Instance::cleanup_sdk`].
 pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
-    // Instance::drop will destroy services and call CleanUPSDK once. Just dropping is sufficient.
+    // Instance::drop calls cleanup_sdk() which handles everything. Just dropping is sufficient.
     Ok(())
 }
 
-/// Drop boilerplate for Instance.
-/// Teardown order must match Zoom samples to avoid SIGSEGV: destroy services explicitly, then CleanUPSDK().
-/// See: meetingsdk-headless-linux-sample (Zoom::clean), meetingsdk-linux-raw-recording-sample (CleanSDK).
+/// Drop delegates to cleanup_sdk(). If cleanup_sdk() was already called
+/// explicitly (the normal path), this is a no-op.
 impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
-        tracing::info!("Zoom SDK instance teardown starting (sdk_tearing_down={})", is_sdk_tearing_down());
-
-        // Service objects (IMeetingService, IAuthService, ISettingService) are always
-        // OUR responsibility to destroy — the SDK does NOT free them during Disconnecting.
-        //
-        // CleanUPSDK() is different: when the host ends the meeting, the SDK fires
-        // MeetingStatusDisconnecting and then does its own internal global teardown.
-        // By the time Instance::drop runs (10+ seconds later, after uploads), the SDK
-        // has already cleaned up. Calling CleanUPSDK() at that point returns
-        // SDKERR_WRONG_USAGE (2) and corrupts internal state, causing SIGABRT/SIGSEGV
-        // 90-600ms later. So we only call CleanUPSDK() on the normal (non-teardown) path
-        // where the SDK hasn't already cleaned up internally.
-        //
-        // On the normal path (e.g. bot leaves voluntarily), no Disconnecting fires,
-        // sdk_tearing_down is false, and we call CleanUPSDK() as usual.
-
-        // 1. Destroy meeting service first (releases meeting/recording state). Drop runs MeetingService::drop -> DestroyMeetingService.
-        let _ = self.meeting_service.take();
-
-        // 2. Destroy setting service (SettingService::drop -> DestroySettingService)
-        let _ = self.setting_service.take();
-
-        // 3. Destroy auth service (AuthService::drop -> DestroyAuthService)
-        let _ = self.auth_service.take();
-
-        // 4. Destroy network connection helper if it was created (main.rs may have already destroyed it)
-        if !self.ptr_network_conn_helper.is_null() {
-            let result = unsafe { ZOOMSDK_DestroyNetworkConnectionHelper(self.ptr_network_conn_helper) };
-            if result != ZOOMSDK_SDKError_SDKERR_SUCCESS {
-                tracing::warn!("DestroyNetworkConnectionHelper returned {:?}", result);
-            }
-            self.ptr_network_conn_helper = std::ptr::null_mut();
-        }
-
-        // 5. Global cleanup — only when SDK hasn't already torn down internally.
-        // When host ends meeting, SDK fires Disconnecting then does its own cleanup.
-        // Calling CleanUPSDK() after that returns SDKERR_WRONG_USAGE and causes SIGABRT.
-        if !is_sdk_tearing_down() {
-            let err = unsafe { ZOOMSDK_CleanUPSDK() };
-            if err != ZOOMSDK_SDKError_SDKERR_SUCCESS {
-                tracing::warn!("ZOOMSDK_CleanUPSDK returned {:?}", err);
-            } else {
-                tracing::info!("ZOOMSDK_CleanUPSDK succeeded");
-            }
-        } else {
-            tracing::info!("Skipping CleanUPSDK — SDK already cleaned up after Disconnecting");
-        }
+        self.cleanup_sdk();
     }
 }
 

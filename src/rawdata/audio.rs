@@ -141,8 +141,7 @@ impl<'a> AudioRawDataHelper<'a> {
 impl<'a> Drop for AudioRawDataHelper<'a> {
     fn drop(&mut self) {
         if crate::is_sdk_tearing_down() {
-            tracing::info!("AudioRawDataHelper drop: skipping unsubscribe (SDK is tearing down), flushing only");
-            self.flush();
+            tracing::info!("AudioRawDataHelper drop: skipping unsubscribe (SDK is tearing down)");
             return;
         }
         let r = self.unsubscribe_delegate();

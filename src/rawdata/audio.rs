@@ -113,6 +113,13 @@ impl<'a> AudioRawDataHelper<'a> {
         }
         result
     }
+    /// Flush the audio delegate (sends remaining per-user audio tracks for processing)
+    /// without making any SDK calls. Safe to call during SDK teardown.
+    pub fn flush(&mut self) {
+        if let Some(ref mut delegate) = self.delegate {
+            delegate.flush();
+        }
+    }
     /// \Subscribe audio mic raw data with a callback.
     /// - [VirtualAudioMicEvent], the callback handler of raw audio data.
     /// - If the function succeeds, the return value is Ok(), otherwise failed, see [crate::SdkError] for details.
@@ -134,7 +141,8 @@ impl<'a> AudioRawDataHelper<'a> {
 impl<'a> Drop for AudioRawDataHelper<'a> {
     fn drop(&mut self) {
         if crate::is_sdk_tearing_down() {
-            tracing::info!("AudioRawDataHelper drop: skipping unsubscribe (SDK is tearing down)");
+            tracing::info!("AudioRawDataHelper drop: skipping unsubscribe (SDK is tearing down), flushing only");
+            self.flush();
             return;
         }
         let r = self.unsubscribe_delegate();

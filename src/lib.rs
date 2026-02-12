@@ -51,7 +51,7 @@ mod bindings;
 use std::ffi::{CStr, CString};
 use std::ops::Drop;
 use std::pin::Pin;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicPtr, Ordering};
 
 use auth_service::AuthService;
 use bindings::*;
@@ -65,11 +65,35 @@ use bindings::*;
 /// the 50ms glib main-loop latency that caused a race condition / double-free.
 static SDK_TEARDOWN_STARTED: AtomicBool = AtomicBool::new(false);
 
+/// Raw pointer to the GLib MainLoop. Stored so that `mark_sdk_teardown()` can quit
+/// the main loop from the SDK callback thread. `g_main_loop_quit()` is thread-safe
+/// and wakes up the poll, allowing the main thread to exit the event loop and proceed
+/// to post-processing before the SDK's internal teardown can crash the process.
+static GLIB_MAIN_LOOP_PTR: AtomicPtr<glib::ffi::GMainLoop> =
+    AtomicPtr::new(std::ptr::null_mut());
+
+/// Register the GLib MainLoop so `mark_sdk_teardown()` can quit it from the SDK thread.
+/// Must be called from the main thread after creating the MainLoop.
+pub fn set_main_loop(main_loop: &glib::MainLoop) {
+    let ptr = glib::translate::ToGlibPtr::to_glib_none(main_loop).0;
+    GLIB_MAIN_LOOP_PTR.store(ptr, Ordering::SeqCst);
+}
+
 /// Mark that the SDK has started teardown (called from `on_meeting_status_changed`
 /// when `MeetingStatusDisconnecting` is received).
 pub fn mark_sdk_teardown() {
     SDK_TEARDOWN_STARTED.store(true, Ordering::SeqCst);
     tracing::warn!("SDK teardown flag set — SDK is disconnecting, skipping further raw-data operations");
+
+    // Quit the GLib main loop from the SDK thread. This is thread-safe and wakes up
+    // the poll, ensuring the main thread exits main_loop.run() promptly. Without this,
+    // the SDK's internal teardown can run on the main thread and prevent the GLib tick
+    // handler from ever firing, leaving the bot stuck until the SDK crashes (SIGSEGV).
+    let ptr = GLIB_MAIN_LOOP_PTR.load(Ordering::SeqCst);
+    if !ptr.is_null() {
+        unsafe { glib::ffi::g_main_loop_quit(ptr) };
+        tracing::info!("GLib main loop quit requested from SDK teardown callback");
+    }
 }
 
 /// Check whether the SDK teardown has started.

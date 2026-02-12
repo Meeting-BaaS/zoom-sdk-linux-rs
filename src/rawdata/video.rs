@@ -104,8 +104,12 @@ impl Drop for Renderer {
         // TODO: delegate (from video_helper_create_delegate) is never freed; C++ has same leak (wrapper-cpp/modules/c_rawdata_video_helper.cpp).
         // We rely on SDK-owned renderer teardown (destroyed_by_sdk, renderer = None) and do not call ZOOMSDK_destroyRenderer to avoid double-free.
         // Attendee-style: if SDK already destroyed the renderer (onRendererBeDestroyed), do nothing.
-        if self.destroyed_by_sdk {
-            tracing::info!("Renderer drop: SDK already destroyed renderer, skipping unSubscribe/destroy");
+        if self.destroyed_by_sdk || crate::is_sdk_tearing_down() {
+            tracing::info!(
+                "Renderer drop: skipping unSubscribe/destroy (destroyed_by_sdk={}, sdk_tearing_down={})",
+                self.destroyed_by_sdk,
+                crate::is_sdk_tearing_down()
+            );
             return;
         }
         tracing::info!("Droping renderer !");

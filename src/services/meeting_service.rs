@@ -228,6 +228,10 @@ impl<'a> MeetingService<'a> {
 
 impl<'a> Drop for MeetingService<'a> {
     fn drop(&mut self) {
+        if crate::is_sdk_tearing_down() {
+            tracing::info!("MeetingService drop: skipping DestroyMeetingService (SDK is tearing down)");
+            return;
+        }
         let ret = unsafe { ZOOMSDK_DestroyMeetingService(self.ref_meeting_service) };
         if ret != ZOOMSDK_SDKError_SDKERR_SUCCESS {
             tracing::warn!("Error when droping MeetingService : {:?}", ret);
@@ -244,6 +248,14 @@ extern "C" fn on_meeting_status_changed(
     status: ZOOMSDK_MeetingStatus,
     result: c_int,
 ) {
+    // When the SDK fires MeetingStatusDisconnecting, it will immediately begin
+    // internal teardown (freeing renderer, audio, etc.) after this callback returns.
+    // Set the global teardown flag NOW — on the SDK thread, before returning —
+    // so that the glib main-loop tick handler and Drop impls skip SDK object access.
+    if status == ZOOMSDK_MeetingStatus_MEETING_STATUS_DISCONNECTING {
+        crate::mark_sdk_teardown();
+    }
+
     let result: MeetingFailCode = match (result as u32).try_into() {
         Ok(fail_code) => fail_code,
         Err(e) => {

@@ -51,9 +51,31 @@ mod bindings;
 use std::ffi::{CStr, CString};
 use std::ops::Drop;
 use std::pin::Pin;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use auth_service::AuthService;
 use bindings::*;
+
+/// Global flag set when the SDK fires MeetingStatusDisconnecting.
+/// After this point, the SDK begins internal teardown and frees renderer/audio objects.
+/// All code that touches SDK raw data objects (renderer, audio helper) must check this
+/// flag and skip operations on potentially-freed pointers.
+///
+/// Set directly in the C callback (on the SDK thread, before returning) to avoid
+/// the 50ms glib main-loop latency that caused a race condition / double-free.
+static SDK_TEARDOWN_STARTED: AtomicBool = AtomicBool::new(false);
+
+/// Mark that the SDK has started teardown (called from `on_meeting_status_changed`
+/// when `MeetingStatusDisconnecting` is received).
+pub fn mark_sdk_teardown() {
+    SDK_TEARDOWN_STARTED.store(true, Ordering::SeqCst);
+    tracing::warn!("SDK teardown flag set — SDK is disconnecting, skipping further raw-data operations");
+}
+
+/// Check whether the SDK teardown has started.
+pub fn is_sdk_tearing_down() -> bool {
+    SDK_TEARDOWN_STARTED.load(Ordering::SeqCst)
+}
 
 /// Allows obtaining a new JWT token.
 pub mod jwt_helper;
@@ -266,7 +288,20 @@ pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
 /// See: meetingsdk-headless-linux-sample (Zoom::clean), meetingsdk-linux-raw-recording-sample (CleanSDK).
 impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
-        tracing::info!("Zoom SDK instance teardown starting");
+        tracing::info!("Zoom SDK instance teardown starting (sdk_tearing_down={})", is_sdk_tearing_down());
+
+        if is_sdk_tearing_down() {
+            // SDK already ran its own internal teardown after MeetingStatusDisconnecting.
+            // Calling DestroyMeetingService / CleanUPSDK again would double-free.
+            // Just drop Rust-side state without calling into the SDK.
+            tracing::warn!("Skipping SDK service destruction and CleanUPSDK (SDK already tore down)");
+            self.meeting_service = None;
+            self.setting_service = None;
+            self.auth_service = None;
+            self.ptr_network_conn_helper = std::ptr::null_mut();
+            return;
+        }
+
         // Teardown order matches Zoom demos: destroy services first, then CleanUPSDK() once.
 
         // 1. Destroy meeting service first (releases meeting/recording state). Drop runs MeetingService::drop -> DestroyMeetingService.

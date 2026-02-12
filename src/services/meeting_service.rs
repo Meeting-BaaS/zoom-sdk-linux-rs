@@ -228,10 +228,9 @@ impl<'a> MeetingService<'a> {
 
 impl<'a> Drop for MeetingService<'a> {
     fn drop(&mut self) {
-        if crate::is_sdk_tearing_down() {
-            tracing::info!("MeetingService drop: skipping DestroyMeetingService (SDK is tearing down)");
-            return;
-        }
+        // Always destroy the meeting service. The SDK does NOT free service objects
+        // during its internal teardown after MeetingStatusDisconnecting — they are
+        // our responsibility. Skipping this causes SIGABRT/SIGSEGV at process exit.
         let ret = unsafe { ZOOMSDK_DestroyMeetingService(self.ref_meeting_service) };
         if ret != ZOOMSDK_SDKError_SDKERR_SUCCESS {
             tracing::warn!("Error when droping MeetingService : {:?}", ret);

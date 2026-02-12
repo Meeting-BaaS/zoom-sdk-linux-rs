@@ -290,19 +290,12 @@ impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
         tracing::info!("Zoom SDK instance teardown starting (sdk_tearing_down={})", is_sdk_tearing_down());
 
-        if is_sdk_tearing_down() {
-            // SDK already ran its own internal teardown after MeetingStatusDisconnecting.
-            // Calling DestroyMeetingService / CleanUPSDK again would double-free.
-            // Just drop Rust-side state without calling into the SDK.
-            tracing::warn!("Skipping SDK service destruction and CleanUPSDK (SDK already tore down)");
-            self.meeting_service = None;
-            self.setting_service = None;
-            self.auth_service = None;
-            self.ptr_network_conn_helper = std::ptr::null_mut();
-            return;
-        }
-
-        // Teardown order matches Zoom demos: destroy services first, then CleanUPSDK() once.
+        // Always do full cleanup regardless of sdk_tearing_down flag.
+        // The flag protects raw-data access in the OnRecord tick (~186ms danger window),
+        // but service objects (IMeetingService, IAuthService, ISettingService) and
+        // CleanUPSDK() are OUR responsibility. Skipping them causes the SDK's own
+        // atexit/static destructors to double-free at process exit.
+        // See: meetingsdk-headless-linux-sample (Zoom::clean), meetingsdk-linux-raw-recording-sample (CleanSDK).
 
         // 1. Destroy meeting service first (releases meeting/recording state). Drop runs MeetingService::drop -> DestroyMeetingService.
         let _ = self.meeting_service.take();

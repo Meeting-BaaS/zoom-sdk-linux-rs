@@ -247,11 +247,22 @@ extern "C" fn on_meeting_status_changed(
     status: ZOOMSDK_MeetingStatus,
     result: c_int,
 ) {
+    // Track when we actually enter the meeting (raw-data objects get created).
+    if status == ZOOMSDK_MeetingStatus_MEETING_STATUS_INMEETING {
+        crate::mark_meeting_entered();
+    }
+
     // When the SDK fires MeetingStatusDisconnecting, it will immediately begin
     // internal teardown (freeing renderer, audio, etc.) after this callback returns.
     // Set the global teardown flag NOW — on the SDK thread, before returning —
     // so that the glib main-loop tick handler and Drop impls skip SDK object access.
-    if status == ZOOMSDK_MeetingStatus_MEETING_STATUS_DISCONNECTING {
+    //
+    // ONLY do this when the meeting was actually entered (InMeeting was observed).
+    // Pre-meeting disconnects (e.g. OBF "authorized user not in meeting") have no
+    // raw-data objects to protect, and tearing down would prevent join retries.
+    if status == ZOOMSDK_MeetingStatus_MEETING_STATUS_DISCONNECTING
+        && crate::was_meeting_entered()
+    {
         crate::mark_sdk_teardown();
     }
 

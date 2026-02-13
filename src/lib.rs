@@ -65,6 +65,12 @@ use bindings::*;
 /// the 50ms glib main-loop latency that caused a race condition / double-free.
 static SDK_TEARDOWN_STARTED: AtomicBool = AtomicBool::new(false);
 
+/// Tracks whether the SDK ever reached MeetingStatusInMeeting. Used to distinguish
+/// a real meeting disconnect (raw-data objects exist, need teardown protection) from
+/// a pre-meeting disconnect (e.g. OBF "authorized user not in meeting" — no raw-data
+/// objects, SDK can be reused for retry).
+static MEETING_WAS_IN_MEETING: AtomicBool = AtomicBool::new(false);
+
 /// Raw pointer to the GLib MainLoop. Stored so that `mark_sdk_teardown()` can quit
 /// the main loop from the SDK callback thread. `g_main_loop_quit()` is thread-safe
 /// and wakes up the poll, allowing the main thread to exit the event loop and proceed
@@ -99,6 +105,18 @@ pub fn mark_sdk_teardown() {
 /// Check whether the SDK teardown has started.
 pub fn is_sdk_tearing_down() -> bool {
     SDK_TEARDOWN_STARTED.load(Ordering::SeqCst)
+}
+
+/// Mark that the meeting has reached InMeeting status.
+/// Called from `on_meeting_status_changed` when `MeetingStatusInMeeting` is received.
+pub fn mark_meeting_entered() {
+    MEETING_WAS_IN_MEETING.store(true, Ordering::SeqCst);
+}
+
+/// Check whether the meeting was ever entered (reached InMeeting status).
+/// Returns false for pre-meeting disconnects (e.g. OBF join failures).
+pub fn was_meeting_entered() -> bool {
+    MEETING_WAS_IN_MEETING.load(Ordering::SeqCst)
 }
 
 /// Allows obtaining a new JWT token.

@@ -13,14 +13,14 @@ pub trait SharingControllerEvent: std::fmt::Debug {
     /// The userId changes according to the status value. When the status value is
     /// the Sharing_Self_Send_Begin or Sharing_Self_Send_End, the userId is the user own ID.
     /// Otherwise, the value of userId is the sharer ID.
-    fn on_sharing_status(&mut self, _status: SharingStatus, _user_id: u32) {}
+    fn on_sharing_status(&mut self, _status: SharingStatus, _user_id: u32, _share_source_id: u32) {}
 
     /// Callback event of locked share status.
     /// - [bool] TRUE indicates that it is locked. FALSE unlocked.
     fn on_lock_share_status(&mut self, _locked: bool) {}
 
     /// Callback event of changed sharing information.
-    fn on_share_content_notification(&mut self, _status: SharingStatus, _user_id: u32) {}
+    fn on_share_content_notification(&mut self, _status: SharingStatus, _user_id: u32, _share_source_id: u32) {}
 
     /// Callback event of switching multi-participants share to one participant share.
     /// - [ShareSwitchMultitoSingleConfirmHandler] An object pointer used by user to complete
@@ -45,9 +45,9 @@ pub trait SharingControllerEvent: std::fmt::Debug {
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_sharing_status(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32) {
+extern "C" fn on_sharing_status(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32, share_source_id: u32) {
     tracing::debug!("Entering on_sharing_status");
-    (*convert(ptr).try_lock().unwrap()).on_sharing_status(status.into(), user_id);
+    (*convert(ptr).try_lock().unwrap()).on_sharing_status(status.into(), user_id, share_source_id);
 }
 
 #[tracing::instrument(ret)]
@@ -58,9 +58,9 @@ extern "C" fn on_lock_share_status(ptr: *const u8, locked: bool) {
 
 #[tracing::instrument(ret)]
 #[no_mangle]
-extern "C" fn on_share_content_notification(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32) {
+extern "C" fn on_share_content_notification(ptr: *const u8, status: ZOOMSDK_SharingStatus, user_id: u32, share_source_id: u32) {
     (*convert(ptr).lock().unwrap())
-        .on_share_content_notification(status.into(), user_id);
+        .on_share_content_notification(status.into(), user_id, share_source_id);
 }
 
 #[tracing::instrument(ret)]

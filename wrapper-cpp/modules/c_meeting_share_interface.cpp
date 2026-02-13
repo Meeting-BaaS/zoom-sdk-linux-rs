@@ -1,10 +1,10 @@
 #include "c_meeting_share_interface.h"
 
-extern "C" void on_sharing_status(void *ptr, ZOOMSDK::SharingStatus status, unsigned int userId);
+extern "C" void on_sharing_status(void *ptr, ZOOMSDK::SharingStatus status, unsigned int userId, unsigned int shareSourceId);
 
 extern "C" void on_lock_share_status(void *ptr, bool bLocked);
 
-extern "C" void on_share_content_notification(void *ptr, ZOOMSDK::SharingStatus status, unsigned int userId);
+extern "C" void on_share_content_notification(void *ptr, ZOOMSDK::SharingStatus status, unsigned int userId, unsigned int shareSourceId);
 
 extern "C" void on_multi_share_switch_to_single_share_need_confirm(void *ptr, ZOOMSDK::IShareSwitchMultiToSingleConfirmHandler* handler_);
 
@@ -23,7 +23,7 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
         }
 
 	    void onSharingStatus(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
-            return on_sharing_status(ptr_to_rust, shareInfo.status, shareInfo.userid);
+            return on_sharing_status(ptr_to_rust, shareInfo.status, shareInfo.userid, shareInfo.shareSourceID);
         }
 
 	    void onFailedToStartShare() override {
@@ -35,7 +35,7 @@ class C_MeetingShareCtrlEvent: public ZOOMSDK::IMeetingShareCtrlEvent {
         }
 
 	    void onShareContentNotification(ZOOMSDK::ZoomSDKSharingSourceInfo shareInfo) override {
-            return on_share_content_notification(ptr_to_rust, shareInfo.status, shareInfo.userid);
+            return on_share_content_notification(ptr_to_rust, shareInfo.status, shareInfo.userid, shareInfo.shareSourceID);
         }
 
         void onMultiShareSwitchToSingleShareNeedConfirm(ZOOMSDK::IShareSwitchMultiToSingleConfirmHandler* handler_) override {

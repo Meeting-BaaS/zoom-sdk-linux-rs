@@ -51,9 +51,73 @@ mod bindings;
 use std::ffi::{CStr, CString};
 use std::ops::Drop;
 use std::pin::Pin;
+use std::sync::atomic::{AtomicBool, AtomicPtr, Ordering};
 
 use auth_service::AuthService;
 use bindings::*;
+
+/// Global flag set when the SDK fires MeetingStatusDisconnecting.
+/// After this point, the SDK begins internal teardown and frees renderer/audio objects.
+/// All code that touches SDK raw data objects (renderer, audio helper) must check this
+/// flag and skip operations on potentially-freed pointers.
+///
+/// Set directly in the C callback (on the SDK thread, before returning) to avoid
+/// the 50ms glib main-loop latency that caused a race condition / double-free.
+static SDK_TEARDOWN_STARTED: AtomicBool = AtomicBool::new(false);
+
+/// Tracks whether the SDK ever reached MeetingStatusInMeeting. Used to distinguish
+/// a real meeting disconnect (raw-data objects exist, need teardown protection) from
+/// a pre-meeting disconnect (e.g. OBF "authorized user not in meeting" — no raw-data
+/// objects, SDK can be reused for retry).
+static MEETING_WAS_IN_MEETING: AtomicBool = AtomicBool::new(false);
+
+/// Raw pointer to the GLib MainLoop. Stored so that `mark_sdk_teardown()` can quit
+/// the main loop from the SDK callback thread. `g_main_loop_quit()` is thread-safe
+/// and wakes up the poll, allowing the main thread to exit the event loop and proceed
+/// to post-processing before the SDK's internal teardown can crash the process.
+static GLIB_MAIN_LOOP_PTR: AtomicPtr<glib::ffi::GMainLoop> =
+    AtomicPtr::new(std::ptr::null_mut());
+
+/// Register the GLib MainLoop so `mark_sdk_teardown()` can quit it from the SDK thread.
+/// Must be called from the main thread after creating the MainLoop.
+pub fn set_main_loop(main_loop: &glib::MainLoop) {
+    let ptr = glib::translate::ToGlibPtr::to_glib_none(main_loop).0;
+    GLIB_MAIN_LOOP_PTR.store(ptr, Ordering::SeqCst);
+}
+
+/// Mark that the SDK has started teardown (called from `on_meeting_status_changed`
+/// when `MeetingStatusDisconnecting` is received).
+pub fn mark_sdk_teardown() {
+    SDK_TEARDOWN_STARTED.store(true, Ordering::SeqCst);
+    tracing::warn!("SDK teardown flag set — SDK is disconnecting, skipping further raw-data operations");
+
+    // Quit the GLib main loop from the SDK thread. This is thread-safe and wakes up
+    // the poll, ensuring the main thread exits main_loop.run() promptly. Without this,
+    // the SDK's internal teardown can run on the main thread and prevent the GLib tick
+    // handler from ever firing, leaving the bot stuck until the SDK crashes (SIGSEGV).
+    let ptr = GLIB_MAIN_LOOP_PTR.load(Ordering::SeqCst);
+    if !ptr.is_null() {
+        unsafe { glib::ffi::g_main_loop_quit(ptr) };
+        tracing::info!("GLib main loop quit requested from SDK teardown callback");
+    }
+}
+
+/// Check whether the SDK teardown has started.
+pub fn is_sdk_tearing_down() -> bool {
+    SDK_TEARDOWN_STARTED.load(Ordering::SeqCst)
+}
+
+/// Mark that the meeting has reached InMeeting status.
+/// Called from `on_meeting_status_changed` when `MeetingStatusInMeeting` is received.
+pub fn mark_meeting_entered() {
+    MEETING_WAS_IN_MEETING.store(true, Ordering::SeqCst);
+}
+
+/// Check whether the meeting was ever entered (reached InMeeting status).
+/// Returns false for pre-meeting disconnects (e.g. OBF join failures).
+pub fn was_meeting_entered() -> bool {
+    MEETING_WAS_IN_MEETING.load(Ordering::SeqCst)
+}
 
 /// Allows obtaining a new JWT token.
 pub mod jwt_helper;
@@ -103,6 +167,9 @@ pub struct Instance<'a> {
 
     // Dont use it
     new_domain: Option<Pin<CString>>,
+
+    // True after cleanup_sdk() has run — prevents Drop from double-cleaning.
+    cleaned_up: bool,
 }
 
 /// Initialize ZOOM SDK  
@@ -143,6 +210,7 @@ pub fn init_sdk<'a, 'b>(init_param: SdkInitParam) -> SdkResult<Pin<Box<Instance<
         setting_service: None,
         ptr_network_conn_helper: std::ptr::null_mut(),
         new_domain: None,
+        cleaned_up: false,
     });
     let ref_init = &mut out.raw_init_parameters;
     ZoomSdkResult(unsafe { ZOOMSDK_InitSDK(ref_init) }, out).into()
@@ -237,6 +305,54 @@ impl<'a> Instance<'a> {
             unimplemented!()
         }
     }
+    /// Destroy all SDK services and call CleanUPSDK().
+    ///
+    /// Must be called as soon as the meeting ends, BEFORE any long-running
+    /// post-processing (video thread join, FFmpeg, S3 uploads).  This matches
+    /// the Attendee pattern: adapter.cleanup() runs right after meeting ends,
+    /// then file uploads happen afterward.
+    ///
+    /// After this, Drop is a no-op (safe to let Instance go out of scope).
+    pub fn cleanup_sdk(&mut self) {
+        if self.cleaned_up {
+            tracing::info!("cleanup_sdk: already cleaned up, skipping");
+            return;
+        }
+        self.cleaned_up = true;
+        tracing::info!("cleanup_sdk: destroying services and cleaning up SDK");
+
+        // 1. Destroy meeting service (MeetingService::drop -> DestroyMeetingService)
+        let _ = self.meeting_service.take();
+
+        // 2. Destroy setting service (SettingService::drop -> DestroySettingService)
+        let _ = self.setting_service.take();
+
+        // 3. Destroy auth service (AuthService::drop -> DestroyAuthService)
+        let _ = self.auth_service.take();
+
+        // 4. Destroy network connection helper
+        if !self.ptr_network_conn_helper.is_null() {
+            let result = unsafe { ZOOMSDK_DestroyNetworkConnectionHelper(self.ptr_network_conn_helper) };
+            if result != ZOOMSDK_SDKError_SDKERR_SUCCESS {
+                tracing::warn!("DestroyNetworkConnectionHelper returned {:?}", result);
+            }
+            self.ptr_network_conn_helper = std::ptr::null_mut();
+        }
+
+        // 5. Mark teardown so any subsequent Drop impls (AudioRawDataHelper,
+        //    Renderer) that run after this point skip SDK calls — the SDK
+        //    is no longer in a valid state after CleanUPSDK().
+        mark_sdk_teardown();
+
+        // 6. CleanUPSDK — global SDK cleanup after all services are destroyed
+        let err = unsafe { ZOOMSDK_CleanUPSDK() };
+        if err != ZOOMSDK_SDKError_SDKERR_SUCCESS {
+            tracing::warn!("ZOOMSDK_CleanUPSDK returned {:?}", err);
+        } else {
+            tracing::info!("ZOOMSDK_CleanUPSDK succeeded");
+        }
+    }
+
     /// Call the method to switch sdk domain
     /// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
     /// TODO : Check function behavior.
@@ -253,21 +369,18 @@ impl<'a> Instance<'a> {
     }
 }
 
-/// Clean up ZOOM SDK  
-/// - [`Instance`] Zoom SDK instance given to this function.
-/// - If the function succeeds, the return value is Ok(()), otherwise failed, see [SdkError] for details.
-// TODO : Fix segfault if we use it.
+/// Clean up ZOOM SDK by dropping the instance.
+/// Teardown (destroy services, then CleanUPSDK) is performed by [`Instance::cleanup_sdk`].
 pub fn cleanup_sdk(_this: Pin<Box<Instance>>) -> SdkResult<()> {
-    tracing::info!("calling cleanup SDK");
-    let ret = ZoomSdkResult(unsafe { ZOOMSDK_CleanUPSDK() }, ()).into();
-    tracing::info!("After cleanup SDK");
-    ret
+    // Instance::drop calls cleanup_sdk() which handles everything. Just dropping is sufficient.
+    Ok(())
 }
 
-/// Drop boilerplate for Instance
+/// Drop delegates to cleanup_sdk(). If cleanup_sdk() was already called
+/// explicitly (the normal path), this is a no-op.
 impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
-        tracing::info!("Zoom SDK instance droped!");
+        self.cleanup_sdk();
     }
 }
 

@@ -43,6 +43,7 @@ impl<'a> SettingService<'a> {
 
 impl<'a> Drop for SettingService<'a> {
     fn drop(&mut self) {
+        // Always destroy the setting service — service objects are our responsibility.
         let ret = unsafe { ZOOMSDK_DestroySettingService(self.ref_setting_service) };
         if ret != ZOOMSDK_SDKError_SDKERR_SUCCESS {
             tracing::warn!("Error when droping SettingService : {:?}", ret);

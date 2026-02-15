@@ -137,6 +137,7 @@ impl<'a> AuthService<'a> {
 
 impl<'a> Drop for AuthService<'a> {
     fn drop(&mut self) {
+        // Always destroy the auth service — service objects are our responsibility.
         let ret = unsafe { ZOOMSDK_DestroyAuthService(self.ptr_auth_service) };
         if ret != ZOOMSDK_SDKError_SDKERR_SUCCESS {
             tracing::warn!("Error when droping AuthService : {:?}", ret);

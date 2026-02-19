@@ -1,6 +1,6 @@
 /**
  * @file meeting_service_interface.h
- * @brief Meeting Service Interface
+ * @brief Meeting Service Interface.
  */
 #ifndef _MEETING_SERVICE_INTERFACE_H_
 #define _MEETING_SERVICE_INTERFACE_H_
@@ -10,7 +10,7 @@ class IZoomRealNameAuthMeetingHelper;
 #endif
 BEGIN_ZOOM_SDK_NAMESPACE
 /**
- * @brief Meeting status.
+ * @brief Enumeration of meeting status.
  * Here are more detailed structural descriptions.
  */
 enum MeetingStatus
@@ -50,7 +50,7 @@ enum MeetingStatus
 };
 
 /**
- * @brief Meeting failure code.
+ * @brief Enumeration of meeting failure code.
  * Here are more detailed structural descriptions.
  */
 enum MeetingFailCode
@@ -133,14 +133,24 @@ enum MeetingFailCode
 	MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR = 500,  
 	/** Authorized user not in meeting. */
 	MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING = 501,
-	/** Jmak user email not match */
+	/** On-behalf token error: conflict with login credentials. */
+	MEETING_FAIL_ON_BEHALF_TOKEN_CONFLICT_LOGIN_ERROR = 502,
+	/** User level privilege token not have host zak/obf. */
+	MEETING_FAIL_USER_LEVEL_TOKEN_NOT_HAVE_HOST_ZAK_OBF = 503,
+	/** App can not anonymous join meeting. */
+	MEETING_FAIL_APP_CAN_NOT_ANONYMOUS_JOIN_MEETING = 504,
+	/** On-behalf token invalid. */
+	MEETING_FAIL_ON_BEHALF_TOKEN_INVALID = 505,
+	/** On-behalf token meeting number not match. */
+	MEETING_FAIL_ON_BEHALF_TOKEN_NOT_MATCH_MEETING = 506,
+	/** Jmak user email not match. */
 	MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH = 1143, 
 	MEETING_FAIL_UNKNOWN = 0xffff,
 
 };  
 
 /**
- * @brief Meeting end reason.
+ * @brief Enumeration of meeting end reason.
  * Here are more detailed structural descriptions.
  */
 enum MeetingEndReason
@@ -160,11 +170,13 @@ enum MeetingEndReason
 	/** Free meeting times out. */
 	EndMeetingReason_FreeMeetingTimeOut = 6,
 	/** Represents an undefined end meeting reason, typically used for new error codes introduced by the backend after client release */
-	EndMeetingReason_Undefined,
+	EndMeetingReason_Undefined = 7,
+	/* Authorized user left. */
+	EndMeetingReason_DueToAuthorizedUserLeave = 8,
 };
 
 /**
- * @brief Meeting type.
+ * @brief Enumeration of meeting type.
  * Here are more detailed structural descriptions.
  */
 enum MeetingType
@@ -180,7 +192,7 @@ enum MeetingType
 };
 
 /**
- * @brief Leave meeting command.
+ * @brief Enumeration of leave meeting command.
  * Here are more detailed structural descriptions.
  */
 enum LeaveMeetingCmd
@@ -192,7 +204,7 @@ enum LeaveMeetingCmd
 };
 
 /**
- * @brief SDK user type.
+ * @brief Enumeration of SDK user type.
  * Here are more detailed structural descriptions.
  */
 enum SDKUserType
@@ -204,7 +216,7 @@ enum SDKUserType
 };
 
 /**
- * @brief The sampling rate of raw audio data.
+ * @brief Enumeration of raw audio data sampling rate.
  * Here are more detailed structural descriptions.
  */
 enum AudioRawdataSamplingRate
@@ -216,7 +228,7 @@ enum AudioRawdataSamplingRate
 };
 
 /**
- * @brief The colorspace of video rawdata.
+ * @brief Enumeration of video rawdata colorspace.
  * Here are more detailed structural descriptions.
  */
 enum VideoRawdataColorspace
@@ -253,9 +265,9 @@ typedef struct tagJoinParam4WithoutLogin
 	const zchar_t* customer_key;
 	/** Webinar token. */
 	const zchar_t* webinarToken;
-	/** Turn off the video of not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the video of not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isVideoOff;
-	/** Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isAudioOff;
 	/** Join token. */
 	const zchar_t* join_token;
@@ -266,7 +278,7 @@ typedef struct tagJoinParam4WithoutLogin
 #if defined(WIN32)
 	/** The window handle of the direct Sharing application. */
 	HWND		   hDirectShareAppWnd;
-	/** Share the desktop directly or not. True indicates to Share. */
+	/** Share the desktop directly or not. true indicates to share. */
 	bool		   isDirectShareDesktop;
 #endif
 	/** Is audio raw data stereo? The default is mono. */
@@ -297,9 +309,9 @@ typedef struct tagJoinParam4NormalUser
 	const zchar_t* customer_key;
 	/** Webinar token. */
 	const zchar_t* webinarToken;
-	/** Turn off the video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isVideoOff;
-	/** Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isAudioOff;
 	/** Join token. */
 	const zchar_t* join_token;
@@ -308,7 +320,7 @@ typedef struct tagJoinParam4NormalUser
 #if defined(WIN32)
 	/** The window handle of the direct sharing application. */
 	HWND		   hDirectShareAppWnd;
-	/** Share the desktop directly or not. True indicates to Share. */
+	/** Share the desktop directly or not. true indicates to share. */
 	bool		   isDirectShareDesktop;
 #endif
 	/** Is audio raw data stereo? The default is mono. */
@@ -344,7 +356,7 @@ typedef struct tagJoinParam
 
 
 /**
- * @brief SDK user type.
+ * @brief Enumeration of Zoom user type.
  * Here are more detailed structural descriptions.
  */
 enum ZoomUserType
@@ -381,16 +393,16 @@ typedef struct tagStartParam4WithoutLogin
 	const zchar_t* vanityID;
 	/** The customer key that need the app intergrated with sdk to specify. The SDK will set this value when the associated settings are turned on. The max length of customer_key is 35. */
 	const zchar_t* customer_key;
-	/** Turn off the video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isVideoOff;
-	/** Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		   isAudioOff;
 	/** Is my voice in the mixed audio raw data? */
 	bool           isMyVoiceInMix; 
 #if defined(WIN32)
 	/** The window handle of the direct sharing application. */
 	HWND		   hDirectShareAppWnd;
-	/** Share the desktop directly or not. True indicates to share. */
+	/** Share the desktop directly or not. true indicates to share. */
 	bool		   isDirectShareDesktop;
 #endif
 	/** Is audio raw data stereo? The default is mono. */
@@ -413,16 +425,16 @@ typedef struct tagStartParam4NormalUser
 	const zchar_t*  vanityID;
 	/** The customer key that need the app intergrated with sdk to specify. The SDK will set this value when the associated settings are turned on. The max length of customer_key is 35. */
 	const zchar_t*  customer_key;
-	/** Turn off video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		    isVideoOff;
-	/** Turn off audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes. */
+	/** Turn off audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes. */
 	bool		    isAudioOff;
 	/** Is my voice in the mixed audio raw data? */
 	bool            isMyVoiceInMix; 
 #if defined(WIN32)
 	/** The window handle of the direct sharing application. */
 	HWND			hDirectShareAppWnd;
-	/** Share the desktop directly or not. True indicates to Share. */
+	/** Share the desktop directly or not. true indicates to share. */
 	bool		    isDirectShareDesktop;
 #endif
 	/** Is audio raw data stereo? The default is mono. */
@@ -459,7 +471,7 @@ typedef struct tagStartParam
 }StartParam;
 
 /**
- * @brief Connection quality.
+ * @brief Enumeration of connection quality.
  * Here are more detailed structural descriptions.
  */
 enum ConnectionQuality 
@@ -481,7 +493,7 @@ enum ConnectionQuality
 };
 
 /**
- * @brief Meeting component enumeration.
+ * @brief Enumeration of meeting component.
  * Here are more detailed structural descriptions.
  */
 enum MeetingComponentType
@@ -601,7 +613,7 @@ typedef struct tagMeetingASVStatisticInfo
 
 #if defined(WIN32)
 /**
- * @brief SDK View Type, primary displayer and secondary displayer.
+ * @brief Enumeration of SDK view type, primary displayer and secondary displayer.
  * Here are more detailed structural descriptions.
  */
 enum SDKViewType
@@ -615,7 +627,7 @@ enum SDKViewType
 };
 
 /**
- * @brief Share view zoom ratio.
+ * @brief Enumeration of share view zoom ratio.
  * Here are more detailed structural descriptions.
  */
 enum SDKShareViewZoomRatio
@@ -628,7 +640,7 @@ enum SDKShareViewZoomRatio
 };
 #endif
 /**
- * @brief meeting supported audio type.
+ * @brief Enumeration of meeting supported audio type.
  * Here are more detailed structural descriptions.
  */
 enum InMeetingSupportAudioType
@@ -640,7 +652,7 @@ enum InMeetingSupportAudioType
 
 
 /**
- * @brief Meeting connection type.
+ * @brief Enumeration of meeting connection type.
  * Here are more detailed structural descriptions.
  */
 enum MeetingConnType
@@ -661,67 +673,67 @@ class IMeetingInfo
 {
 public:
 	/**
-	 * @brief Get the current meeting number.
+	 * @brief Gets the current meeting number.
 	 * @return If the function succeeds, the return value is the current meeting number. Otherwise returns ZERO(0).
 	 */
 	virtual UINT64 GetMeetingNumber() = 0;
 	
 	/**
-	 * @brief Get the current meeting ID.
+	 * @brief Gets the current meeting ID.
 	 * @return If the function succeeds, the return value is the current meeting ID. Otherwise returns an empty string of length ZERO(0).
 	 */
 	virtual const zchar_t* GetMeetingID() = 0;
 	
 	/**
-	 * @brief Get the meeting topic.
-	 * @return If the function succeeds, the return value is the current meeting topic. Otherwise returns an empty string of length ZERO(0)
+	 * @brief Gets the meeting topic.
+	 * @return If the function succeeds, the return value is the current meeting topic. Otherwise, this function fails and returns an empty string of length ZERO(0).
 	 */
 	virtual const zchar_t* GetMeetingTopic() = 0;
 	
 	/**
-	 * @brief Get the meeting password.
-	 * @return If the function succeeds, the return value is the current meeting password. Otherwise returns an empty string of length ZERO(0)
+	 * @brief Gets the meeting password.
+	 * @return If the function succeeds, the return value is the current meeting password. Otherwise, this function fails and returns an empty string of length ZERO(0).
 	 */
 	virtual const zchar_t* GetMeetingPassword() = 0;
 	
 	/**
-	 * @brief Get the meeting type.
-	 * @return If the function succeeds, the return value is the current meeting type.
+	 * @brief Gets the meeting type.
+	 * @return If the function succeeds, it returns the current meeting type. Otherwise, this function fails and returns nullptr.
 	 */
 	virtual MeetingType GetMeetingType() = 0;
 	
 	/**
-	 * @brief Get the email invitation template for the current meeting.
+	 * @brief Gets the email invitation template for the current meeting.
 	 * @return If the function succeeds, the return value is the email invitation template. Otherwise returns nullptr.
 	 */
 	virtual const zchar_t* GetInviteEmailTemplate() = 0;
 	
 	/**
-	 * @brief Get the meeting title in the email invitation template.
+	 * @brief Gets the meeting title in the email invitation template.
 	 * @return If the function succeeds, the return value is the meeting title. Otherwise returns nullptr.
 	 */
 	virtual const zchar_t* GetInviteEmailTitle() = 0;
 	
 	/**
-	 * @brief Get the URL of invitation to join the meeting.
+	 * @brief Gets the URL of invitation to join the meeting.
 	 * @return If the function succeeds, the return value is the URL of invitation. Otherwise returns nullptr.
 	 */
 	virtual const zchar_t* GetJoinMeetingUrl() = 0;
 	
 	/**
-	 * @brief Get the host tag of the current meeting.
+	 * @brief Gets the host tag of the current meeting.
 	 * @return If the function succeeds, the return value is the host tag. Otherwise returns nullptr.
 	 */
 	virtual const zchar_t* GetMeetingHostTag() = 0;
 	
 	/**
-	 * @brief Get the connection type of the current meeting.
+	 * @brief Gets the connection type of the current meeting.
 	 * @return The connection type.
 	 */
 	virtual MeetingConnType GetMeetingConnType() = 0;
 	
 	/**
-	 * @brief Get the audio type supported by the current meeting. see \link InMeetingSupportAudioType \endlink enum. 
+	 * @brief Gets the audio type supported by the current meeting. see \link InMeetingSupportAudioType \endlink enum. 
 	 * @return If the function succeeds, it will return the type. The value is the 'bitwise OR' of each supported audio type.
 	 */
 	virtual int GetSupportedMeetingAudioType() = 0;
@@ -737,11 +749,11 @@ typedef struct tagMeetingParameter
 {
 	/** Meeting type. */
 	MeetingType meeting_type;
-	/** View only or not. True indicates to view only. */
+	/** View only or not. true indicates to view only. */
 	bool is_view_only;
-	/** Auto local recording or not. True indicates to auto local recording. */
+	/** Auto local recording or not. true indicates to auto local recording. */
 	bool is_auto_recording_local;
-	/** Auto cloud recording or not. True indicates to auto cloud recording. */
+	/** Auto cloud recording or not. true indicates to auto cloud recording. */
 	bool is_auto_recording_cloud;
 	/** Meeting number. */
 	UINT64 meeting_number;
@@ -776,7 +788,7 @@ typedef struct tagMeetingParameter
 }MeetingParameter;
 
 /**
- * @brief Meeting statistics warning type.
+ * @brief Enumeration of meeting statistics warning type.
  * Here are more detailed structural descriptions.
  */
 enum StatisticsWarningType
@@ -788,6 +800,36 @@ enum StatisticsWarningType
 	/** The system is busy. */
 	Statistics_Warning_Busy_System,
 };
+
+#if defined(WIN32)
+/**
+ * @class IMeetingAppSignalHandler
+ * @brief the interface to handle app signal panel in meeting.
+ */
+class IMeetingAppSignalHandler
+{
+public:
+	virtual ~IMeetingAppSignalHandler() {};
+
+	/**
+	 * @brief Check if the app signal panel can be shown.
+	 * @return true if the app signal panel can be shown, false otherwise.
+	 */
+	virtual bool CanShowPanel() = 0;
+	/**
+	 * @brief Show the app signal panel window.
+	 * @param x The horizontal coordinate value.
+	 * @param y The vertical coordinate value.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
+	 */
+	virtual SDKError ShowPanel(unsigned int x, unsigned int y) = 0;
+	/**
+	 * @brief Hide the app signal panel window.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
+	 */
+	virtual SDKError HidePanel() = 0;
+};
+#endif
 
 /**
  * @class IMeetingServiceEvent
@@ -851,6 +893,15 @@ public:
 	 * @param uplink This data is uplink or downlink.
 	 */
 	virtual void onUserNetworkStatusChanged(MeetingComponentType type, ConnectionQuality level, unsigned int userId, bool uplink) = 0;
+
+#if defined(WIN32)
+	/**
+	 * @brief Callback event when the app signal panel is updated.
+	 * @param handler The handler object to control the app signal panel.
+	 * @note Only available for the custom UI.
+	 */
+	virtual void onAppSignalPanelUpdated(IMeetingAppSignalHandler* pHandler) = 0;
+#endif
 };
 
 /**
@@ -913,72 +964,72 @@ class IMeetingAICompanionController;
 class IMeetingDocsController;
 /**
  * @class IMeetingService
- * @brief Meeting Service Interface
+ * @brief Meeting Service Interface.
  */
 class IMeetingService
 {
 public:
 	/**
-	 * @brief Set meeting service callback event handler.
+	 * @brief Sets meeting service callback event handler.
 	 * @param pEvent A pointer to the IMeetingServiceEvent that receives the meeting service callback event.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SetEvent(IMeetingServiceEvent* pEvent) = 0;
 	
 	/**
-	 * @brief Join meeting with web uri
-	 * @param protocol_action Specifies the web uri
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @brief Joins meeting with web uri.
+	 * @param protocol_action Specifies the web uri.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError HandleZoomWebUriProtocolAction(const zchar_t* protocol_action) = 0;
 	
 	/**
-	 * @brief Join the meeting.
+	 * @brief Joins the meeting.
 	 * @param joinParam The parameter is used to join meeting.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Join(JoinParam& joinParam) = 0;
 	
 	/**
-	 * @brief Start meeting.
+	 * @brief Starts meeting.
 	 * @param startParam The parameter is used to start meeting.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Start(StartParam& startParam) = 0;
 	
 	/**
-	 * @brief Leave meeting.
+	 * @brief Leaves meeting.
 	 * @param leaveCmd Leave meeting command.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Leave(LeaveMeetingCmd leaveCmd) = 0;
 	
 	/**
-	 * @brief Get meeting status.
-	 * @return If the function succeeds, the return value is the current meeting status.  Otherwise failed.
+	 * @brief Gets meeting status.
+	 * @return If the function succeeds, the return value is the current meeting status. 
 	 */
 	virtual MeetingStatus GetMeetingStatus() = 0;
 	
 	/**
 	 * @brief Lock the current meeting.
-	 * @return If the function succeeds, the return value is the SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError LockMeeting() = 0;
 	
 	/**
 	 * @brief Unlock the current meeting.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError UnlockMeeting() = 0;
 	
 	/**
-	 * @brief Determine if the meeting is locked.
-	 * @return TRUE indicates the meeting status is locked.
+	 * @brief Determines if the meeting is locked.
+	 * @return true indicates the meeting status is locked.
 	 */
 	virtual bool IsMeetingLocked() = 0;
 	
 	/**
-	 * @brief Determine if the current user can change the meeting topic.
+	 * @brief Determines if the current user can change the meeting topic.
 	 * @return If it can change the meeting topic, the return value is true.
 	 */
 	virtual bool CanSetMeetingTopic() = 0;
@@ -992,280 +1043,280 @@ public:
 	
 	/**
 	 * @brief Suspend all participant activities.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SuspendParticipantsActivities() = 0;
 	
 	/**
-	 * @brief Determine if host/cohose can suspend participant activities.
-	 * @return If it can suspend participant activities, the return value is True.
+	 * @brief Determines if host/cohose can suspend participant activities.
+	 * @return If it can suspend participant activities, the return value is true.
 	 */
 	virtual bool CanSuspendParticipantsActivities() = 0;
 	
 	/**
-	 * @brief Get meeting information.
+	 * @brief Gets meeting information.
 	 * @return If the function succeeds, the return value is the meeting information. Otherwise returns nullptr.
 	 */
 	virtual IMeetingInfo* GetMeetingInfo() = 0;
 	
 	/**
-	 * @brief Get the quality of Internet connection when sharing.
-	 * @param bSending TRUE indicates to get the connection quality of sending the sharing statistics. FALSE indicates to get the connection quality of receiving the sharing statistics.
+	 * @brief Gets the quality of Internet connection when sharing.
+	 * @param bSending true indicates to get the connection quality of sending the sharing statistics. false indicates to get the connection quality of receiving the sharing statistics.
 	 * @return If the function succeeds, the return is one of those enumerated in ConnectionQuality enum.
 	 * @note If you are not in the meeting, the Conn_Quality_Unknown will be returned.
 	 */
 	virtual ConnectionQuality GetSharingConnQuality(bool bSending = true) = 0;
 	
 	/**
-	 * @brief Get the Internet connection quality of video.
-	 * @param bSending TRUE indicates to get the connection quality of sending the video. FALSE indicates to get the connection quality of receiving the video.
+	 * @brief Gets the Internet connection quality of video.
+	 * @param bSending true indicates to get the connection quality of sending the video. false indicates to get the connection quality of receiving the video.
 	 * @return If the function succeeds, the return is one of those enumerated in ConnectionQuality enum.
 	 * @note If you are not in the meeting, the Conn_Quality_Unknown will be returned.
 	 */
 	virtual ConnectionQuality GetVideoConnQuality(bool bSending = true) = 0;
 	
 	/**
-	 * @brief Get the Internet connection quality of audio.
-	 * @param bSending TRUE indicates to get the connection quality of sending the audio. FALSE indicates to get the connection quality of receiving the audio.
-	 * @return If the function succeeds, the return value is one of those enumerated in ConnectionQuality enum.
+	 * @brief Gets the Internet connection quality of audio.
+	 * @param bSending true indicates to get the connection quality of sending the audio. false indicates to get the connection quality of receiving the audio.
+	 * @return If the function succeeds, it returns one of those enumerated in ConnectionQuality enum. Otherwise, this function fails and returns nullptr.
 	 * @note If you are not in the meeting, the Conn_Quality_Unknown will be returned.
 	 */
 	virtual ConnectionQuality GetAudioConnQuality(bool bSending = true) = 0;
 
 	/**
-	 * @brief Get meeting audio statistics information.
+	 * @brief Gets meeting audio statistics information.
 	 * @param info_ [out] Audio statistics information.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError GetMeetingAudioStatisticInfo(MeetingAudioStatisticInfo& info) = 0;
 
 	/**
-	 * @brief Get meeting video statistics information.
+	 * @brief Gets meeting video statistics information.
 	 * @param info_ [out] Video statistics information.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
      */
 	virtual SDKError GetMeetingVideoStatisticInfo(MeetingASVStatisticInfo& info) = 0;
 
 	/**
-	 * @brief Get meeting share statistics information.
+	 * @brief Gets meeting share statistics information.
 	 * @param info_ [out] Share statistics information.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
      */
 	virtual SDKError GetMeetingShareStatisticInfo(MeetingASVStatisticInfo& info) = 0;
 	
 	/**
-	 * @brief Get video controller interface.
+	 * @brief Gets video controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingVideoController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingVideoController* GetMeetingVideoController() = 0;
 	
 	/**
-	 * @brief Get the sharing controller interface.
+	 * @brief Gets the sharing controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingVideoController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingShareController* GetMeetingShareController() = 0;
 	
 	/**
-	 * @brief Get the audio controller interface.
+	 * @brief Gets the audio controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingAudioController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingAudioController* GetMeetingAudioController() = 0;
 	
 	/**
-	 * @brief Get the recording controller interface.
+	 * @brief Gets the recording controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingRecordingController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingRecordingController* GetMeetingRecordingController() = 0;
 	
 	/**
-	 * @brief Get the waiting room controller interface.
+	 * @brief Gets the waiting room controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingWaitingRoomController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingWaitingRoomController* GetMeetingWaitingRoomController() = 0;
 	
 	/**
-	 * @brief Get the participants controller interface.
+	 * @brief Gets the participants controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingParticipantsController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingParticipantsController* GetMeetingParticipantsController() = 0;
 	
 	/**
-	 * @brief Get the webinar controller interface.
+	 * @brief Gets the webinar controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingWebinarController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingWebinarController* GetMeetingWebinarController() = 0;
 	
 	/**
-	 * @brief Get the Raw Archiving controller.
+	 * @brief Gets the Raw Archiving controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingRawArchivingController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingRawArchivingController* GetMeetingRawArchivingController() = 0;
 	
 	/**
-	 * @brief Get the reminder controller.
+	 * @brief Gets the reminder controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingReminderController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingReminderController* GetMeetingReminderController() = 0;
 	
 	/**
-	 * @brief Get the smart summary controller.
+	 * @brief Gets the smart summary controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingSmartSummaryController. Otherwise the function returns nullptr.
-	 * @deprecated This interface is marked as deprecated, and is replaced by GetMeetingSmartSummaryHelper() in class IMeetingAICompanionController.
+	 * @deprecated Use \link IMeetingAICompanionController->GetMeetingAICompanionSmartSummaryHelper \endlink instead.
 	 */
 	virtual IMeetingSmartSummaryController* GetMeetingSmartSummaryController() = 0;
 	
 	/**
-	 * @brief Get the chat controller interface.
+	 * @brief Gets the chat controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingChatController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingChatController* GetMeetingChatController() = 0;
 	
 	/**
-	 * @brief Get the Breakout Room controller.
+	 * @brief Gets the Breakout Room controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingBOController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingBOController* GetMeetingBOController() = 0;
 	
 	/**
-	 * @brief Get the meeting configuration interface.
+	 * @brief Gets the meeting configuration interface.
 	 * @return If the function succeeds, the return value is the meeting configuration interface. Otherwise returns nullptr.
 	 */
 	virtual IMeetingConfiguration* GetMeetingConfiguration() = 0;
 	
 	/**
-	 * @brief Get the AI companion controller.
+	 * @brief Gets the AI companion controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingAICompanionController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingAICompanionController* GetMeetingAICompanionController() = 0;
 	
 #if defined(WIN32)
 	/**
-	 * @brief Get the meeting UI controller interface.
+	 * @brief Gets the meeting UI controller interface.
 	 * @return If the function succeeds, the return value is a pointer to the IMeetingConfiguration. Otherwise returns nullptr.
 	 */
 	virtual IMeetingUIController* GetUIController() = 0;
 	
 	/**
-	 * @brief Get the annotation controller interface.
+	 * @brief Gets the annotation controller interface.
 	 * @return If the function succeeds, the return value is a pointer of IAnnotationController. Otherwise returns nullptr.
 	 */
 	virtual IAnnotationController* GetAnnotationController() = 0;
 	
 	/**
-	 * @brief Get the remote controller interface.
+	 * @brief Gets the remote controller interface.
 	 * @return If the function succeeds, the return value is a pointer of IMeetingVideoController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingRemoteController* GetMeetingRemoteController() = 0;
 	
 	/**
-	 * @brief Get the meeting H.323 helper interface.
+	 * @brief Gets the meeting H.323 helper interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingH323Helper. Otherwise returns nullptr.
 	 */
 	virtual IMeetingH323Helper* GetH323Helper() = 0;
 	
 	/**
-	 * @brief Get the meeting phone helper interface.
+	 * @brief Gets the meeting phone helper interface.
 	 * @return If the function succeeds, the return value is a pointer of IMeetingPhoneHelper. Otherwise returns nullptr.
 	 */
 	virtual IMeetingPhoneHelper* GetMeetingPhoneHelper() = 0;
 	
 	/**
-	 * @brief Get the live stream controller interface.
+	 * @brief Gets the live stream controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingLiveStreamController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingLiveStreamController* GetMeetingLiveStreamController() = 0;
 	
 	/**
-	 * @brief Get the Closed Caption controller interface.
+	 * @brief Gets the Closed Caption controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingWebinarController. Otherwise returns nullptr.
 	 */
 	virtual IClosedCaptionController* GetMeetingClosedCaptionController() = 0;
 	
 	/**
-	 * @brief Get the real name auth controller interface.
+	 * @brief Gets the real name auth controller interface.
 	 * @return If the function succeeds, the return value is a pointer to IZoomRealNameAuthMeetingHelper. Otherwise returns nullptr.
 	 */
 	virtual IZoomRealNameAuthMeetingHelper* GetMeetingRealNameAuthController() = 0;
 	
 	/**
-	 * @brief Get the Q&A controller.
+	 * @brief Gets the Q&A controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingQAController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingQAController* GetMeetingQAController() = 0;
 	
 	/**
-	 * @brief Get the Interpretation controller.
+	 * @brief Gets the Interpretation controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingInterpretationController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingInterpretationController* GetMeetingInterpretationController() = 0;
 	
 	/**
-	 * @brief Get the sign interpretation controller.
+	 * @brief Gets the sign interpretation controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingSignInterpretationController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingSignInterpretationController* GetMeetingSignInterpretationController() = 0;
 	
 	/**
-	 * @brief Get the Reaction controller.
+	 * @brief Gets the Reaction controller.
 	 * @return If the function succeeds, the return value is a pointer to IEmojiReactionController. Otherwise returns nullptr.
 	 */
 	virtual IEmojiReactionController* GetMeetingEmojiReactionController() = 0;
 	
 	/**
-	 * @brief Get the AAN controller.
+	 * @brief Gets the AAN controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingAANController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingAANController* GetMeetingAANController() = 0;
 	
 	/**
-	 * @brief Get the immersive controller.
+	 * @brief Gets the immersive controller.
 	 * @return If the function succeeds, the return value is a pointer to ICustomImmersiveController. Otherwise the function returns nullptr.
 	 */
 	virtual ICustomImmersiveController* GetMeetingImmersiveController() = 0;
 	
 	/**
-	 * @brief Get the Whiteboard controller.
+	 * @brief Gets the Whiteboard controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingWhiteboardController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingWhiteboardController* GetMeetingWhiteboardController() = 0;
 	
 	/**
-	 * @brief Get the Docs controller.
+	 * @brief Gets the Docs controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingDocsController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingDocsController* GetMeetingDocsController() = 0;
 	
 	/**
-	 * @brief Get the Polling controller.
+	 * @brief Gets the Polling controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingPollingController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingPollingController* GetMeetingPollingController() = 0;
 	
 	/**
-	 * @brief Get the remote support controller.
+	 * @brief Gets the remote support controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingRemoteSupportController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingRemoteSupportController* GetMeetingRemoteSupportController() = 0;
 	
 	/**
-	 * @brief Get the Indicator controller.
+	 * @brief Gets the Indicator controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingIndicatorController. Otherwise the function returns nullptr.
 	 */
 	virtual IMeetingIndicatorController* GetMeetingIndicatorController() = 0;
 	
 	/**
-	 * @brief Get the production studio controller.
+	 * @brief Gets the production studio controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingProductionStudioController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingProductionStudioController* GetMeetingProductionStudioController() = 0;
 #endif
 	/**
-	 * @brief Get data center information
+	 * @brief Gets data center information.
 	 */
 	virtual const zchar_t* GetInMeetingDataCenterInfo() = 0;
 	
 	/**
-	 * @brief Get the encryption controller.
+	 * @brief Gets the encryption controller.
 	 * @return If the function succeeds, the return value is a pointer to IMeetingEncryptionController. Otherwise returns nullptr.
 	 */
 	virtual IMeetingEncryptionController* GetInMeetingEncryptionController() = 0;

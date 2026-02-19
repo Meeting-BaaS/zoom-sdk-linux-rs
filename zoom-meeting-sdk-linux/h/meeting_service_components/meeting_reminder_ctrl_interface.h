@@ -10,7 +10,7 @@
 BEGIN_ZOOM_SDK_NAMESPACE
 
 /**
- * @brief The type for disclaimer dialog.
+ * @brief Enumeration of disclaimer dialog type.
  * Here are more detailed structural descriptions.
  */
 enum MeetingReminderType
@@ -66,7 +66,7 @@ enum MeetingReminderType
 };
 
 /**
- * @brief The type of the action which user should take.
+ * @brief Enumeration of action type which user should take.
  * Here are more detailed structural descriptions.
  */
 enum ActionType
@@ -114,33 +114,33 @@ public:
 	virtual ~IMeetingReminderContent() {};
 	
 	/**
-	 * @brief Get the type of the reminder.
+	 * @brief Gets the type of the reminder.
 	 */
 	virtual MeetingReminderType  GetType() = 0;
 	
 	/**
-	 * @brief Get the title of the reminder dialog content.
+	 * @brief Gets the title of the reminder dialog content.
 	 */
 	virtual const zchar_t* GetTitle() = 0;
 	
 	/**
-	 * @brief Get the detail content of the reminder dialog content.
+	 * @brief Gets the detail content of the reminder dialog content.
 	 */
 	virtual const zchar_t* GetContent() = 0;
 	
 	/**
-	 * @brief Determine whether block the user join or stay in the meeting
-	 * @return True indicates block the user join or stay in the meeting. Otherwise False.
+	 * @brief Determines whether block the user join or stay in the meeting
+	 * @return true indicates block the user join or stay in the meeting. Otherwise false.
 	 */
 	virtual bool  IsBlocking() = 0;
 	
 	/**
-	 * @brief Get the type of the action which user should take after receiving this reminder content.
+	 * @brief Gets the type of the action which user should take after receiving this reminder content.
 	 */
 	virtual ActionType GetActionType() = 0;
 	
 	/**
-	 * @brief Get a List of reminder's type.
+	 * @brief Gets a List of reminder's type.
 	 * @return List of the reminder's type. 
 	 */
 	virtual IList<MeetingReminderType >* GetMultiReminderTypes() = 0;
@@ -172,20 +172,20 @@ public:
 	virtual SDKError  Decline() = 0;
 	
 	/**
-	 * @brief Set not show the disclaimer in subsequent meetings.
+	 * @brief Sets not show the disclaimer in subsequent meetings.
 	 */
 	virtual SDKError  SetHideFeatureDisclaimers() = 0;
 	
 	/**
 	 * @brief Is need explicit consent for AI custom disclaimer. \link TYPE_CUSTOM_AI_COMPANION_DISCLAIMER \endlink .
-	 * @return True means explicit consent is required. Before agreeing to AIC disclaimer, the user's video and audio will be blocked. 
+	 * @return true indicates explicit consent is required. Before agreeing to AIC disclaimer, the user's video and audio will be blocked. 
 	 *  Otherwise means explicit consent is not required and video and audio will not be blocked.
 	 */
 	virtual bool IsNeedExplicitConsent4AICustomDisclaimer() = 0;
 };
 
 /** 
- * @brief The option for meeting feature.
+ * @brief Enumeration of meeting feature enable option.
  */
 enum FeatureEnableOption
 {
@@ -207,22 +207,22 @@ public:
 	virtual ~IMeetingEnableReminderHandler() {};
 	
 	/**
-	 * @brief Set the option indicating which meetings feature will be enabled for.
+	 * @brief Sets the option indicating which meetings feature will be enabled for.
 	 * @param option Specify the option. 	
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise the function fails.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SetEnableOption(FeatureEnableOption option) = 0;
 	
 	/**
-	 * @brief Start the feature.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise the function fails.
+	 * @brief Starts the feature.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Start() = 0;
 	
 	/**
 	 * @brief Decline the reminder.
-	 * @param bDeclineAll TRUE means decline all reminders,and participants cannot send requests again until the host changes the setting. FALSE means that the host declines only this specific request, not all requests.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise the function fails.
+	 * @param bDeclineAll true indicates decline all reminders,and participants cannot send requests again until the host changes the setting. false means that the host declines only this specific request, not all requests.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Decline(bool bDeclineAll) = 0;
 	
@@ -264,15 +264,15 @@ class IMeetingReminderController
 {
 public:
 	/**
-	 * @brief Set meeting reminder controller callback event handler
+	 * @brief Sets meeting reminder controller callback event handler
 	 * @param pEvent A pointer to the IMeetingReminderEvent that receives reminder callback event. 
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SetEvent(IMeetingReminderEvent* pEvent) = 0;
 
 #if (defined WIN32 )
 	/**
-	 * @brief Set the customized config of multi-reminder disclaimer. 
+	 * @brief Sets the customized config of multi-reminder disclaimer. 
 	 * @param config the customized config of multi-reminder disclaimer.
 	 * @note Valid for user custom interface mode only.	
 	 */

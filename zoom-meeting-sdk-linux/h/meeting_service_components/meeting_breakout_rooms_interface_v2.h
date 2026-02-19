@@ -1,6 +1,6 @@
 /**
  * @file meeting_breakout_rooms_interface2.h
- * @brief Meeting Service Breakout Room Interface
+ * @brief Meeting Service Breakout Room Interface.
  * Valid for both ZOOM style and user custom interface mode.
  *
  *	//////////////////////////// Creator ////////////////////////////
@@ -63,6 +63,9 @@
 
 BEGIN_ZOOM_SDK_NAMESPACE
 
+/**
+ * @brief Enumeration of breakout room user control status.
+ */
 typedef enum
 {
 	/** User is in main conference, not assigned to BO */
@@ -96,31 +99,34 @@ class IBOMeeting
 public:
 	virtual ~IBOMeeting() {}
 	/**
-	 * @brief Get BO ID.
+	 * @brief Gets the BO ID.
+	 * @return If the function succeeds, it returns the BO ID. Otherwise, this function fails and returns nullptr.
 	 */
 	virtual const zchar_t* GetBOID() = 0;
 
 	/**
-	 * @brief Get BO name.
+	 * @brief Gets the BO name.
+	 * @return If the function succeeds, it returns the BO name. Otherwise, this function fails and returns nullptr.
 	 */
 	virtual const zchar_t* GetBOName() = 0;
 
 	/**
-	 * @brief Get user ID list in the BO.
-	 * @return If the function succeeds, the return value is a pointer to IList object.
+	 * @brief Gets the user ID list in the BO.
+	 * @return If the function succeeds, it returns a pointer to IList object. Otherwise, this function fails and returns nullptr.
 	 */
 	virtual IList<const zchar_t*>* GetBOUserList() = 0;
 
 	/**
-	 * @brief Get user status by user ID. 
-	 * @return user status.
+	 * @brief Gets the user status by user ID. 
+	 * @param strUserID The user's ID.
+	 * @return If the function succeeds, it returns the user status.
 	 */
 	virtual BO_CTRL_USER_STATUS GetBOUserStatus(const zchar_t* strUserID) = 0;
 };
 
 ////////////////////////////////////////// IBOCreator //////////////////////////////////////////
 /**
- * @brief BO creator callback handler.
+ * @brief Enumeration of BO creator callback handler.
  */
 enum PreAssignBODataStatus
 {
@@ -141,46 +147,48 @@ public:
 	virtual ~IBOCreatorEvent() {}
 
 	/**
-	 * @brief If CreateBO successfully, you will receive the event. Make sure you receive the event before start bo.
-	 * @param strBOID, to indicate which bo has been created successfully.
-	 * @deprecated This interface is marked as deprecated, and it is recommended to use 'onCreateBOResponse(bool bSuccess, const zchar_t* strBOID)'.
+	 * @brief Callback event when creating a BO successfully. You will receive this event after CreateBO succeeds. Make sure you receive this event before starting the BO.
+	 * @param strBOID The ID of the BO that has been created successfully.
+	 * @deprecated Use \link onCreateBOResponse \endlink instead.
 	 */
 	virtual void onBOCreateSuccess(const zchar_t* strBOID) = 0;
 
 	/**
-	 * @brief When the pre-assigned data download status changes, you will receive the event.
+	 * @brief Callback event when the pre-assigned data download status changes.
+	 * @param status The download status.
 	 */
 	virtual void OnWebPreAssignBODataDownloadStatusChanged(PreAssignBODataStatus status) = 0;
 
 	/**
-	 * @brief You will receive the event when the option changes
+	 * @brief Callback event when the BO option changes.
+	 * @param newOption The new BO option.
 	 */
 	virtual void OnBOOptionChanged(const BOOption& newOption) = 0;
 
 	/**
-	 * @brief The callback notification of CreateBreakoutRoom.
-	 * @param bSuccess, Indicate whether the creation is actually successful. True indicates success, false indicates failure.
-	 * @param strBOID, If the creation is successful, its value is the breakout room's ID, otherwise the value is nullptr.
+	 * @brief Callback event of CreateBreakoutRoom.
+	 * @param bSuccess true if the creation is successful, false otherwise.
+	 * @param strBOID The breakout room's ID if the creation is successful, otherwise nullptr.
 	 */
 	virtual void onCreateBOResponse(bool bSuccess, const zchar_t* strBOID) = 0;
 
 	/**
-	 * @brief The callback notification of RemoveBO.
-	 * @param bSuccess, Indicates whether the removal was actually successful. True indicates success, false indicates failure.
-	 * @param strBOID, Identifies which breakout room is being removed.
+	 * @brief Callback event of RemoveBO.
+	 * @param bSuccess true if the removal is successful, false otherwise.
+	 * @param strBOID The breakout room's ID being removed.
 	 */
 	virtual void onRemoveBOResponse(bool bSuccess, const zchar_t* strBOID) = 0;
 
 	/**
-	 * @brief The callback notification of UpdateBOName.
-	 * @param bSuccess, Indicates whether the update was actually successful. True indicates success, false indicates failure.
-	 * @param strBOID, Identifies which breakout room is being updated.
+	 * @brief Callback event of UpdateBOName.
+	 * @param bSuccess true if the update is successful, false otherwise.
+	 * @param strBOID The breakout room's ID being updated.
 	 */
 	virtual void onUpdateBONameResponse(bool bSuccess, const zchar_t* strBOID) = 0;
 };
 
 /**
- * @brief enum for BO stop countdown
+ * @brief Enumeration of BO stop countdown.
  */
 enum BO_STOP_COUNTDOWN
 {
@@ -213,7 +221,7 @@ struct BOOption
 	unsigned int nTimerDurationMinutes;   
 
 	/**
-	 * @brief The following items are for Webinar only
+	 * @brief The following items are for Webinar only.
 	 */
 	/** Enable/Disable Webinar Attendee join Webinar BO, When it changes, the BO data will be reset. */
 	bool IsAttendeeContained;
@@ -251,7 +259,7 @@ class IBatchCreateBOHelper
 public:
 	/**
 	 * @brief Prepare to batch create BO rooms.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note If the function succeeds, all the created BO rooms will be removed. And the prepared list you added by calling \link AddNewBoToList \endlink will be clear.
 	 */
 	virtual SDKError CreateBOTransactionBegin() = 0;
@@ -266,7 +274,7 @@ public:
 
 	/**
 	 * @brief Batch create BO rooms according to the prepare list.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note CreateBOTransactionBegin() must be called before this function is called. Otherwise SDKErr_WRONG_USAGE will be returned.
 	 */
 	virtual SDKError CreateBoTransactionCommit() = 0;
@@ -286,14 +294,14 @@ public:
 	 * @brief Create a BO.
 	 * @param strBOName, the BO name.
 	 * @return if success the return value is BO ID, otherwise nullptr.
-	 * @deprecated This interface is marked as deprecated, and it is recommended to use 'CreateBreakoutRoom(const zchar_t* strBOName)'.
+	 * @deprecated Use \link CreateBreakoutRoom \endlink instead.
 	 */
 	virtual const zchar_t* CreateBO(const zchar_t* strBOName) = 0;
 	
 	/**
 	 * @brief Create a breakout room.
 	 * @param strBOName, the breakout room name.
-	 * @return if success the return value is true. Otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 * @note
 	 * 1. This function is compatible with meeting breakout room and webinar breakout room.
 	 * 2. This function is asynchronous. onCreateBOResponse is the corresponding callback notification.
@@ -305,14 +313,14 @@ public:
 	 * @brief Update BO name, 'IBOCreatorEvent.onUpdateBONameResponse' is the corresponding callback notification.
 	 * @param strBOID, is the breakout room's ID.
 	 * @param strNewBOName, is the new breakout room's name.
-	 * @return if success the return value is true. Otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool UpdateBOName(const zchar_t* strBOID, const zchar_t* strNewBOName) = 0; 
 	
 	/**
 	 * @brief Remove a breakout room, 'IBOCreatorEvent.onRemoveBOResponse' is the corresponding callback notification.
 	 * @param strBOID, is the breakout room ID.
-	 * @return if success the return value is true. Otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool RemoveBO(const zchar_t* strBOID) = 0;
 	
@@ -320,7 +328,7 @@ public:
 	 * @brief Assign a user to a BO.
 	 * @param strUserID, is the user ID.
 	 * @param strBOID, is the BO ID.
-	 * @return if success the return value is true, otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool AssignUserToBO(const zchar_t* strUserID, const zchar_t* strBOID) = 0;
 	
@@ -328,44 +336,44 @@ public:
 	 * @brief Remove some user from a BO.
 	 * @param strUserID, is the user ID.
 	 * @param strBOID, is the BO ID.
-	 * @return if success the return value is true, otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool RemoveUserFromBO(const zchar_t* strUserID, const zchar_t* strBOID) = 0;									
 
 	/**
 	 * @brief Set BO option.
 	 * @param option, the option that you want to set.
-	 * @return if success the return value is true, otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool SetBOOption(const BOOption& option) = 0;
 	
 	/**
-	 * @brief Get BO option
+	 * @brief Gets BO option.
 	 * @param option, Get the current bo option through this parameter.
-	 * @return if success the return value is true, otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool GetBOOption(BOOption& option) = 0;
 
 	/**
-	 * @brief Get the Batch create bo controller.
+	 * @brief Gets the Batch create bo controller.
 	 * @return If the function succeeds, the return value is a pointer to IBatchCreateBOHelper. Otherwise returns nullptr.
 	 */
 	virtual IBatchCreateBOHelper* GetBatchCreateBOHelper() = 0;
 
 	/**
-	 * @brief Determine whether web enabled the pre-assigned option when scheduling a meeting.
-	 * @return true if it is enabled, otherwise false.
+	 * @brief Determines whether web enabled the pre-assigned option when scheduling a meeting.
+	 * @return true if it is enabled. Otherwise, false.
 	 */
 	virtual bool IsWebPreAssignBOEnabled() = 0;
 
 	/**
 	 * @brief Request web pre-assigned data and create those rooms.
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError RequestAndUseWebPreAssignBOList() = 0;
 
 	/**
-	 * @brief Get the pre-assigned data download status.
+	 * @brief Gets the pre-assigned data download status.
 	 * @return The return value is a enum for download status.
 	 */
 	virtual PreAssignBODataStatus GetWebPreAssignBODataStatus() = 0;
@@ -373,8 +381,8 @@ public:
 	/**
 	 * @brief Create a Webinar BO, Available Only For Zoomui Mode.
 	 * @param strBOName, the BO name.
-	 * @return if success the return value is true, otherwise false.
-	 * @deprecated This interface is marked as deprecated, and it is recommended to use 'CreateBreakoutRoom(const zchar_t* strBOName)'.
+	 * @return true if the function succeeds. Otherwise, false.
+	 * @deprecated Use \link CreateBreakoutRoom \endlink instead.
 	 */
 	virtual bool CreateWebinarBo(const zchar_t* strBOName) = 0;
 };
@@ -422,13 +430,13 @@ public:
 
 	/**
 	 * @brief The callback notification of StartBO.
-	 * @param bSuccess, Indicates whether the startup is actually successful. True indicates success, and false indicates failure.
+	 * @param bSuccess, Indicates whether the startup is actually successful. true indicates success, and false indicates failure.
 	 */
 	virtual void onStartBOResponse(bool bSuccess) = 0;
 
 	/**
 	 * @brief The callback notification of StopBO.
-	 * @param bSuccess, Indicates whether the stop is actually successful. True indicates success, and false indicates failure.
+	 * @param bSuccess, Indicates whether the stop is actually successful. true indicates success, and false indicates failure.
 	 */
 	virtual void onStopBOResponse(bool bSuccess) = 0;
 };
@@ -442,80 +450,80 @@ class IBOAdmin
 public:
 	/**
 	 * @brief start breakout room, 'IBOAdminEvent.onStartBOResponse' is the corresponding callback notification.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool StartBO() = 0;
 
 	/**
 	 * @brief stop breakout room, 'IBOAdminEvent.onStopBOResponse' is the corresponding callback notification.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool StopBO() = 0;
 	
 	/**
 	 * @brief To set a unassigned user to a BO, when BO is started.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool AssignNewUserToRunningBO(const zchar_t* strUserID, const zchar_t* strBOID) = 0;
 	
 	/**
 	 * @brief To Switch user to other BO, when BO is started.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool SwitchAssignedUserToRunningBO(const zchar_t* strUserID, const zchar_t* strBOID) = 0;
 	
 	/**
-	 * @brief Determine if can start BO.
-	 * @return true indicates can, otherwise can not.
+	 * @brief Determines if can start BO.
+	 * @return true if can start BO. Otherwise, false.
 	 */
 	virtual bool CanStartBO() = 0;
 	
 	/**
-	 * @brief Set admin callback handler.
+	 * @brief Sets admin callback handler.
 	 * @param pEvent, A pointer to the IBOAdminEvent.
 	 */
 	virtual void SetEvent(IBOAdminEvent* pEvent) = 0;
 	
 	/**
 	 * @brief To join the BO which request help is from.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool JoinBOByUserRequest(const zchar_t* strUserID) = 0;
 	
 	/**
 	 * @brief To ignore the request help.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool IgnoreUserHelpRequest(const zchar_t* strUserID) = 0;
 
 	/**
 	 * @brief To send the broadcast message.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool BroadcastMessage(const zchar_t* strMsg) = 0;
 
 	/**
 	 * @brief Host invite user return to main session, When BO is started and user is in BO.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool InviteBOUserReturnToMainSession(const zchar_t* strUserID) = 0;
 
 	/**
 	 * @brief Query if the current meeting supports broadcasting host's voice to BO.
-	 * @return true means that the meeting supports thised, otherwise it's not supported.
+	 * @return true if the meeting supports broadcasting. Otherwise, false.
 	 */
 	virtual bool IsBroadcastVoiceToBOSupport() = 0;
 
 	/**
 	 * @brief Query if the host now has the ability to broadcast voice to BO.
-	 * @return true means that the host now has the ability, otherwise the host does not.
+	 * @return true if the host has the ability to broadcast voice to BO. Otherwise, false.
 	 */
 	virtual bool CanBroadcastVoiceToBO() = 0;
 
 	/**
-	 * @brief Start or stop broadcasting voice to BO.
-	 * @param bStart True for start and false for stop.
-	 * @return true means that the invocation succeeds. Otherwise, it fails.
+	 * @brief Starts or stop broadcasting voice to BO.
+	 * @param bStart true for start and false for stop.
+	 * @return true if the invocation succeeds. Otherwise, false.
 	 */
 	virtual bool BroadcastVoiceToBo(bool bStart) = 0;
 };
@@ -531,13 +539,13 @@ class IBOAssistant
 public:
 	/**
 	 * @brief Join BO by BO ID.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool JoinBO(const zchar_t* strBOID) = 0;
 	
 	/**
-	 * @brief leave BO
-	 * @return true indicates success, otherwise fail.
+	 * @brief Leaves BO.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool LeaveBO() = 0;	
 };
@@ -571,49 +579,49 @@ public:
 };
 /**
  * @class IBOAttendee
- * @brief attendee interface
+ * @brief Attendee interface.
  */
 class IBOAttendee
 {
 public:
 	/**
 	 * @brief Join BO for attendee which is assigned to a BO.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool JoinBo() = 0;
 
 	/**
 	 * @brief Leave BO for attendee which is in a BO.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool LeaveBo() = 0;
 
 	/**
-	 * @brief Get name of the BO that attendee is assigned to.
+	 * @brief Gets name of the BO that attendee is assigned to.
 	 */
 	virtual const zchar_t* GetBoName() = 0;
 
 	/**
-	 * @brief Set attendee callback handler.
+	 * @brief Sets attendee callback handler.
 	 * @param pEvent, A pointer to the IBOAttendeeEvent.
 	 */
 	virtual void SetEvent(IBOAttendeeEvent* pEvent) = 0;
 
 	/**
 	 * @brief Request help for attendee.
-	 * @return true indicates success, otherwise fail.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool RequestForHelp() = 0;
 
 	/**
-	 * @brief Determine if host is in the BO which attendee is assigned to.
-	 * @return true if host is in, otherwise false.
+	 * @brief Determines if host is in the BO which attendee is assigned to.
+	 * @return true if host is in. Otherwise, false.
 	 */
 	virtual bool IsHostInThisBO() = 0;
 
 	/**
-	 * @brief Determine if participant can return to main session.
-	 * @return true if can, otherwise false.
+	 * @brief Determines if participant can return to main session.
+	 * @return true if participant can return to main session. Otherwise, false.
 	 */
 	virtual bool IsCanReturnMainSession() = 0;
 };
@@ -629,7 +637,7 @@ public:
 	virtual ~IBODataEvent() {}
 
 	/**
-	 * @brief To notify if some BO information is changed(user join/leave BO or BO user name is modified)
+	 * @brief To notify if some BO information is changed(user join/leave BO or BO user name is modified).
 	 * @param strBOID, the BO ID which information is changed.
 	 */
 	virtual void onBOInfoUpdated(const zchar_t* strBOID) = 0; 
@@ -647,7 +655,7 @@ public:
 };
 /**
  * @class IBOData
- * @brief BO data interface
+ * @brief BO data interface.
  */
 class IBOData
 {
@@ -659,38 +667,38 @@ public:
 	virtual void SetEvent(IBODataEvent* pEvent) = 0;
 
 	/**
-	 * @brief Get the id list of all unassigned users. 
-	 * @return If the function succeeds, the return value is a pointer to IList object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the id list of all unassigned users. 
+	 * @return If the function succeeds, the return value is a pointer to IList object. Otherwise, the return value is nullptr.
 	 */
 	virtual IList<const zchar_t*>* GetUnassignedUserList() = 0;
 
 	/**
-	 * @brief Get the id list of all BOs.
-	 * @return If the function succeeds, the return value is a pointer to IList object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the id list of all BOs.
+	 * @return If the function succeeds, the return value is a pointer to IList object. Otherwise, the return value is nullptr.
 	 */
 	virtual IList<const zchar_t*>* GetBOMeetingIDList() = 0;
 	
 	/**
-	 * @brief Get user name by user ID. 
-	 * @return user name
+	 * @brief Gets user name by user ID. 
+	 * @return The user name.
 	 */
 	virtual const zchar_t* GetBOUserName(const zchar_t* strUserID) = 0;
 
 	/**
-	 * @brief Determine if strUserID is myself.
-	 * @return true if strUserID is myself, otherwise false.
+	 * @brief Determines if strUserID is myself.
+	 * @return true if strUserID is myself. Otherwise, false.
 	 */
 	virtual bool IsBOUserMyself(const zchar_t* strUserID) = 0;
 
 	/**
 	 * @brief Get BO object by BO ID.
-	 * @return If the function succeeds, the return value is a pointer to IBOMeeting object. Otherwise failed, the return value is nullptr.
+	 * @return If the function succeeds, the return value is a pointer to IBOMeeting object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOMeeting* GetBOMeetingByID(const zchar_t* strBOID) = 0;
 
 	/**
-	 * @brief Get current BO name if you in a BO.
-	 * @return BO name
+	 * @brief Gets current BO name if you in a BO.
+	 * @return The BO name.
 	 */
 	virtual const zchar_t* GetCurrentBoName() = 0;
 };
@@ -698,7 +706,7 @@ public:
 ////////////////////////////////////////// IMeetingBOController //////////////////////////////////////////
 
 /**
- * @brief enum for BO status
+ * @brief Enumeration of BO status.
  */
 enum BO_STATUS
 {
@@ -725,7 +733,7 @@ public:
 
 	/**
 	 * @brief return to main session.
-	 * @return If the call is successful, the return value is true, Otherwise false.
+	 * @return true if the call is successful. Otherwise, false.
 	 */
 	virtual bool ReturnToMainSession() = 0;
 
@@ -850,80 +858,80 @@ public:
 
 /**
  * @class IMeetingBOController
- * @brief Meeting breakout rooms controller interface
+ * @brief Meeting breakout rooms controller interface.
  */
 class IMeetingBOController
 {
 public:
 	/**
-	 * @brief Set breakout room callback event handler.
+	 * @brief Sets breakout room callback event handler.
 	 * @param event, A pointer to the IMeetingBOControllerEvent.
-	 * @return If the function succeeds, the return value is true. Otherwise false.
+	 * @return true if the function succeeds. Otherwise, false.
 	 */
 	virtual bool SetEvent(IMeetingBOControllerEvent* event) = 0;
 
 	/**
-	 * @brief Get the pointer of BO creator object. 
-	 * @return If the function succeeds, the return value is a pointer to IBOCreator object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the pointer of BO creator object. 
+	 * @return If the function succeeds, the return value is a pointer to IBOCreator object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOCreator*    GetBOCreatorHelper() = 0;
 
 	/**
-	 * @brief Get the pointer of BO administrator object. 
-	 * @return If the function succeeds, the return value is a pointer to IBOAdmin object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the pointer of BO administrator object. 
+	 * @return If the function succeeds, the return value is a pointer to IBOAdmin object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOAdmin*      GetBOAdminHelper() = 0;
 
 	/**
-	 * @brief Get the pointer of BO assistant object. 
-	 * @return If the function succeeds, the return value is a pointer to IBOAssistant object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the pointer of BO assistant object. 
+	 * @return If the function succeeds, the return value is a pointer to IBOAssistant object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOAssistant*  GetBOAssistantHelper() = 0;
 
 	/**
-	 * @brief Get the pointer of BO attendee object. 
-	 * @return If the function succeeds, the return value is a pointer to IBOAttendee object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the pointer of BO attendee object. 
+	 * @return If the function succeeds, the return value is a pointer to IBOAttendee object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOAttendee*   GetBOAttedeeHelper() = 0;
 
 	/**
-	 * @brief Get the pointer of BO data object. 
-	 * @return If the function succeeds, the return value is a pointer to IBOData object. Otherwise failed, the return value is nullptr.
+	 * @brief Gets the pointer of BO data object. 
+	 * @return If the function succeeds, the return value is a pointer to IBOData object. Otherwise, the return value is nullptr.
 	 */
 	virtual IBOData*	   GetBODataHelper() = 0;
 
 	/**
-	 * @brief Determine if the BO is started or not.
-	 * @return true indicates that host has started the BO, otherwise not.
+	 * @brief Determines if the BO is started or not.
+	 * @return true if the host has started the BO. Otherwise, false.
 	 */
 	virtual bool IsBOStarted() = 0;
 	
 	/**
-	 * @brief Determine if the BO feature is enabled in current meeting.
+	 * @brief Determines if the BO feature is enabled in current meeting.
 	 * @return true indicates that BO feature is enabled in current meeting.
 	 */
 	virtual bool IsBOEnabled() = 0;
 
 	/**
-	 * @brief Determine if myself is in BO meeting.
+	 * @brief Determines if myself is in BO meeting.
 	 * @return true indicates that i am in a BO meeting.
 	 */
 	virtual bool IsInBOMeeting() = 0;
 
 	/**
-	 * @brief Get current BO status
+	 * @brief Gets current BO status.
 	 * @return The return value is a enum for bo status.
 	 */
 	virtual BO_STATUS GetBOStatus() = 0;
 
 	/**
 	 * @brief Query if the host is broadcasting voice to BO.
-	 * @return true means that the host is broadcasting, otherwise it's not broadcasting.
+	 * @return true if the host is broadcasting voice to BO. Otherwise, false.
 	 */
 	virtual bool IsBroadcastingVoiceToBO() = 0;
 
 	/**
-	 * @brief Get the name of the BO you are going to. When you enter a BO or are switched to another BO by the host, maybe you need the BO name to display on transfer UI.
+	 * @brief Gets the name of the BO you are going to. When you enter a BO or are switched to another BO by the host, maybe you need the BO name to display on transfer UI.
 	 */
 	virtual const zchar_t* GetJoiningBOName() = 0;
 };

@@ -81,12 +81,12 @@ class IZoomSDKVideoSourceHelper
 public:
 	virtual ~IZoomSDKVideoSourceHelper(){}
 	/**
-	 * @brief Set a PreProcessor to edit the zoom camera video source before send to other.
+	 * @brief Sets a PreProcessor to edit the zoom camera video source before send to other.
 	 */
     virtual SDKError setPreProcessor(IZoomSDKPreProcessor* processor) = 0;		
 	
 	/**
-	 * @brief Set external video source for capture video by self.
+	 * @brief Sets external video source for capture video by self.
 	 */
     virtual SDKError setExternalVideoSource(IZoomSDKVideoSource* source) = 0;  
 };

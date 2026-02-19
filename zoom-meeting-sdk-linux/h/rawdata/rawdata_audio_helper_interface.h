@@ -29,13 +29,13 @@ class IZoomSDKAudioRawDataSender
 public:
 	virtual ~IZoomSDKAudioRawDataSender() {}
 	/**
-	 * @brief Send audio raw data. Audio sample must be 16-bit audio.
+	 * @brief Sends audio raw data. Audio sample must be 16-bit audio.
 	 * @param data the audio data's address.
 	 * @param data_length the audio data's length. Must be an even number.
 	 * @param sample_rate the audio data's sampling rate.
 	 *  When the channel is mono, supported sample rates: 8000/11025/16000/32000/44100/48000/50000/50400/96000/192000/2822400
 	 *  When the channel is stereo, supported sample rates: 8000/16000/32000/44100/48000/50000/50400/96000/192000
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise the function fails and returns an error code.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError send(char* data, unsigned int data_length, int sample_rate, ZoomSDKAudioChannel channel = ZoomSDKAudioChannel_Mono) = 0;
 };
@@ -79,7 +79,7 @@ public:
 	/**
 	 * @brief Subscribe audio mic raw data with a callback.
 	 * @param pSource, Callback sink object.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError setExternalAudioSource(IZoomSDKVirtualAudioMicEvent* pSource) = 0;
 };

@@ -14,13 +14,13 @@ class IZoomSDKShareSender
 public:
 	virtual ~IZoomSDKShareSender() {}
 	/**
-	 * @brief Send a frame of YUV data.
+	 * @brief Sends a frame of YUV data.
 	 * @param frameBuffer YUV data buffer.
 	 * @param width Frame width.
 	 * @param height Frame height.
 	 * @param frameLength Buffer length.
 	 * @param format YUV type.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError sendShareFrame(char* frameBuffer, int width, int height, int frameLength, FrameDataFormat format = FrameDataFormat_I420_FULL) = 0;
 };
@@ -46,7 +46,7 @@ class IZoomSDKShareAudioSender
 public:
 	virtual ~IZoomSDKShareAudioSender() {}
 	/**
-	 * @brief Send audio raw data.
+	 * @brief Sends audio raw data.
 	 * @param data The audio data's address.
 	 * @param data_length The audio data's length, in even numbers.
 	 * @param sample_rate The audio data's sampling rate.
@@ -82,18 +82,18 @@ public:
 	virtual ~IZoomSDKShareSourceHelper() {}
 	
 	/**
-	 * @brief Start sharing external source.
+	 * @brief Starts sharing external source.
 	 * @param pShareSource the external source object pointer. 
 	 * @param pShareAudioSource the external audio source object pointer. 
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise the function fails and returns an error code.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note If pShareAudioSource is non-null, it indicates sharing user-defined audio at the same time.
 	 */
 	virtual SDKError setExternalShareSource(IZoomSDKShareSource* pShareSource, IZoomSDKShareAudioSource* pShareAudioSource = nullptr) = 0;
 	
 	/**
-	 * @brief Start sharing pure external audio source.
+	 * @brief Starts sharing pure external audio source.
 	 * @param pShareAudioSource the external audio source object pointer. 
-	 * @return If the function succeeds, the return value is SDKErr_Success. Otherwise the function fails and returns an error code.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note The feature is similar to sharing computer audio, except that the shared content is user-defined.	
 	 */
 	virtual SDKError setSharePureAudioSource(IZoomSDKShareAudioSource* pShareAudioSource) = 0;

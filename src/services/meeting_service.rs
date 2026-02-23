@@ -266,6 +266,13 @@ extern "C" fn on_meeting_status_changed(
         crate::mark_sdk_teardown();
     }
 
+    // Log raw end reason for MeetingStatusEnded (the result is an EndMeetingReason, not a
+    // MeetingFailCode, but the callback signature reuses the same parameter).
+    // Value 8 = EndMeetingReason_DueToAuthorizedUserLeave (SDK 6.7.2+).
+    if status == ZOOMSDK_MeetingStatus_MEETING_STATUS_ENDED {
+        tracing::info!("Meeting ended with raw EndMeetingReason: {}", result);
+    }
+
     let result: MeetingFailCode = match (result as u32).try_into() {
         Ok(fail_code) => fail_code,
         Err(e) => {
@@ -591,6 +598,16 @@ pub enum MeetingFailCode {
     AppPrivilegeTokenError = ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR,
     /// Authorized user not in meeting (OBF token required user not present)
     AuthorizedUserNotInMeeting = ZOOMSDK_MeetingFailCode_MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING,
+    /// OBF token conflict with login credentials
+    OnBehalfTokenConflictLogin = ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_CONFLICT_LOGIN_ERROR,
+    /// User level privilege token does not have host ZAK/OBF
+    UserLevelTokenNotHaveHostZakObf = ZOOMSDK_MeetingFailCode_MEETING_FAIL_USER_LEVEL_TOKEN_NOT_HAVE_HOST_ZAK_OBF,
+    /// App cannot anonymously join meeting
+    AppCanNotAnonymousJoinMeeting = ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_CAN_NOT_ANONYMOUS_JOIN_MEETING,
+    /// OBF token invalid
+    OnBehalfTokenInvalid = ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_INVALID,
+    /// OBF token does not match meeting
+    OnBehalfTokenNotMatchMeeting = ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_NOT_MATCH_MEETING,
     /// JMAK user email not match
     JMAKUserEmailNotMatch = ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH,
     /// Unknown error
@@ -673,6 +690,21 @@ impl TryFrom<u32> for MeetingFailCode {
             }
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING => {
                 Ok(Self::AuthorizedUserNotInMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_CONFLICT_LOGIN_ERROR => {
+                Ok(Self::OnBehalfTokenConflictLogin)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_USER_LEVEL_TOKEN_NOT_HAVE_HOST_ZAK_OBF => {
+                Ok(Self::UserLevelTokenNotHaveHostZakObf)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_CAN_NOT_ANONYMOUS_JOIN_MEETING => {
+                Ok(Self::AppCanNotAnonymousJoinMeeting)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_INVALID => {
+                Ok(Self::OnBehalfTokenInvalid)
+            }
+            ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_NOT_MATCH_MEETING => {
+                Ok(Self::OnBehalfTokenNotMatchMeeting)
             }
             ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH => {
                 Ok(Self::JMAKUserEmailNotMatch)

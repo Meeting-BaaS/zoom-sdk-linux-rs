@@ -145,7 +145,7 @@ use setting_service::SettingService;
 /// ```rust
 /// use zoom_sdk_linux_rs::get_sdk_version;
 ///
-/// assert_eq!(&get_sdk_version(), "6.2.5 (2487)");
+/// assert_eq!(&get_sdk_version(), "6.7.5 (7391)");
 /// ```
 pub fn get_sdk_version() -> String {
     let a = unsafe { CStr::from_ptr(ZOOMSDK_GetSDKVersion()) };
@@ -390,6 +390,6 @@ mod tests {
 
     #[test]
     fn check_version() {
-        assert_eq!(&get_sdk_version(), "6.2.5 (2487)");
+        assert_eq!(&get_sdk_version(), "6.7.5 (7391)");
     }
 }

@@ -2707,22 +2707,26 @@ pub const ZOOMSDK_LoginFailReason_LoginFail_Need_Bitrthday_ask: ZOOMSDK_LoginFai
 pub const ZOOMSDK_LoginFailReason_LoginFail_OtherIssue: ZOOMSDK_LoginFailReason = 100;
 #[doc = " @brief Enumeration of SDK login failed reason."]
 pub type ZOOMSDK_LoginFailReason = ::std::os::raw::c_uint;
-#[doc = " @brief SDK authentication parameter with jwt token."]
+#[doc = " @brief SDK authentication parameter with JWT token or public app key."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagAuthContext {
     #[doc = " @brief JWT token. You may generate your JWT token using the online tool https://jwt.io/.\n @note It is highly recommended to generate your JWT token in your backend server.\n JWT is generated with three core parts: Header, Payload, and Signature. When combined, these parts are separated by a period to form a token: `aaaaa.bbbbb.cccc`.\n Please follow this template to compose your payload for SDK initialization:\n\t\tHeader\n\t\t{\n\t\t\"alg\": \"HS256\",\n\t\t\"typ\": \"JWT\"\n\t\t}\n\t\tPayload\n\t\t{\n\t\t\"appKey\": \"string\", // Your SDK key\n\t\t\"iat\": long, // access token issue timestamp\n\t\t\"exp\": long, // access token expire time\n\t\t\"tokenExp\": long // token expire time\n\t\t}\n\t\tSignature\n\t\tHMACSHA256(\n\t\t\tbase64UrlEncode(header) + \".\" +\n\t\t\tbase64UrlEncode(payload),\n\t\t\t\"Your SDK secret here\"\n)"]
     pub jwt_token: *const zchar_t,
+    #[doc = " @brief Public app key used for SDK authentication. Alternative to JWT token."]
+    pub publicAppKey: *const zchar_t,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ZOOMSDK_tagAuthContext"][::std::mem::size_of::<ZOOMSDK_tagAuthContext>() - 8usize];
+    ["Size of ZOOMSDK_tagAuthContext"][::std::mem::size_of::<ZOOMSDK_tagAuthContext>() - 16usize];
     ["Alignment of ZOOMSDK_tagAuthContext"]
         [::std::mem::align_of::<ZOOMSDK_tagAuthContext>() - 8usize];
     ["Offset of field: ZOOMSDK_tagAuthContext::jwt_token"]
         [::std::mem::offset_of!(ZOOMSDK_tagAuthContext, jwt_token) - 0usize];
+    ["Offset of field: ZOOMSDK_tagAuthContext::publicAppKey"]
+        [::std::mem::offset_of!(ZOOMSDK_tagAuthContext, publicAppKey) - 8usize];
 };
-#[doc = " @brief SDK authentication parameter with jwt token."]
+#[doc = " @brief SDK authentication parameter with JWT token or public app key."]
 pub type ZOOMSDK_AuthContext = ZOOMSDK_tagAuthContext;
 #[doc = " Unknown login type."]
 pub const ZOOMSDK_LoginType_LoginType_Unknown: ZOOMSDK_LoginType = 0;
@@ -2803,7 +2807,7 @@ pub const ZOOMSDK_MeetingStatus_MEETING_STATUS_WEBINAR_DEPROMOTE: ZOOMSDK_Meetin
 pub const ZOOMSDK_MeetingStatus_MEETING_STATUS_JOIN_BREAKOUT_ROOM: ZOOMSDK_MeetingStatus = 14;
 #[doc = " Leave the breakout room."]
 pub const ZOOMSDK_MeetingStatus_MEETING_STATUS_LEAVE_BREAKOUT_ROOM: ZOOMSDK_MeetingStatus = 15;
-#[doc = " @brief Meeting status.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting status.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingStatus = ::std::os::raw::c_uint;
 #[doc = " Start meeting successfully."]
 pub const ZOOMSDK_MeetingFailCode_MEETING_SUCCESS: ZOOMSDK_MeetingFailCode = 0;
@@ -2895,12 +2899,27 @@ pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR: ZOOMSD
 #[doc = " Authorized user not in meeting."]
 pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_AUTHORIZED_USER_NOT_INMEETING:
     ZOOMSDK_MeetingFailCode = 501;
-#[doc = " Jmak user email not match"]
+#[doc = " On-behalf token error: conflict with login credentials."]
+pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_CONFLICT_LOGIN_ERROR:
+    ZOOMSDK_MeetingFailCode = 502;
+#[doc = " User level privilege token not have host zak/obf."]
+pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_USER_LEVEL_TOKEN_NOT_HAVE_HOST_ZAK_OBF:
+    ZOOMSDK_MeetingFailCode = 503;
+#[doc = " App can not anonymous join meeting."]
+pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_APP_CAN_NOT_ANONYMOUS_JOIN_MEETING:
+    ZOOMSDK_MeetingFailCode = 504;
+#[doc = " On-behalf token invalid."]
+pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_INVALID: ZOOMSDK_MeetingFailCode =
+    505;
+#[doc = " On-behalf token meeting number not match."]
+pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_ON_BEHALF_TOKEN_NOT_MATCH_MEETING:
+    ZOOMSDK_MeetingFailCode = 506;
+#[doc = " Jmak user email not match."]
 pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH: ZOOMSDK_MeetingFailCode =
     1143;
-#[doc = " Jmak user email not match"]
+#[doc = " Jmak user email not match."]
 pub const ZOOMSDK_MeetingFailCode_MEETING_FAIL_UNKNOWN: ZOOMSDK_MeetingFailCode = 65535;
-#[doc = " @brief Meeting failure code.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting failure code.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingFailCode = ::std::os::raw::c_uint;
 #[doc = " For initialization."]
 pub const ZOOMSDK_MeetingEndReason_EndMeetingReason_None: ZOOMSDK_MeetingEndReason = 0;
@@ -2920,7 +2939,10 @@ pub const ZOOMSDK_MeetingEndReason_EndMeetingReason_FreeMeetingTimeOut: ZOOMSDK_
     6;
 #[doc = " Represents an undefined end meeting reason, typically used for new error codes introduced by the backend after client release"]
 pub const ZOOMSDK_MeetingEndReason_EndMeetingReason_Undefined: ZOOMSDK_MeetingEndReason = 7;
-#[doc = " @brief Meeting end reason.\n Here are more detailed structural descriptions."]
+#[doc = " Represents an undefined end meeting reason, typically used for new error codes introduced by the backend after client release"]
+pub const ZOOMSDK_MeetingEndReason_EndMeetingReason_DueToAuthorizedUserLeave:
+    ZOOMSDK_MeetingEndReason = 8;
+#[doc = " @brief Enumeration of meeting end reason.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingEndReason = ::std::os::raw::c_uint;
 #[doc = " For initialization."]
 pub const ZOOMSDK_MeetingType_MEETING_TYPE_NONE: ZOOMSDK_MeetingType = 0;
@@ -2930,19 +2952,19 @@ pub const ZOOMSDK_MeetingType_MEETING_TYPE_NORMAL: ZOOMSDK_MeetingType = 1;
 pub const ZOOMSDK_MeetingType_MEETING_TYPE_WEBINAR: ZOOMSDK_MeetingType = 2;
 #[doc = " Breakout meeting."]
 pub const ZOOMSDK_MeetingType_MEETING_TYPE_BREAKOUTROOM: ZOOMSDK_MeetingType = 3;
-#[doc = " @brief Meeting type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingType = ::std::os::raw::c_uint;
 #[doc = " Leave meeting"]
 pub const ZOOMSDK_LeaveMeetingCmd_LEAVE_MEETING: ZOOMSDK_LeaveMeetingCmd = 0;
 #[doc = " End meeting"]
 pub const ZOOMSDK_LeaveMeetingCmd_END_MEETING: ZOOMSDK_LeaveMeetingCmd = 1;
-#[doc = " @brief Leave meeting command.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of leave meeting command.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_LeaveMeetingCmd = ::std::os::raw::c_uint;
 #[doc = " Type of ordinary user who needs to login."]
 pub const ZOOMSDK_SDKUserType_SDK_UT_NORMALUSER: ZOOMSDK_SDKUserType = 100;
 #[doc = " Start meeting without login."]
 pub const ZOOMSDK_SDKUserType_SDK_UT_WITHOUT_LOGIN: ZOOMSDK_SDKUserType = 101;
-#[doc = " @brief SDK user type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of SDK user type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_SDKUserType = ::std::os::raw::c_uint;
 #[doc = " The sampling rate of the acquired raw audio data is 32K."]
 pub const ZOOMSDK_AudioRawdataSamplingRate_AudioRawdataSamplingRate_32K:
@@ -2950,7 +2972,7 @@ pub const ZOOMSDK_AudioRawdataSamplingRate_AudioRawdataSamplingRate_32K:
 #[doc = " The sampling rate of the acquired raw audio data is 48K."]
 pub const ZOOMSDK_AudioRawdataSamplingRate_AudioRawdataSamplingRate_48K:
     ZOOMSDK_AudioRawdataSamplingRate = 1;
-#[doc = " @brief The sampling rate of raw audio data.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of raw audio data sampling rate.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_AudioRawdataSamplingRate = ::std::os::raw::c_uint;
 #[doc = " For standard definition TV (SDTV)  Y[16,235], Cb/Cr[16,240]."]
 pub const ZOOMSDK_VideoRawdataColorspace_VideoRawdataColorspace_BT601_L:
@@ -2964,7 +2986,7 @@ pub const ZOOMSDK_VideoRawdataColorspace_VideoRawdataColorspace_BT709_L:
 #[doc = " For high definition TV (HDTV) full range version: [0,255]"]
 pub const ZOOMSDK_VideoRawdataColorspace_VideoRawdataColorspace_BT709_F:
     ZOOMSDK_VideoRawdataColorspace = 3;
-#[doc = " @brief The colorspace of video rawdata.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of video rawdata colorspace.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_VideoRawdataColorspace = ::std::os::raw::c_uint;
 #[doc = " @brief The parameters of non-login user when joins the meeting.\n Here are more detailed structural descriptions."]
 #[repr(C)]
@@ -2986,9 +3008,9 @@ pub struct ZOOMSDK_tagJoinParam4WithoutLogin {
     pub customer_key: *const zchar_t,
     #[doc = " Webinar token."]
     pub webinarToken: *const zchar_t,
-    #[doc = " Turn off the video of not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the video of not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isVideoOff: bool,
-    #[doc = " Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isAudioOff: bool,
     #[doc = " Join token."]
     pub join_token: *const zchar_t,
@@ -3066,9 +3088,9 @@ pub struct ZOOMSDK_tagJoinParam4NormalUser {
     pub customer_key: *const zchar_t,
     #[doc = " Webinar token."]
     pub webinarToken: *const zchar_t,
-    #[doc = " Turn off the video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isVideoOff: bool,
-    #[doc = " Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isAudioOff: bool,
     #[doc = " Join token."]
     pub join_token: *const zchar_t,
@@ -3172,7 +3194,7 @@ pub const ZOOMSDK_ZoomUserType_ZoomUserType_GoogleOAuth: ZOOMSDK_ZoomUserType = 
 pub const ZOOMSDK_ZoomUserType_ZoomUserType_SSO: ZOOMSDK_ZoomUserType = 4;
 #[doc = " User of unknown type."]
 pub const ZOOMSDK_ZoomUserType_ZoomUserType_Unknown: ZOOMSDK_ZoomUserType = 5;
-#[doc = " @brief SDK user type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of Zoom user type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_ZoomUserType = ::std::os::raw::c_uint;
 #[doc = " @brief The parameter used by unlogged-in user when starts the meeting.\n Here are more detailed structural descriptions."]
 #[repr(C)]
@@ -3190,9 +3212,9 @@ pub struct ZOOMSDK_tagStartParam4WithoutLogin {
     pub vanityID: *const zchar_t,
     #[doc = " The customer key that need the app intergrated with sdk to specify. The SDK will set this value when the associated settings are turned on. The max length of customer_key is 35."]
     pub customer_key: *const zchar_t,
-    #[doc = " Turn off the video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isVideoOff: bool,
-    #[doc = " Turn off the audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off the audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isAudioOff: bool,
     #[doc = " Is my voice in the mixed audio raw data?"]
     pub isMyVoiceInMix: bool,
@@ -3252,9 +3274,9 @@ pub struct ZOOMSDK_tagStartParam4NormalUser {
     pub vanityID: *const zchar_t,
     #[doc = " The customer key that need the app intergrated with sdk to specify. The SDK will set this value when the associated settings are turned on. The max length of customer_key is 35."]
     pub customer_key: *const zchar_t,
-    #[doc = " Turn off video or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off video or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isVideoOff: bool,
-    #[doc = " Turn off audio or not. True indicates to turn off. In addition, this flag is affected by meeting attributes."]
+    #[doc = " Turn off audio or not. true indicates to turn off. In addition, this flag is affected by meeting attributes."]
     pub isAudioOff: bool,
     #[doc = " Is my voice in the mixed audio raw data?"]
     pub isMyVoiceInMix: bool,
@@ -3352,7 +3374,7 @@ pub const ZOOMSDK_ConnectionQuality_Conn_Quality_Normal: ZOOMSDK_ConnectionQuali
 pub const ZOOMSDK_ConnectionQuality_Conn_Quality_Good: ZOOMSDK_ConnectionQuality = 5;
 #[doc = " The connection quality is excellent."]
 pub const ZOOMSDK_ConnectionQuality_Conn_Quality_Excellent: ZOOMSDK_ConnectionQuality = 6;
-#[doc = " @brief Connection quality.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of connection quality.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_ConnectionQuality = ::std::os::raw::c_uint;
 #[doc = " Default component type."]
 pub const ZOOMSDK_MeetingComponentType_MeetingComponentType_Def: ZOOMSDK_MeetingComponentType = 0;
@@ -3362,7 +3384,7 @@ pub const ZOOMSDK_MeetingComponentType_MeetingComponentType_AUDIO: ZOOMSDK_Meeti
 pub const ZOOMSDK_MeetingComponentType_MeetingComponentType_VIDEO: ZOOMSDK_MeetingComponentType = 2;
 #[doc = " Share application."]
 pub const ZOOMSDK_MeetingComponentType_MeetingComponentType_SHARE: ZOOMSDK_MeetingComponentType = 3;
-#[doc = " @brief Meeting component enumeration.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting component.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingComponentType = ::std::os::raw::c_uint;
 #[doc = " @brief The meeting audio statistic information."]
 #[repr(C)]
@@ -3500,7 +3522,7 @@ pub const ZOOMSDK_InMeetingSupportAudioType_AUDIO_TYPE_NONE: ZOOMSDK_InMeetingSu
 pub const ZOOMSDK_InMeetingSupportAudioType_AUDIO_TYPE_VOIP: ZOOMSDK_InMeetingSupportAudioType = 1;
 pub const ZOOMSDK_InMeetingSupportAudioType_AUDIO_TYPE_TELEPHONY:
     ZOOMSDK_InMeetingSupportAudioType = 2;
-#[doc = " @brief meeting supported audio type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting supported audio type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_InMeetingSupportAudioType = ::std::os::raw::c_uint;
 #[doc = " Disconnection."]
 pub const ZOOMSDK_MeetingConnType_Meeting_Conn_None: ZOOMSDK_MeetingConnType = 0;
@@ -3508,7 +3530,7 @@ pub const ZOOMSDK_MeetingConnType_Meeting_Conn_None: ZOOMSDK_MeetingConnType = 0
 pub const ZOOMSDK_MeetingConnType_Meeting_Conn_Normal: ZOOMSDK_MeetingConnType = 1;
 #[doc = " Failure and reconnection."]
 pub const ZOOMSDK_MeetingConnType_Meeting_Conn_FailOver: ZOOMSDK_MeetingConnType = 2;
-#[doc = " @brief Meeting connection type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting connection type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_MeetingConnType = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IMeetingInfo__bindgen_vtable(::std::os::raw::c_void);
@@ -3529,11 +3551,11 @@ const _: () = {
 pub struct ZOOMSDK_tagMeetingParameter {
     #[doc = " Meeting type."]
     pub meeting_type: ZOOMSDK_MeetingType,
-    #[doc = " View only or not. True indicates to view only."]
+    #[doc = " View only or not. true indicates to view only."]
     pub is_view_only: bool,
-    #[doc = " Auto local recording or not. True indicates to auto local recording."]
+    #[doc = " Auto local recording or not. true indicates to auto local recording."]
     pub is_auto_recording_local: bool,
-    #[doc = " Auto cloud recording or not. True indicates to auto cloud recording."]
+    #[doc = " Auto cloud recording or not. true indicates to auto cloud recording."]
     pub is_auto_recording_cloud: bool,
     #[doc = " Meeting number."]
     pub meeting_number: UINT64,
@@ -3573,7 +3595,7 @@ pub const ZOOMSDK_StatisticsWarningType_Statistics_Warning_Network_Quality_Bad:
 #[doc = " The system is busy."]
 pub const ZOOMSDK_StatisticsWarningType_Statistics_Warning_Busy_System:
     ZOOMSDK_StatisticsWarningType = 2;
-#[doc = " @brief Meeting statistics warning type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of meeting statistics warning type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_StatisticsWarningType = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IMeetingServiceEvent__bindgen_vtable(::std::os::raw::c_void);
@@ -3665,7 +3687,7 @@ pub struct ZOOMSDK_IMeetingDocsController {
 }
 #[repr(C)]
 pub struct ZOOMSDK_IMeetingService__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " @class IMeetingService\n @brief Meeting Service Interface"]
+#[doc = " @class IMeetingService\n @brief Meeting Service Interface."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IMeetingService {
@@ -3735,19 +3757,19 @@ const _: () = {
 pub const ZOOMSDK_LimitFPSValue_limitfps_Not_Enable: ZOOMSDK_LimitFPSValue = 0;
 #[doc = " 1 frame per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_1_frame: ZOOMSDK_LimitFPSValue = 1;
-#[doc = " 2 frame per second."]
+#[doc = " 2 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_2_frame: ZOOMSDK_LimitFPSValue = 2;
-#[doc = " 4 frame per second."]
+#[doc = " 4 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_4_frame: ZOOMSDK_LimitFPSValue = 3;
-#[doc = " 6 frame per second."]
+#[doc = " 6 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_6_frame: ZOOMSDK_LimitFPSValue = 4;
-#[doc = " 8 frame per second."]
+#[doc = " 8 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_8_frame: ZOOMSDK_LimitFPSValue = 5;
-#[doc = " 10 frame per second."]
+#[doc = " 10 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_10_frame: ZOOMSDK_LimitFPSValue = 6;
-#[doc = " 15 frame per second."]
+#[doc = " 15 frames per second."]
 pub const ZOOMSDK_LimitFPSValue_limitfps_15_frame: ZOOMSDK_LimitFPSValue = 7;
-#[doc = " @brief Enumeration of the values to limit fps."]
+#[doc = " @brief Enumeration of FPS limit values."]
 pub type ZOOMSDK_LimitFPSValue = ::std::os::raw::c_uint;
 #[doc = " For initialization."]
 pub const ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_None:
@@ -3764,7 +3786,7 @@ pub const ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_Medium:
 #[doc = " High level suppression. Eliminates most background speech and persistent noise."]
 pub const ZOOMSDK_Suppress_Background_Noise_Level_Suppress_BGNoise_Level_High:
     ZOOMSDK_Suppress_Background_Noise_Level = 4;
-#[doc = " @brief Enumeration of the level to suppress background noise. For more information, please visit <https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0059985>."]
+#[doc = " @brief Enumeration of background noise suppression levels. For more information, please visit <https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0059985>."]
 pub type ZOOMSDK_Suppress_Background_Noise_Level = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IGeneralSettingContext__bindgen_vtable(::std::os::raw::c_void);
@@ -3790,7 +3812,7 @@ pub const ZOOMSDK_VIDEO_LIGHT_ADAPTION_TYPE_Light_Adaption_Auto: ZOOMSDK_VIDEO_L
 #[doc = " Manual type."]
 pub const ZOOMSDK_VIDEO_LIGHT_ADAPTION_TYPE_Light_Adaption_Manual:
     ZOOMSDK_VIDEO_LIGHT_ADAPTION_TYPE = 2;
-#[doc = " @brief Enumeration of light adaption type."]
+#[doc = " @brief Enumeration of light adaption types."]
 pub type ZOOMSDK_VIDEO_LIGHT_ADAPTION_TYPE = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IVideoSettingContextEvent__bindgen_vtable(::std::os::raw::c_void);
@@ -3809,11 +3831,11 @@ const _: () = {
 };
 #[doc = " No auto framing."]
 pub const ZOOMSDK_AutoFramingMode_AutoFramingMode_none: ZOOMSDK_AutoFramingMode = 0;
-#[doc = " Use the video frame's center point as the center to zoom in."]
+#[doc = " Uses the video frame's center point as the center to zoom in."]
 pub const ZOOMSDK_AutoFramingMode_AutoFramingMode_center_coordinates: ZOOMSDK_AutoFramingMode = 1;
-#[doc = " Use the detected face in the video frame as the center to zoom in."]
+#[doc = " Uses the detected face in the video frame as the center to zoom in."]
 pub const ZOOMSDK_AutoFramingMode_AutoFramingMode_face_recognition: ZOOMSDK_AutoFramingMode = 2;
-#[doc = " @brief Enumeration of the auto framing modes in video."]
+#[doc = " @brief Enumeration of auto framing modes in video."]
 pub type ZOOMSDK_AutoFramingMode = ::std::os::raw::c_uint;
 #[doc = " No use of the fail strategy."]
 pub const ZOOMSDK_FaceRecognitionFailStrategy_FaceRecognitionFailStrategy_none:
@@ -3884,12 +3906,12 @@ pub const ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE_SDK_AUDIO_DEVICE_RAW_MODE_DEFAU
 #[doc = " Enables the drivers to provide a level of audio processing."]
 pub const ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE_SDK_AUDIO_DEVICE_RAW_MODE_ON:
     ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE = 1;
-#[doc = " Puts the drivers into \"Raw\" mode so that the ZoomWorkplave app can receive an unprocessed signal."]
+#[doc = " Puts the drivers into \"Raw\" mode so that the Zoom Workplace app can receive an unprocessed signal."]
 pub const ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE_SDK_AUDIO_DEVICE_RAW_MODE_OFF:
     ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE = 2;
 #[doc = " @brief Enumeration of signal processing by Windows audio device drivers. For more information, please visit <https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0066398>."]
 pub type ZOOMSDK_SDK_AUDIO_DEVICE_RAW_MODE_TYPE = ::std::os::raw::c_uint;
-#[doc = " Automatically adjust echo cancellation, balancing CPU and performance."]
+#[doc = " Automatically adjusts echo cancellation, balancing CPU and performance."]
 pub const ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL_SDK_ECHO_CANCELLATION_DEFAULT:
     ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL = 0;
 #[doc = " Better echo limitation, taking into account multiple people talking at the same time, low CPU utilization."]
@@ -3898,7 +3920,7 @@ pub const ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL_SDK_ECHO_CANCELLATION_LOW:
 #[doc = " Best experience when multiple people are talking at the same time. Enabling this option may increase CPU utilization."]
 pub const ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL_SDK_ECHO_CANCELLATION_HIGH:
     ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL = 2;
-#[doc = " @brief Enumeration for echo cancellation.  For more information, please visit <https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0066398>."]
+#[doc = " @brief Enumeration of echo cancellation levels. For more information, please visit <https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0066398>."]
 pub type ZOOMSDK_SDK_ECHO_CANCELLATION_LEVEL = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IAudioSettingContext__bindgen_vtable(::std::os::raw::c_void);
@@ -4218,18 +4240,18 @@ const _: () = {
 };
 #[doc = " For initialize"]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_None: ZOOMSDK_SDKChatMessageType = 0;
-#[doc = " Chat message is send to all."]
+#[doc = " Chat message is sent to all."]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_All: ZOOMSDK_SDKChatMessageType = 1;
-#[doc = " Chat message is send to all panelists."]
+#[doc = " Chat message is sent to all panelists."]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_All_Panelist:
     ZOOMSDK_SDKChatMessageType = 2;
-#[doc = " Chat message is send to individual attendee and cc panelists."]
+#[doc = " Chat message is sent to individual attendee and cc panelists."]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_Individual_Panelist:
     ZOOMSDK_SDKChatMessageType = 3;
-#[doc = " Chat message is send to individual user."]
+#[doc = " Chat message is sent to individual user."]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_Individual: ZOOMSDK_SDKChatMessageType =
     4;
-#[doc = " Chat message is send to waiting room user."]
+#[doc = " Chat message is sent to waiting room user."]
 pub const ZOOMSDK_SDKChatMessageType_SDKChatMessageType_To_WaitingRoomUsers:
     ZOOMSDK_SDKChatMessageType = 5;
 #[doc = " @brief Enumerations of the type for chat message."]
@@ -4588,13 +4610,13 @@ const _: () = {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagNormalMeetingChatStatus {
-    #[doc = " TRUE indicates that the user owns the authority to send message to chat."]
+    #[doc = " true indicates that the user owns the authority to send message to chat."]
     pub can_chat: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to all."]
+    #[doc = " true indicates that the user owns the authority to send message to all."]
     pub can_chat_to_all: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to an individual attendee in the meeting."]
+    #[doc = " true indicates that the user owns the authority to send message to an individual attendee in the meeting."]
     pub can_chat_to_individual: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message only to the host."]
+    #[doc = " true indicates that the user owns the authority to send message only to the host."]
     pub is_only_can_chat_to_host: bool,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -4622,11 +4644,11 @@ pub type ZOOMSDK_NormalMeetingChatStatus = ZOOMSDK_tagNormalMeetingChatStatus;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagWebinarAttendeeChatStatus {
-    #[doc = " TRUE indicates that the attendee can send message to chat."]
+    #[doc = " true indicates that the attendee can send message to chat."]
     pub can_chat: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to all the panelists and attendees."]
+    #[doc = " true indicates that the user owns the authority to send message to all the panelists and attendees."]
     pub can_chat_to_all_panellist_and_attendee: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to all the panelists."]
+    #[doc = " true indicates that the user owns the authority to send message to all the panelists."]
     pub can_chat_to_all_panellist: bool,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -4655,11 +4677,11 @@ pub type ZOOMSDK_WebinarAttendeeChatStatus = ZOOMSDK_tagWebinarAttendeeChatStatu
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagWebinarOtherUserRoleChatStatus {
-    #[doc = " TRUE indicates that the user owns the authority to send message to all the panelists."]
+    #[doc = " true indicates that the user owns the authority to send message to all the panelists."]
     pub can_chat_to_all_panellist: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to all."]
+    #[doc = " true indicates that the user owns the authority to send message to all."]
     pub can_chat_to_all_panellist_and_attendee: bool,
-    #[doc = " TRUE indicates that the user owns the authority to send message to individual attendee."]
+    #[doc = " true indicates that the user owns the authority to send message to individual attendee."]
     pub can_chat_to_individual: bool,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -4692,11 +4714,11 @@ pub type ZOOMSDK_WebinarOtherUserRoleChatStatus = ZOOMSDK_tagWebinarOtherUserRol
 #[derive(Copy, Clone)]
 pub struct ZOOMSDK_tagChatStatus {
     pub ut: ZOOMSDK_tagChatStatus__bindgen_ty_1,
-    #[doc = " TRUE indicates that it is disabled to chat in the specified meeting."]
+    #[doc = " true indicates that it is disabled to chat in the specified meeting."]
     pub is_chat_off: bool,
-    #[doc = " TRUE indicates that the owner of the current message is the attendee of the webinar."]
+    #[doc = " true indicates that the owner of the current message is the attendee of the webinar."]
     pub is_webinar_attendee: bool,
-    #[doc = " TRUE indicates that the current meeting is webinar."]
+    #[doc = " true indicates that the current meeting is webinar."]
     pub is_webinar_meeting: bool,
 }
 #[doc = " The ut value depends on the value of the other members in the structure.\n When the value of is_webinar_meeting is false, the ut value is the NormalMeetingChatStausnormal_meeting_status.\n When the values of the is_webinar_meeting and the is_webinar_attendee is true, the ut value is WebinarAttendeeChatStatus webinar_attendee_status.\n The value of is_webinar_meeting is true while the is_webinar_attendee is false, the ut value is WebinarOtherUserRoleChatStatus webinar_other_status."]
@@ -4787,7 +4809,7 @@ pub const ZOOMSDK_SDKFileTransferStatus_SDKFileTransferState_TransferFailed:
 pub const ZOOMSDK_SDKFileTransferStatus_SDKFileTransferState_TransferDone:
     ZOOMSDK_SDKFileTransferStatus = 4;
 pub type ZOOMSDK_SDKFileTransferStatus = ::std::os::raw::c_uint;
-#[doc = " @brief The basic information of transfer file"]
+#[doc = " @brief The basic information of transfer file."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagSDKFileTransferInfo {
@@ -4835,7 +4857,7 @@ const _: () = {
     ["Offset of field: ZOOMSDK_tagSDKFileTransferInfo::bit_per_second"]
         [::std::mem::offset_of!(ZOOMSDK_tagSDKFileTransferInfo, bit_per_second) - 48usize];
 };
-#[doc = " @brief The basic information of transfer file"]
+#[doc = " @brief The basic information of transfer file."]
 pub type ZOOMSDK_SDKFileTransferInfo = ZOOMSDK_tagSDKFileTransferInfo;
 #[repr(C)]
 pub struct ZOOMSDK_ISDKFileSender__bindgen_vtable(::std::os::raw::c_void);
@@ -4896,7 +4918,7 @@ const _: () = {
 };
 #[repr(C)]
 pub struct ZOOMSDK_IMeetingChatController__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " @class IMeetingChatController\n @brief Meeting chat controller interface"]
+#[doc = " @class IMeetingChatController\n @brief Meeting chat controller interface."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IMeetingChatController {
@@ -4917,13 +4939,13 @@ pub const ZOOMSDK_ShareSettingType_ShareSettingType_HOST_GRAB: ZOOMSDK_ShareSett
 pub const ZOOMSDK_ShareSettingType_ShareSettingType_ANYONE_GRAB: ZOOMSDK_ShareSettingType = 2;
 #[doc = " Anyone can share, Multi-share can exist at the same time"]
 pub const ZOOMSDK_ShareSettingType_ShareSettingType_MULTI_SHARE: ZOOMSDK_ShareSettingType = 3;
-#[doc = " @brief Share setting type.\n Here are more detailed structural descriptions.."]
+#[doc = " @brief Enumeration of share setting type.\n Here are more detailed structural descriptions.."]
 pub type ZOOMSDK_ShareSettingType = ::std::os::raw::c_uint;
 #[doc = " Mono mode."]
 pub const ZOOMSDK_AudioShareMode_AudioShareMode_Mono: ZOOMSDK_AudioShareMode = 0;
 #[doc = " Stereo mode"]
 pub const ZOOMSDK_AudioShareMode_AudioShareMode_Stereo: ZOOMSDK_AudioShareMode = 1;
-#[doc = " @brief Audio share mode.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of audio share mode.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_AudioShareMode = ::std::os::raw::c_uint;
 #[doc = " @brief Visible shared source information.\n Here are more detailed structural descriptions.."]
 #[repr(C)]
@@ -4995,7 +5017,7 @@ pub const ZOOMSDK_AdvanceShareOption_AdvanceShareOption_PureComputerAudio:
     ZOOMSDK_AdvanceShareOption = 1;
 #[doc = " Type of sharing the camera."]
 pub const ZOOMSDK_AdvanceShareOption_AdvanceShareOption_ShareCamera: ZOOMSDK_AdvanceShareOption = 2;
-#[doc = " @brief Additional type of current sharing sent to others.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of additional type of current sharing sent to others.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_AdvanceShareOption = ::std::os::raw::c_uint;
 #[doc = " Multi-participants can share simultaneously."]
 pub const ZOOMSDK_MultiShareOption_Enable_Multi_Share: ZOOMSDK_MultiShareOption = 0;
@@ -5082,7 +5104,7 @@ pub const ZOOMSDK_AudioStatus_Audio_UnMuted_ByHost: ZOOMSDK_AudioStatus = 4;
 pub const ZOOMSDK_AudioStatus_Audio_MutedAll_ByHost: ZOOMSDK_AudioStatus = 5;
 #[doc = " The host unmutes all."]
 pub const ZOOMSDK_AudioStatus_Audio_UnMutedAll_ByHost: ZOOMSDK_AudioStatus = 6;
-#[doc = " @brief Define the audio status of the user.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of audio status of the user.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_AudioStatus = ::std::os::raw::c_uint;
 #[doc = " Normal audio type."]
 pub const ZOOMSDK_AudioType_AUDIOTYPE_NONE: ZOOMSDK_AudioType = 0;
@@ -5092,7 +5114,7 @@ pub const ZOOMSDK_AudioType_AUDIOTYPE_VOIP: ZOOMSDK_AudioType = 1;
 pub const ZOOMSDK_AudioType_AUDIOTYPE_PHONE: ZOOMSDK_AudioType = 2;
 #[doc = " Unknown mode."]
 pub const ZOOMSDK_AudioType_AUDIOTYPE_UNKNOWN: ZOOMSDK_AudioType = 3;
-#[doc = " @brief Define the audio type of the user.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of audio type of the user.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_AudioType = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_IRequestStartAudioHandler__bindgen_vtable(::std::os::raw::c_void);
@@ -5268,7 +5290,7 @@ pub const ZOOMSDK_VideoStatus_Video_ON: ZOOMSDK_VideoStatus = 0;
 pub const ZOOMSDK_VideoStatus_Video_OFF: ZOOMSDK_VideoStatus = 1;
 #[doc = " Video is muted by host."]
 pub const ZOOMSDK_VideoStatus_Video_Mute_ByHost: ZOOMSDK_VideoStatus = 2;
-#[doc = " @brief The video status of the user.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of video status of the user.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_VideoStatus = ::std::os::raw::c_uint;
 #[doc = " Unknown video quality status."]
 pub const ZOOMSDK_VideoConnectionQuality_VideoConnectionQuality_Unknown:
@@ -5282,7 +5304,7 @@ pub const ZOOMSDK_VideoConnectionQuality_VideoConnectionQuality_Normal:
 #[doc = " The video quality is good."]
 pub const ZOOMSDK_VideoConnectionQuality_VideoConnectionQuality_Good:
     ZOOMSDK_VideoConnectionQuality = 3;
-#[doc = " @brief The video quality of the user.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of video quality of the user.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_VideoConnectionQuality = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -5376,7 +5398,7 @@ pub const ZOOMSDK_CameraControlRequestType_CameraControlRequestType_RequestContr
     ZOOMSDK_CameraControlRequestType = 1;
 pub const ZOOMSDK_CameraControlRequestType_CameraControlRequestType_GiveUpControl:
     ZOOMSDK_CameraControlRequestType = 2;
-#[doc = " @brief The camera control request type.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of camera control request type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_CameraControlRequestType = ::std::os::raw::c_uint;
 pub const ZOOMSDK_CameraControlRequestResult_CameraControlRequestResult_Approve:
     ZOOMSDK_CameraControlRequestResult = 0;
@@ -5384,7 +5406,7 @@ pub const ZOOMSDK_CameraControlRequestResult_CameraControlRequestResult_Decline:
     ZOOMSDK_CameraControlRequestResult = 1;
 pub const ZOOMSDK_CameraControlRequestResult_CameraControlRequestResult_Revoke:
     ZOOMSDK_CameraControlRequestResult = 2;
-#[doc = " @brief The camera control request result.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of camera control request result.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_CameraControlRequestResult = ::std::os::raw::c_uint;
 #[repr(C)]
 pub struct ZOOMSDK_ICameraControlRequestHandler__bindgen_vtable(::std::os::raw::c_void);
@@ -5596,7 +5618,7 @@ pub const ZOOMSDK_RecordingStatus_Recording_Pause: ZOOMSDK_RecordingStatus = 3;
 pub const ZOOMSDK_RecordingStatus_Recording_Connecting: ZOOMSDK_RecordingStatus = 4;
 #[doc = " Saving the recording failed."]
 pub const ZOOMSDK_RecordingStatus_Recording_Fail: ZOOMSDK_RecordingStatus = 5;
-#[doc = " @brief Recording status.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of recording status.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_RecordingStatus = ::std::os::raw::c_uint;
 pub const ZOOMSDK_TranscodingStatus_Transcoding_Start: ZOOMSDK_TranscodingStatus = 0;
 pub const ZOOMSDK_TranscodingStatus_Transcoding_Inprogress: ZOOMSDK_TranscodingStatus = 1;
@@ -5633,7 +5655,7 @@ pub const ZOOMSDK_RequestLocalRecordingStatus_RequestLocalRecording_Denied:
 #[doc = " the request local recording timeout."]
 pub const ZOOMSDK_RequestLocalRecordingStatus_RequestLocalRecording_Timeout:
     ZOOMSDK_RequestLocalRecordingStatus = 2;
-#[doc = " @brief Request local recording privilege status.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of request local recording privilege status.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_RequestLocalRecordingStatus = ::std::os::raw::c_uint;
 #[doc = " host grants the request."]
 pub const ZOOMSDK_RequestStartCloudRecordingStatus_RequestStartCloudRecording_Granted:
@@ -5644,7 +5666,7 @@ pub const ZOOMSDK_RequestStartCloudRecordingStatus_RequestStartCloudRecording_De
 #[doc = " the request for cloud recording timed out."]
 pub const ZOOMSDK_RequestStartCloudRecordingStatus_RequestStartCloudRecording_TimedOut:
     ZOOMSDK_RequestStartCloudRecordingStatus = 2;
-#[doc = " @brief Request host to start cloud recording status."]
+#[doc = " @brief Enumeration of request host to start cloud recording status."]
 pub type ZOOMSDK_RequestStartCloudRecordingStatus = ::std::os::raw::c_uint;
 pub const ZOOMSDK_LocalRecordingRequestPrivilegeStatus_LocalRecordingRequestPrivilege_None:
     ZOOMSDK_LocalRecordingRequestPrivilegeStatus = 0;
@@ -5691,7 +5713,7 @@ const _: () = {
 pub struct ZOOMSDK_IRequestEnableAndStartSmartRecordingHandler__bindgen_vtable(
     ::std::os::raw::c_void,
 );
-#[doc = " @class IRequestEnableAndStartSmartRecordingHandler\n @brief Enable and start smart cloud recording request handler"]
+#[doc = " @class IRequestEnableAndStartSmartRecordingHandler\n @brief Enables and start smart cloud recording request handler"]
 #[repr(C)]
 #[derive(Debug)]
 pub struct ZOOMSDK_IRequestEnableAndStartSmartRecordingHandler {
@@ -5706,7 +5728,7 @@ const _: () = {
 };
 #[repr(C)]
 pub struct ZOOMSDK_ISmartRecordingEnableActionHandler__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " @class ISmartRecordingEnableActionHandler\n @brief Enable and start smart recording."]
+#[doc = " @class ISmartRecordingEnableActionHandler\n @brief Enables and start smart recording."]
 #[repr(C)]
 #[derive(Debug)]
 pub struct ZOOMSDK_ISmartRecordingEnableActionHandler {
@@ -5761,13 +5783,13 @@ pub const ZOOMSDK_UserRole_USERROLE_PANELIST: ZOOMSDK_UserRole = 3;
 pub const ZOOMSDK_UserRole_USERROLE_BREAKOUTROOM_MODERATOR: ZOOMSDK_UserRole = 4;
 #[doc = " Role of attendee."]
 pub const ZOOMSDK_UserRole_USERROLE_ATTENDEE: ZOOMSDK_UserRole = 5;
-#[doc = " @brief Role of user.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of user role.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_UserRole = ::std::os::raw::c_uint;
 #[doc = " @brief Status of webinar attendee.\n Here are more detailed structural descriptions."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_tagWebinarAttendeeStatus {
-    #[doc = " TRUE indicates that it is able to talk."]
+    #[doc = " true indicates that it is able to talk."]
     pub allow_talk: bool,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -5785,7 +5807,7 @@ pub const ZOOMSDK_FocusModeShareType_FocusModeShareType_None: ZOOMSDK_FocusModeS
 pub const ZOOMSDK_FocusModeShareType_FocusModeShareType_HostOnly: ZOOMSDK_FocusModeShareType = 1;
 pub const ZOOMSDK_FocusModeShareType_FocusModeShareType_AllParticipants:
     ZOOMSDK_FocusModeShareType = 2;
-#[doc = " @brief Type of focus mode.\n Here are more detailed structural descriptions."]
+#[doc = " @brief Enumeration of focus mode type.\n Here are more detailed structural descriptions."]
 pub type ZOOMSDK_FocusModeShareType = ::std::os::raw::c_uint;
 #[doc = " @brief Info of virtual name tag.\n Here are more detailed structural descriptions."]
 #[repr(C)]
@@ -5839,7 +5861,7 @@ const _: () = {
 };
 #[repr(C)]
 pub struct ZOOMSDK_IMeetingParticipantsController__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " @class IMeetingParticipantsController\n @brief Meeting waiting room controller interface"]
+#[doc = " @class IMeetingParticipantsController\n @brief Meeting waiting room controller interface."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ZOOMSDK_IMeetingParticipantsController {
@@ -5863,80 +5885,81 @@ pub struct ZOOMSDK_INetworkConnectionHelper {
     _unused: [u8; 0],
 }
 unsafe extern "C" {
-    #[doc = " @brief Initialize ZOOM SDK.\n @param [out] initParam Initialize the parameter of ZOOM SDK.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed."]
+    #[doc = " @brief Initializes ZOOM SDK.\n @param initParam The initialization parameter for ZOOM SDK.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}InitSDK"]
     pub fn ZOOMSDK_InitSDK(initParam: *mut ZOOMSDK_InitParam) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
+    #[doc = " @brief Switches ZOOM SDK domain.\n @param new_domain The new domain to switch to.\n @param bForce true to force the domain switch, false otherwise.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}SwitchDomain"]
     pub fn ZOOMSDK_SwitchDomain(new_domain: *const zchar_t, bForce: bool) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Create meeting service interface.\n @param ppMeetingService An object pointer to the IMeetingService*.\n @return If the function succeeds, the return value is SDKErr_Success while the value of ppMeetingService is not nullptr. Otherwise failed."]
+    #[doc = " @brief Creates meeting service interface.\n @param ppMeetingService An object pointer to the IMeetingService*.\n @return If the function succeeds, the return value is SDKERR_SUCCESS while the value of ppMeetingService is not nullptr. Otherwise, this function returns an error."]
     #[link_name = "\u{1}CreateMeetingService"]
     pub fn ZOOMSDK_CreateMeetingService(
         ppMeetingService: *mut *mut ZOOMSDK_IMeetingService,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Destroy the specified meeting service Interface.\n @param pMeetingService A pointer to the IMeetingService to be destroyed.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed."]
+    #[doc = " @brief Destroys the specified meeting service interface.\n @param pMeetingService A pointer to the IMeetingService to be destroyed.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}DestroyMeetingService"]
     pub fn ZOOMSDK_DestroyMeetingService(
         pMeetingService: *mut ZOOMSDK_IMeetingService,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Create authentication service interface.\n @param ppAuthService An object pointer to the IAuthService*.\n @return If the function succeeds, the return value is SDKErr_Success while the value of ppAuthService is not nullptr. Otherwise failed."]
+    #[doc = " @brief Creates authentication service interface.\n @param ppAuthService An object pointer to the IAuthService*.\n @return If the function succeeds, the return value is SDKERR_SUCCESS while the value of ppAuthService is not nullptr. Otherwise, this function returns an error."]
     #[link_name = "\u{1}CreateAuthService"]
     pub fn ZOOMSDK_CreateAuthService(
         ppAuthService: *mut *mut ZOOMSDK_IAuthService,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Destroy the specified authentication service interface.\n @param pAuthService A pointer to the IAuthService to be destroyed.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed."]
+    #[doc = " @brief Destroys the specified authentication service interface.\n @param pAuthService A pointer to the IAuthService to be destroyed.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}DestroyAuthService"]
     pub fn ZOOMSDK_DestroyAuthService(pAuthService: *mut ZOOMSDK_IAuthService) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Create setting service interface.\n @param ppSettingService An object pointer to the ISettingService*.\n @return If the function succeeds, the return value is SDKErr_Success while the value of ppSettingService is not nullptr. Otherwise failed."]
+    #[doc = " @brief Creates setting service interface.\n @param ppSettingService An object pointer to the ISettingService*.\n @return If the function succeeds, the return value is SDKERR_SUCCESS while the value of ppSettingService is not nullptr. Otherwise, this function returns an error."]
     #[link_name = "\u{1}CreateSettingService"]
     pub fn ZOOMSDK_CreateSettingService(
         ppSettingService: *mut *mut ZOOMSDK_ISettingService,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Destroy the specified setting service interface.\n @param pSettingService A pointer to the ISettingService to be destroyed.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed."]
+    #[doc = " @brief Destroys the specified setting service interface.\n @param pSettingService A pointer to the ISettingService to be destroyed.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}DestroySettingService"]
     pub fn ZOOMSDK_DestroySettingService(
         pSettingService: *mut ZOOMSDK_ISettingService,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Create network connection helper interface.\n @param ppNetworkHelper An object pointer to the INetworkConnectionHelper*.\n @return If the function succeeds, the return value is SDKErr_Success while the value of ppNetworkHelper is not nullptr. Otherwise failed."]
+    #[doc = " @brief Creates network connection helper interface.\n @param ppNetworkHelper An object pointer to the INetworkConnectionHelper*.\n @return If the function succeeds, the return value is SDKERR_SUCCESS while the value of ppNetworkHelper is not nullptr. Otherwise, this function returns an error."]
     #[link_name = "\u{1}CreateNetworkConnectionHelper"]
     pub fn ZOOMSDK_CreateNetworkConnectionHelper(
         ppNetworkHelper: *mut *mut ZOOMSDK_INetworkConnectionHelper,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Destroy the specified network connection helper interface.\n @param pNetworkHelper A pointer to the INetworkConnectionHelper to be destroyed.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed."]
+    #[doc = " @brief Destroys the specified network connection helper interface.\n @param pNetworkHelper A pointer to the INetworkConnectionHelper to be destroyed.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error."]
     #[link_name = "\u{1}DestroyNetworkConnectionHelper"]
     pub fn ZOOMSDK_DestroyNetworkConnectionHelper(
         pNetworkHelper: *mut ZOOMSDK_INetworkConnectionHelper,
     ) -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Clean up ZOOM SDK.\n @return If the function succeeds, the return value is SDKErr_Success. Otherwise failed.\n @note This function must not be called within any SDK callback. Calling CleanUPSDK() inside a callback may cause unexpected behavior."]
+    #[doc = " @brief Cleans up ZOOM SDK.\n @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.\n @note This function must not be called within any SDK callback. Calling CleanUPSDK() inside a callback may cause unexpected behavior."]
     #[link_name = "\u{1}CleanUPSDK"]
     pub fn ZOOMSDK_CleanUPSDK() -> ZOOMSDK_SDKError;
 }
 unsafe extern "C" {
-    #[doc = " @brief Get the version of ZOOM SDK.\n @return The version of ZOOM SDK."]
+    #[doc = " @brief Gets the version of ZOOM SDK.\n @return If the function succeeds, it returns the version of ZOOM SDK."]
     #[link_name = "\u{1}GetSDKVersion"]
     pub fn ZOOMSDK_GetSDKVersion() -> *const zchar_t;
 }
 unsafe extern "C" {
-    #[doc = " @brief Get ZOOM last error interface.\n @return If the function succeeds, the return value is an interface of ZOOM last error. If the function fails or there is no error, the return value is nullptr."]
+    #[doc = " @brief Gets ZOOM last error interface.\n @return If the function succeeds, it returns an interface of ZOOM last error. If the function fails or there is no error, this function returns nullptr."]
     #[link_name = "\u{1}GetZoomLastError"]
     pub fn ZOOMSDK_GetZoomLastError() -> *const ZOOMSDK_IZoomLastError;
 }

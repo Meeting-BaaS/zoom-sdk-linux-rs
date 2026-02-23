@@ -196,7 +196,7 @@ typedef struct tagWndPosition
 }WndPosition;
 
 /**
- * @brief Custom resource type used by the SDK.
+ * @brief Enumeration of custom resource type used by the SDK.
  */
 enum CustomizedLanguageType
 {
@@ -465,18 +465,18 @@ class IZoomLastError
 {
 public:
     /**
-	 * @brief Get the last error type.	
+	 * @brief Gets the last error type.	
 	 * @return If the function succeeds, the error type will be returned.
 	 */
 	virtual LastErrorType GetErrorType() const = 0 ;
     /**
-	 * @brief Get the last error code.
+	 * @brief Gets the last error code.
 	 * @return If the function succeeds, the error code will be returned.
 	 */
 	virtual UINT64 GetErrorCode() const = 0;
 
     /**
-	 * @brief Get the description for the last error.
+	 * @brief Gets the description for the last error.
 	 * @return If the function succeeds, the error description will be returned. If there is no error, it will return an empty string of length zero(0).
 	 */
 	virtual const zchar_t* GetErrorDescription() const = 0;

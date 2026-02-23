@@ -7,7 +7,7 @@ BEGIN_ZOOM_SDK_NAMESPACE
 /**
  * @class IMeetingSmartSummaryControllerEvent
  * @brief Meeting smart summary callback event.
- * @deprecated This class is marked as deprecated, and is replaced by class IMeetingSmartSummaryHelperEvent.
+ * @deprecated Use \link IMeetingSmartSummaryHelperEvent \endlink instead.
  */
 
 class IMeetingSmartSummaryControllerEvent
@@ -15,7 +15,7 @@ class IMeetingSmartSummaryControllerEvent
 public:
 	/**
 	 * @brief Callback event when smart summary status changes.
-	 * @param isStarted true means smart summary is started, false means not.
+	 * @param isStarted true indicates smart summary is started, false means not.
 	 */
 	virtual void onSmartSummaryStatusChange(bool isStarted) = 0;
 	/**
@@ -26,8 +26,8 @@ public:
 	virtual void onSmartSummaryPrivilegeRequested(unsigned int senderId, ISmartSummaryPrivilegeHandler* handler) = 0;
 	/**
 	 * @brief Callback event when the host handle the smart summary request.
-	 * @param timeout True means the host not handle the request until timeout.
-	 * @param decline True means the host decline the request, false means the host agree the request.
+	 * @param timeout true indicates the host not handle the request until timeout.
+	 * @param decline true indicates the host decline the request, false means the host agree the request.
 	 */
 	virtual void onSmartSummaryStartReqResponse(bool timeout, bool decline) = 0;
 	/**
@@ -43,14 +43,14 @@ public:
 /**
  * @class IMeetingSmartSummaryController
  * @brief Meeting smart summary controller interface.
- * @deprecated This class is marked as deprecated, and is replaced by class IMeetingSmartSummaryHelper.
+ * @deprecated Use \link IMeetingSmartSummaryHelper \endlink instead.
  */
 class IMeetingSmartSummaryController : public IMeetingSmartSummaryHelper
 {
 public:
 	virtual ~IMeetingSmartSummaryController() {}
 	/**
-	 * @brief Set the smart summary callback event handler.
+	 * @brief Sets the smart summary callback event handler.
 	 * @param event A pointer to the IMeetingSmartSummaryControllerEvent that receives the smart summary event. 
 	 */
 	virtual void SetEvent(IMeetingSmartSummaryControllerEvent* event) = 0;

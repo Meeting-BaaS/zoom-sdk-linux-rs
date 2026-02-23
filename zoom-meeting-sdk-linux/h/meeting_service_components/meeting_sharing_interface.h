@@ -8,7 +8,7 @@
 
 BEGIN_ZOOM_SDK_NAMESPACE
 /**
- * @brief Share setting type.
+ * @brief Enumeration of share setting type.
  * Here are more detailed structural descriptions..
  */
 enum ShareSettingType
@@ -25,7 +25,7 @@ enum ShareSettingType
 };
 
 /**
- * @brief Audio share mode.
+ * @brief Enumeration of audio share mode.
  * Here are more detailed structural descriptions.
  */
 enum AudioShareMode
@@ -80,7 +80,7 @@ typedef struct tagZoomSDKSharingSourceInfo
 }ZoomSDKSharingSourceInfo;
 
 /**
- * @brief Additional type of current sharing sent to others.
+ * @brief Enumeration of additional type of current sharing sent to others.
  * Here are more detailed structural descriptions.
  */
 enum AdvanceShareOption
@@ -128,12 +128,14 @@ class IShareSwitchMultiToSingleConfirmHandler
 {
 public:
 	/**
-	 * @brief Cancel to switch multi-share to single share. All sharing will be remained.
+	 * @brief Cancels switching from multi-share to single share. All sharing will remain.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Cancel() = 0;
 	
 	/**
-	 * @brief Switch multi-share to single share. All sharing will be stopped.
+	 * @brief Switches from multi-share to single share. All sharing will be stopped.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError Confirm() = 0;
 
@@ -163,8 +165,8 @@ public:
 	
 	/**
 	 * @brief Callback event of locked share status.
-	 * @param bLocked TRUE indicates that it is locked. FALSE unlocked.
-	 * @deprecated This interface is marked as deprecated, and is replaced by onShareSettingTypeChangedNotification(ShareSettingType type).
+	 * @param bLocked true indicates that it is locked. false unlocked.
+	 * @deprecated Use \link onShareSettingTypeChangedNotification \endlink instead.
 	 */
 	virtual void onLockShareStatus(bool bLocked) = 0;
 	
@@ -212,54 +214,54 @@ class IMeetingShareController
 {
 public:
 	/**
-	 * @brief Set meeting share controller callback event handler.
+	 * @brief Sets meeting share controller callback event handler.
 	 * @param pEvent A pointer to the IMeetingShareCtrlEvent that receives sharing event. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SetEvent(IMeetingShareCtrlEvent* pEvent) = 0;
 	
 #if defined(WIN32)
 	/**
-	 * @brief Share the specified application.
-	 * @param hwndSharedApp Specify the window handle of the application to be shared. If the hwndSharedApp can't be shared, the return value is the SDKERR_INVALID_PARAMETER error code. If the hwndSharedApp is nullptr, the  * primary monitor will be shared. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Shares the specified application.
+	 * @param hwndSharedApp The window handle of the application to be shared. If the hwndSharedApp can't be shared, the return value is the SDKERR_INVALID_PARAMETER error code. If the hwndSharedApp is nullptr, the primary monitor will be shared. 
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StartAppShare(HWND hwndSharedApp) = 0;
 	
 	/**
-	 * @brief Determine if the window handle can be shared.If the hwndSharedApp is nullptr, the return value is FALSE.
-	 * @return True indicates the window handle can be shared. False means the app's window handle can't be shared.
+	 * @brief Determines whether the window handle can be shared. If the hwndSharedApp is nullptr, the return value is false.
+	 * @param hwndSharedApp The window handle to validate.
+	 * @return true if the window handle can be shared. Otherwise, false.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual bool IsShareAppValid(HWND hwndSharedApp) = 0;
 	
 	/**
-	 * @brief Share the specified monitor.
-	 * @param monitorID Specify the monitor ID to be shared. You may get the value via EnumDisplayMonitors System API. 
-	 * If the monitorID is nullptr, the primary monitor will be shared. For more details, see szDevice in MONITORINFOEX structure.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Shares the specified monitor.
+	 * @param monitorID The monitor ID to be shared. You may get the value via EnumDisplayMonitors System API. If the monitorID is nullptr, the primary monitor will be shared. For more details, see szDevice in MONITORINFOEX structure.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StartMonitorShare(const zchar_t* monitorID) = 0;
 	
 	/**
 	 * @brief A dialog box pops up that enable the user to choose the application or window to share.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid only for ZOOM style mode. 
 	 */
 	virtual SDKError ShowSharingAppSelectWnd() = 0;
 	
 	/**
-	 * @brief Start sharing with mobile device. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing with mobile device. 
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StartAirPlayShare() = 0;
 	
 	/**
-	 * @brief Start sharing camera.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing camera.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for ZOOM style only.	
 	 */
 	virtual SDKError StartShareCamera() = 0;
@@ -267,22 +269,22 @@ public:
 	/**
 	 * @brief Block the window when sharing in full screen.
 	 * Once the function is called, you need to redraw the window to take effect.
-	 * @param bBlock TRUE indicates to block the window when sharing in full screen.
+	 * @param bBlock true indicates to block the window when sharing in full screen.
 	 * @param hWnd Specify the window to be blocked.
-	 * @param bChangeWindowStyle If it is FALSE, please call this function either after the StartMonitorShare is called or when you get the callback event of the onSharingStatus with Sharing_Self_Send_Begin. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @param bChangeWindowStyle If it is false, please call this function either after the StartMonitorShare is called or when you get the callback event of the onSharingStatus with Sharing_Self_Send_Begin. 
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid only for ZOOM style user interface mode.
 	 * It is not suggested to use this function for it will change the property of the window and leads to some unknown errors.
-	 * It won't work until the IMeetingShareController::StartMonitorShare() is called if the bChangeWindowStyle is set to FALSE. 
+	 * It won't work until the IMeetingShareController::StartMonitorShare() is called if the bChangeWindowStyle is set to false. 
 	 * If you want to use the specified window during the share, you need to redraw the window.
-	 * Set the bBlock to FALSE before ending the share and call the function for the specified window to resume the property of the window.
+	 * Set the bBlock to false before ending the share and call the function for the specified window to resume the property of the window.
 	 */
 	virtual SDKError BlockWindowFromScreenshare(bool bBlock, HWND hWnd, bool bChangeWindowStyle = true) = 0;
 	
 	/**
 	 * @brief Switch to auto-adjust mode from sharing window by the function when watching the share on the specified view.
 	 * @param type Specify the view you want to set, either primary or secondary.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid only for ZOOM style user interface mode.
 	 */
 	virtual SDKError SwitchToFitWindowModeWhenViewShare(SDKViewType type) = 0;
@@ -291,22 +293,22 @@ public:
 	 * @brief Switch the window size by the function when watching the share on the specified view.
 	 * @param shareSourceID Specify the share scource ID that you want to switch zoom ratio.
 	 * @param shareViewZoomRatio Specify the size you want to set.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SwitchZoomRatioWhenViewShare(unsigned int shareSourceID, SDKShareViewZoomRatio shareViewZoomRatio) = 0;
 	
 	/**
-	 * @brief Enable follow presenter's pointer by the function when watching the share on the specified view.
+	 * @brief Enables follow presenter's pointer by the function when watching the share on the specified view.
 	 * @param shareSourceID Specify the sharing source ID that you want to follow the presenter's pointer. 
-	 * @param bEnable TRUE indicates to enable. FALSE not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @param bEnable true indicates to enable. false not.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError EnableFollowPresenterPointerWhenViewShare(unsigned int shareSourceID, bool bEnable) = 0;
 	
 	/**
-	 * @brief Determine if the follow presenter's pointer can be enabled when watching the share on the specified view.
+	 * @brief Determines if the follow presenter's pointer can be enabled when watching the share on the specified view.
 	 * @param shareSourceID Specify the share scource ID that you want to follow his pointer. 
-	 * @param [out] bCan TRUE indicates that the pointer can be enabled. FALSE indicates that it can't.
+	 * @param [out] bCan true indicates that the pointer can be enabled. false indicates that it can't.
 	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise it fails.
 	 */
 	virtual SDKError CanEnableFollowPresenterPointerWhenViewShare(unsigned int shareSourceID, bool& bCan) = 0;
@@ -315,50 +317,50 @@ public:
 	 * @brief View the share from the specified user.
 	 * @param shareSourceID Specify the share scource ID that you want to view his share. 
 	 * @param type Specify the view that you want to display the share, either primary or secondary.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid only for ZOOM style user interface mode.
-	 * @deprecated This interface is marked as deprecated
+	 * @deprecated This method is no longer used.
 	 */
 	virtual SDKError ViewShare(unsigned int shareSourceID, SDKViewType type) = 0;
 	
 	/**
-	 * @brief Start sharing with White board.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing with White board.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * You need to draw your own annotation bar for custom mode when you get the onShareContentNotification with SHARE_TYPE_WB.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StartWhiteBoardShare() = 0;
 	
 	/**
-	 * @brief Start sharing frame.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing frame.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StartShareFrame() = 0;
 	
 	/**
-	 * @brief Start sharing only the computer audio.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing only the computer audio.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.	
 	 */
 	virtual SDKError StartSharePureComputerAudio() = 0;
 	/**
-	 * @brief Start sharing camera.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Starts sharing camera.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for user custom interface mode only.	
 	 */
 	virtual SDKError StartShareCamera(const zchar_t* deviceID, HWND hWnd) = 0;
 	
 	/**
 	 * @brief Display the dialog of sharing configuration.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid only for ZOOM style user interface mode.
 	 */
 	virtual SDKError ShowShareOptionDialog() = 0;
 #endif
 
 	/**
-	 * @brief Determine if the specified ADVANCE SHARE OPTION is supported. 
+	 * @brief Determines if the specified ADVANCE SHARE OPTION is supported. 
 	 * @param option_ The ADVANCE SHARE OPTION to be determined.
 	 * @return If it is supported, the return value is SDKERR_SUCCESS. Otherwise not.
 	 * @note Valid for both ZOOM style and user custom interface mode.
@@ -366,242 +368,242 @@ public:
 	virtual SDKError IsSupportAdvanceShareOption(AdvanceShareOption option_) = 0;
 	
 	/**
-	 * @brief Stop the current sharing.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Stops the current sharing.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError StopShare() = 0;
 	
 	/**
 	 * @brief host / co - host can use this function to lock current meeting share.
-	 * @param isLock TRUE means to lock the meeting share, FALSE not.
-     * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
-	 * @deprecated This interface is marked as deprecated, and is replaced by SetMultiShareSettingOptions(MultiShareOption shareOption).
+	 * @param isLock true indicates to lock the meeting share, false not.
+     * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
+	 * @deprecated Use \link SetMultiShareSettingOptions \endlink instead.
 	 */
 	virtual SDKError LockShare(bool isLock) = 0;
 	
 	/**
 	 * @brief Pause the current sharing.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError PauseCurrentSharing() = 0;
 	
 	/**
 	 * @brief Resume the current sharing.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError ResumeCurrentSharing() = 0;
 	
 	/**
-	 * @brief Get the ID of users who are sharing
+	 * @brief Gets the ID of users who are sharing
 	 * @return If the function succeeds, the return value is a list of user ID of all users who are sharing. If the function fails, the return value is nullptr.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual IList<unsigned int>* GetViewableSharingUserList() = 0;
 	
 	/**
-	 * @brief Get the sharing source information list from the specified sharer.
+	 * @brief Gets the sharing source information list from the specified sharer.
 	 * @param userID The ID of the user who is sharing.
-	 * @return If the function succeeds, the return value is the viewable sharing information list.
+	 * @return If the function succeeds, it returns the viewable sharing information list.
 	 * @note Valid for both ZOOM style and user custom interface mode. 
 	 * For custom interface mode, this interface is only valid after subscribing the sharing content from the specified user by calling ICustomizedShareRender::SetUserID(unsigned int userid) successfully.
 	 */
 	virtual IList<ZoomSDKSharingSourceInfo>* GetSharingSourceInfoList(unsigned int userID) = 0;
 	
 	/**
-	 * @brief Determine if it is able to share. 
+	 * @brief Determines if it is able to share. 
 	 * @return Enable or disable to start sharing.
 	 * @note Valid for both ZOOM style and user custom interface mode.
-	 * @deprecated This interface is marked as deprecated, and is replaced by CanStartShare(CannotShareReasonType& reason).
+	 * @deprecated Use \link CanStartShare \endlink instead.
 	 */
 	virtual bool CanStartShare() = 0;
 	
 	/**
-	 * @brief Determine whether the current meeting can start sharing. 
+	 * @brief Determines whether the current meeting can start sharing. 
 	 * @param [out] reason The reason that no one can start sharing.
-	 * @return True indicates you can start sharing.
+	 * @return true indicates you can start sharing.
 	 */
 	virtual bool CanStartShare(CannotShareReasonType& reason) = 0;
 	
 	/**
-	 * @brief Determine if it is able to share desktop in the current meeting.
-	 * @return True indicates it is able to share desktop in the current meeting. False not.
+	 * @brief Determines if it is able to share desktop in the current meeting.
+	 * @return true if it is able to share desktop in the current meeting. Otherwise, false.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual bool IsDesktopSharingEnabled() = 0;
 	
 	/**
-	 * @brief Determine if the sharing is locked. 
-	 * @param bLocked TRUE indicates that the sharing is locked. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Determines if the sharing is locked. 
+	 * @param bLocked true indicates that the sharing is locked. 
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError IsShareLocked(bool& bLocked) = 0;
 	
 	/**
-	 * @brief Determine if the sound of the computer in the current sharing or before share is supported. 
-	 * @param [out] bCurEnableOrNot The parameter is valid only when the return value is TRUE. And TRUE indicates to sharing the sound of the computer for the moment.
-	 * @return If it is TRUE, the value of bCurEnableOrNot can be used to check whether the computer sound is supported or not when sharing. FALSE not.
+	 * @brief Determines if the sound of the computer in the current sharing or before share is supported. 
+	 * @param [out] bCurEnableOrNot The parameter is valid only when the return value is true. And true indicates to sharing the sound of the computer for the moment.
+	 * @return If it is true, the value of bCurEnableOrNot can be used to check whether the computer sound is supported or not when sharing. false not.
 	 * @note Valid for both ZOOM style and user custom interface mode.
-	 * @deprecated This interface is marked as deprecated.
+	 * @deprecated This method is no longer used.
 	 */
 	virtual bool IsSupportEnableShareComputerSound(bool& bCurEnableOrNot) = 0;
 	
 	/**
-	 * @brief Determine whether to optimize the video fluidity when sharing in full screen mode. 
-	 * @param bCurEnableOrNot This parameter is valid only when the return value is TRUE. And TRUE indicates to optimize video for the moment. 
-	 * @return If it is TRUE, the value of bCurEnableOrNot can be used to check whether to support optimize video fluidity or not. FALSE not.
+	 * @brief Determines whether to optimize the video fluidity when sharing in full screen mode. 
+	 * @param bCurEnableOrNot This parameter is valid only when the return value is true. And true indicates to optimize video for the moment. 
+	 * @return If it is true, the value of bCurEnableOrNot can be used to check whether to support optimize video fluidity or not. false not.
 	 * @note Valid for both ZOOM style and user custom interface mode.
-	 * @deprecated This interface is marked as deprecated.
+	 * @deprecated This method is no longer used.
 	 */
 	virtual bool IsSupportEnableOptimizeForFullScreenVideoClip(bool& bCurEnableOrNot) = 0;
 	
 	/**
-	 * @brief Determine if the specified share type supports sharing with compute sound or not.
+	 * @brief Determines if the specified share type supports sharing with compute sound or not.
 	 * @param type The type of sharing content.
-	 * @return True indicates that this is supported.
+	 * @return true indicates that this is supported.
 	 */
 	virtual bool IsSupportShareWithComputerSound(ShareType type) = 0;
 	
 	/**
-	 * @brief Determine if the current share supports sharing with compute sound or not.
-	 * @return True indicates that is supported.
+	 * @brief Determines if the current share supports sharing with compute sound or not.
+	 * @return true indicates that is supported.
 	 */
 	virtual bool IsCurrentSharingSupportShareWithComputerSound() = 0;
 	
 	/**
-	 * @brief Determine if the current meeting enabled sharing with compute sound or not before sharing. 
-	 * @return True indicates that this is enabled.
+	 * @brief Determines if the current meeting enabled sharing with compute sound or not before sharing. 
+	 * @return true indicates that this is enabled.
 	 */
 	virtual bool IsEnableShareComputerSoundOn() = 0;
 	
 	/**
-	 * @brief Enable or disable the computer audio before sharing.
-	 * @param bEnable TRUE indicates to enable. FALSE not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Enables or disable the computer audio before sharing.
+	 * @param bEnable true indicates to enable. false not.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note It will be applied when starting share.
 	 */
 	virtual SDKError EnableShareComputerSound(bool bEnable) = 0;
 	
 	/**
-	 * @brief Determine if the current sharing content enabled sharing with compute sound or not. 
-	 * @return True indicates that this is enabled.
+	 * @brief Determines if the current sharing content enabled sharing with compute sound or not. 
+	 * @return true indicates that this is enabled.
 	 */
 	virtual bool IsEnableShareComputerSoundOnWhenSharing() = 0;
 	
 	/**
-	 * @brief Set to enable or disable the computer audio when sharing.
-	 * @param bEnable TRUE indicates to enable. FALSE not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Sets to enable or disable the computer audio when sharing.
+	 * @param bEnable true indicates to enable. false not.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError EnableShareComputerSoundWhenSharing(bool bEnable) = 0;
 	
 	/**
-	 * @brief Set the audio share mode before or during sharing. 
+	 * @brief Sets the audio share mode before or during sharing. 
 	 * @param mode The mode for audio share.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError SetAudioShareMode(AudioShareMode mode) = 0;
 	
 	/**
-	 * @brief Get the audio share mode. 
+	 * @brief Gets the audio share mode. 
 	 * @param mode The mode for audio share, see \link AudioShareMode \endlink enum.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError GetAudioShareMode(AudioShareMode& mode) = 0;
 	
 	/**
-	 * @brief Determine if the current meeting supports sharing with optimize video or not.
-	 * @return True indicates this is supported.
+	 * @brief Determines if the current meeting supports sharing with optimize video or not.
+	 * @return true indicates this is supported.
 	 */
 	virtual bool IsSupportEnableOptimizeForFullScreenVideoClip() = 0;
 	
 	/**
-	 * @brief Determine if the current meeting enabled sharing with optimize video or not.
-	 * @return True indicates this is enabled.
+	 * @brief Determines if the current meeting enabled sharing with optimize video or not.
+	 * @return true indicates this is enabled.
 	 */
 	virtual bool IsEnableOptimizeForFullScreenVideoClipOn() = 0;
 	
 	/**
-	 * @brief Enable or disable the video optimization before sharing. 
-	 * @param bEnable TRUE indicates to enable. FALSE not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Enables or disable the video optimization before sharing. 
+	 * @param bEnable true indicates to enable. false not.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note It will be applied when starting share.
 	 */
 	virtual SDKError EnableOptimizeForFullScreenVideoClip(bool bEnable) = 0;
 	
 	/**
-	 * @brief Determine if the current sharing content enabled sharing with optimize video or not.
-	 * @return True indicates this is enabled.
+	 * @brief Determines if the current sharing content enabled sharing with optimize video or not.
+	 * @return true indicates this is enabled.
 	 */
 	virtual bool IsEnableOptimizeForFullScreenVideoClipOnWhenSharing() = 0;
 	
 	/**
-	 * @brief Enable or disable the video optimization when sharing. 
-	 * @param bEnable TRUE indicates to enable. FALSE not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @brief Enables or disable the video optimization when sharing. 
+	 * @param bEnable true indicates to enable. false not.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for both ZOOM style and user custom interface mode.
 	 */
 	virtual SDKError EnableOptimizeForFullScreenVideoClipWhenSharing(bool bEnable) = 0;
 	
 	/**
-	 * @brief Set the options for multi-participants share.
+	 * @brief Sets the options for multi-participants share.
 	 * @param [in] shareOption New options for sharing.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SetMultiShareSettingOptions(MultiShareOption shareOption) = 0;
 	
 	/**
-	 * @brief Get the options for multi-participants share.
+	 * @brief Gets the options for multi-participants share.
 	 * @param [out] shareOption Options for sharing.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError GetMultiShareSettingOptions(MultiShareOption& shareOption) = 0;
 	
 	/**
-	 * @brief Determine whether can switch to next camera, when share camera. 
+	 * @brief Determines whether can switch to next camera, when share camera. 
 	 * @param [Out] bCan, if bCan is true it means you can switch, else can not.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError CanSwitchToShareNextCamera(bool& bCan) = 0;
 	
 	/**
 	 * @brief switch to next camera, when you are sharing the camera.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise failed.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 */
 	virtual SDKError SwitchToShareNextCamera() = 0;
 	
 	/**
-	 * @brief Determine whether the user can share video files.
-	 * @return True indicates that the user can share video files. Otherwise False.
+	 * @brief Determines whether the user can share video files.
+	 * @return true indicates that the user can share video files. Otherwise, false.
 	 */
 	virtual bool CanShareVideoFile() = 0;
 
 #if defined(WIN32)
 	/**
-	 * @brief Determine whether the user can share to the breakout room.
-	 * @return True indicates that the user can share to the breakout room. Otherwise the function fails.
+	 * @brief Determines whether the user can share to the breakout room.
+	 * @return true indicates that the user can share to the breakout room. Otherwise, this function returns an error.
 	 * @note Valid for user custom interface mode only.	
 	 */
 	virtual SDKError CanEnableShareToBO(bool& bCan) = 0;
 	
 	/**
-	 * @brief Set to enable sharing to the breakout room. 
-	 * @param bEnable TRUE indicates to enable. FALSE indicates that sharing to the breakout room is not enabled.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise the function fails.
+	 * @brief Sets to enable sharing to the breakout room. 
+	 * @param bEnable true indicates to enable. false indicates that sharing to the breakout room is not enabled.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for user custom interface mode only.	
 	 */
 	virtual SDKError EnableShareToBO(bool bEnable) = 0;
 	
 	/**
-	 * @brief Determine if sharing to the breakout room is enabled. 
-	 * @param bEnabled TRUE indicates that the sharing is locked. 
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise the function fails.
+	 * @brief Determines if sharing to the breakout room is enabled. 
+	 * @param bEnabled true indicates that the sharing is locked. 
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error.
 	 * @note Valid for user custom interface mode only.	
 	 */
 	virtual SDKError IsShareToBOEnabled(bool& bEnabled) = 0;
@@ -609,23 +611,23 @@ public:
 	/**
 	 * @brief Share the video file.
 	 * @param filePath Specify the video file path. Only supports mov, mp4, or avi format.
-	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise the function fails and returns error.
+	 * @return If the function succeeds, the return value is SDKERR_SUCCESS. Otherwise, this function returns an error and returns error.
 	 */
 	virtual SDKError StartVideoFileShare(const zchar_t* filePath) = 0;
 
 	/**
-	 * @brief Determine whether the legal notice for white board is available
-	 * @return True indicates the legal notice for white board is available. Otherwise False.
+	 * @brief Determines whether the legal notice for white board is available
+	 * @return true indicates the legal notice for white board is available. Otherwise, false.
 	 */
 	virtual bool IsWhiteboardLegalNoticeAvailable() = 0;
 	
 	/**
-	 * @brief Get the white board legal notices prompt.
+	 * @brief Gets the white board legal notices prompt.
 	 */
 	virtual const zchar_t* getWhiteboardLegalNoticesPrompt() = 0;
 	
 	/**
-	 * @brief Get the white board legal notices explained.
+	 * @brief Gets the white board legal notices explained.
 	 */
 	virtual const zchar_t* getWhiteboardLegalNoticesExplained() = 0;
 #endif

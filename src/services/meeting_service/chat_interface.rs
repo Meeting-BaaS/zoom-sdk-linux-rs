@@ -118,10 +118,8 @@ impl<'a> ChatInterface<'a> {
             tracing::warn!("NullPtr received!");
             return Err(ZoomRsError::NullPtr);
         }
-        ZoomSdkResult(
-            unsafe { meeting_send_chat_message_to(self.ptr_chat_controler, build) },
-            (),
-        )
-        .into()
+        let sdk_error = unsafe { meeting_send_chat_message_to(self.ptr_chat_controler, build) };
+        tracing::info!("meeting_send_chat_message_to() returned SDK error code: {}", sdk_error);
+        ZoomSdkResult(sdk_error, ()).into()
     }
 }

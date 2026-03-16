@@ -6469,6 +6469,13 @@ unsafe extern "C" {
     ) -> *mut ZOOMSDK_IChatMsgInfo;
 }
 unsafe extern "C" {
+    #[doc = " @brief Set the event handler for chat events (onChatMsgNotification)\n @param controller A Pointer to ZOOMSDK::IMeetingChatController\n @param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ChatEvent>>)\n @return SDKError indicating success or failure"]
+    pub fn chat_set_event(
+        controller: *mut ZOOMSDK_IMeetingChatController,
+        arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+unsafe extern "C" {
     #[doc = " \\brief Set meeting share controller callback event handler.\n \\param pEvent A pointer to the IMeetingShareCtrlEvent that receives sharing event.\n \\return If the function succeeds, the return value is SDKErr_Success.\n Otherwise failed. To get extended error information, see \\link SDKError \\endlink enum."]
     #[link_name = "\u{1}_Z17sharing_set_eventPN7ZOOMSDK23IMeetingShareControllerEPv"]
     pub fn sharing_set_event(

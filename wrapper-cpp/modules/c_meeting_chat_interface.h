@@ -19,4 +19,10 @@ extern "C" ZOOMSDK::IChatMsgInfo *meeting_chat_build(
     ZOOMSDK::SDKChatMessageType msg_type
 );
 
+/// @brief Set the event handler for chat events (onChatMsgNotification)
+/// @param controller A Pointer to ZOOMSDK::IMeetingChatController
+/// @param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ChatEvent>>)
+/// @return SDKError indicating success or failure
+extern "C" ZOOMSDK::SDKError chat_set_event(ZOOMSDK::IMeetingChatController *controller, void *arc_ptr);
+
 #endif

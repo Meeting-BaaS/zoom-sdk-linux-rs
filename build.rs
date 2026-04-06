@@ -10,6 +10,30 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib={}", MEETINGSDK_LIBNAME);
     println!("cargo:rustc-link-arg=-Wl,-rpath,{}", MEETINGSDK_PATH); // Hack for linking dyn lib.so
 
+    // On NixOS, each library is in its own store path. Add all paths from
+    // LD_LIBRARY_PATH as linker search paths so transitive deps are found.
+    if let Ok(ld_path) = std::env::var("LD_LIBRARY_PATH") {
+        for path in ld_path.split(':') {
+            if !path.is_empty() {
+                println!("cargo:rustc-link-search=native={}", path);
+            }
+        }
+    }
+
+    // Transitive dependencies of libmeetingsdk.so and bundled Qt libs.
+    let transitive_libs = [
+        "xcb", "xcb-shm", "xcb-xfixes", "xcb-shape", "xcb-randr",
+        "xcb-xtest", "xcb-keysyms", "xcb-render", "xcb-util", "xcb-image",
+        "X11", "Xfixes",
+        "GL",
+        "dbus-1",
+        "gssapi_krb5",
+        "gbm",
+    ];
+    for lib in &transitive_libs {
+        println!("cargo:rustc-link-lib=dylib={}", lib);
+    }
+
     let cpp_files = [
         "wrapper-cpp/c_auth_service_interface.cpp",
         "wrapper-cpp/c_meeting_service_interface.cpp",

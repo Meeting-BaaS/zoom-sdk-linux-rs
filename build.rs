@@ -48,7 +48,7 @@ fn main() {
     cc::Build::new()
         .cpp(true)
         .opt_level(3)
-        .flag("-march=native")
+        .flag("-march=x86-64-v2")
         .files(cpp_files)
         .include("zoom-meeting-sdk-linux/h/")
         .compile("wrapper");

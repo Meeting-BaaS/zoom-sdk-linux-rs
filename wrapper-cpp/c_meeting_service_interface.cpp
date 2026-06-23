@@ -14,6 +14,57 @@ extern "C" void on_meeting_topic_changed(void *ptr, const zchar_t* sTopic);
 
 extern "C" void on_meeting_full_to_watch_live_stream(void *ptr, const zchar_t* sLiveStreamUrl);
 
+extern "C" int on_reminder_notify(
+    void *ptr,
+    int reminder_type,
+    const zchar_t* title,
+    const zchar_t* content,
+    int is_blocking,
+    int action_type
+);
+
+extern "C" int on_enable_reminder_notify(
+    void *ptr,
+    int reminder_type,
+    const zchar_t* title,
+    const zchar_t* content,
+    int is_blocking,
+    int action_type
+);
+
+namespace {
+    constexpr int REMINDER_ACTION_ACCEPT = 1;
+    constexpr int REMINDER_ACTION_DECLINE = 2;
+    constexpr int REMINDER_ACTION_IGNORE = 3;
+    constexpr int REMINDER_ACTION_START = 4;
+
+    inline int reminder_type_or_unknown(ZOOMSDK::IMeetingReminderContent* content) {
+        return content ? static_cast<int>(content->GetType()) : -1;
+    }
+
+    inline const zchar_t* reminder_title_or_empty(ZOOMSDK::IMeetingReminderContent* content) {
+        if (!content || !content->GetTitle()) {
+            return "";
+        }
+        return content->GetTitle();
+    }
+
+    inline const zchar_t* reminder_content_or_empty(ZOOMSDK::IMeetingReminderContent* content) {
+        if (!content || !content->GetContent()) {
+            return "";
+        }
+        return content->GetContent();
+    }
+
+    inline int reminder_is_blocking(ZOOMSDK::IMeetingReminderContent* content) {
+        return content && content->IsBlocking() ? 1 : 0;
+    }
+
+    inline int reminder_action_type(ZOOMSDK::IMeetingReminderContent* content) {
+        return content ? static_cast<int>(content->GetActionType()) : 0;
+    }
+}
+
 class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
     public:
         ~C_MeetingServiceEvent() override {}
@@ -65,6 +116,90 @@ class C_MeetingServiceEvent: public ZOOMSDK::IMeetingServiceEvent {
 extern "C" ZOOMSDK::SDKError meeting_set_event(ZOOMSDK::IMeetingService* meeting_service, void *arc_ptr) {
     auto* obj = new C_MeetingServiceEvent(arc_ptr); // TODO : Fix memory leak
     return meeting_service->SetEvent(obj);
+}
+
+class C_MeetingReminderEvent: public ZOOMSDK::IMeetingReminderEvent {
+    public:
+        ~C_MeetingReminderEvent() override {}
+
+        C_MeetingReminderEvent(void *ptr) {
+            ptr_to_rust = ptr;
+        }
+
+        void onReminderNotify(
+            ZOOMSDK::IMeetingReminderContent* content,
+            ZOOMSDK::IMeetingReminderHandler* handle
+        ) override {
+            int action = on_reminder_notify(
+                ptr_to_rust,
+                reminder_type_or_unknown(content),
+                reminder_title_or_empty(content),
+                reminder_content_or_empty(content),
+                reminder_is_blocking(content),
+                reminder_action_type(content)
+            );
+
+            if (!handle) {
+                return;
+            }
+
+            switch (action) {
+                case REMINDER_ACTION_ACCEPT:
+                    handle->Accept();
+                    break;
+                case REMINDER_ACTION_DECLINE:
+                    handle->Decline();
+                    break;
+                case REMINDER_ACTION_IGNORE:
+                    handle->Ignore();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void onEnableReminderNotify(
+            ZOOMSDK::IMeetingReminderContent* content,
+            ZOOMSDK::IMeetingEnableReminderHandler* handle
+        ) override {
+            int action = on_enable_reminder_notify(
+                ptr_to_rust,
+                reminder_type_or_unknown(content),
+                reminder_title_or_empty(content),
+                reminder_content_or_empty(content),
+                reminder_is_blocking(content),
+                reminder_action_type(content)
+            );
+
+            if (!handle) {
+                return;
+            }
+
+            switch (action) {
+                case REMINDER_ACTION_DECLINE:
+                    handle->Decline(false);
+                    break;
+                case REMINDER_ACTION_IGNORE:
+                    handle->Ignore();
+                    break;
+                case REMINDER_ACTION_START:
+                    handle->Start();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    private:
+        void *ptr_to_rust;
+};
+
+extern "C" ZOOMSDK::SDKError reminder_set_event(
+    ZOOMSDK::IMeetingReminderController *controller,
+    void *arc_ptr
+) {
+    auto* obj = new C_MeetingReminderEvent(arc_ptr); // TODO : Fix memory leak
+    return controller->SetEvent(obj);
 }
 
 extern "C" ZOOMSDK::SDKError meeting_join(
@@ -130,4 +265,10 @@ extern "C" ZOOMSDK::IMeetingAudioController *meeting_get_meeting_audio_controlle
     ZOOMSDK::IMeetingService* meeting_service
 ) {
     return meeting_service->GetMeetingAudioController();
+}
+
+extern "C" ZOOMSDK::IMeetingReminderController *meeting_get_meeting_reminder_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+) {
+    return meeting_service->GetMeetingReminderController();
 }

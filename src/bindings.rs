@@ -6080,6 +6080,19 @@ unsafe extern "C" {
     ) -> *mut ZOOMSDK_IMeetingAudioController;
 }
 unsafe extern "C" {
+    #[doc = " \\brief Get the reminder controller interface.\n \\return If the function succeeds, the return value is a pointer to IMeetingReminderController. Otherwise returns NULL."]
+    pub fn meeting_get_meeting_reminder_controller(
+        meeting_service: *mut ZOOMSDK_IMeetingService,
+    ) -> *mut ZOOMSDK_IMeetingReminderController;
+}
+unsafe extern "C" {
+    #[doc = " \\brief Set the event handler for reminder/disclaimer events.\n \\param controller A pointer to ZOOMSDK::IMeetingReminderController\n \\param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ReminderEvent>>)\n \\return SDKError indicating success or failure."]
+    pub fn reminder_set_event(
+        controller: *mut ZOOMSDK_IMeetingReminderController,
+        arc_ptr: *mut ::std::os::raw::c_void,
+    ) -> ZOOMSDK_SDKError;
+}
+unsafe extern "C" {
     #[doc = " \\brief Get audio setting interface.\n \\return If the function succeeds, the return value an object pointer to IAudioSettingContext.\n Otherwise failed, returns NULL.\n For more details, see \\link IAudioSettingContext \\endlink."]
     pub fn get_audio_settings(
         setting_service: *mut ZOOMSDK_ISettingService,

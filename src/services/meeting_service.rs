@@ -15,6 +15,8 @@ pub mod chat_interface;
 pub mod participants_interface;
 /// Allows managing, starting, and stopping the recording.
 pub mod recording_controller;
+/// Allows handling Zoom reminder/disclaimer dialogs.
+pub mod reminder_controller;
 /// Allows obtaining the events necessary for screen sharing.
 pub mod sharing_controller;
 /// Allows injecting an image into the bot webcam.
@@ -24,6 +26,10 @@ pub use audio_controller::AudioController;
 pub use chat_interface::ChatInterface;
 pub use participants_interface::{ParticipantsEvent, ParticipantsInterface};
 pub use recording_controller::RecordingController;
+pub use reminder_controller::{
+    is_auto_acceptable_reminder, reminder_type_name, ReminderAction, ReminderContent,
+    ReminderController, ReminderEvent,
+};
 pub use sharing_controller::SharingController;
 pub use webcam_interface::{new_webcam_injection_boitlerplate, VideoToWebcam};
 
@@ -36,6 +42,7 @@ pub struct MeetingService<'a> {
 
     // Natural borrow
     recording_controller: Option<RecordingController<'a>>,
+    reminder_controller: Option<ReminderController<'a>>,
     participants_interface: Option<ParticipantsInterface<'a>>,
     chat_interface: Option<ChatInterface<'a>>,
     sharing_controller: Option<SharingController<'a>>,
@@ -91,6 +98,7 @@ impl<'a> MeetingService<'a> {
                 evt_mutex: None,
                 ref_meeting_service: unsafe { ptr.as_mut() }.unwrap(),
                 recording_controller: None,
+                reminder_controller: None,
                 sharing_controller: None,
                 participants_interface: None,
                 chat_interface: None,
@@ -183,6 +191,17 @@ impl<'a> MeetingService<'a> {
                 .expect("Cannot create RecordingController");
         }
         self.recording_controller.as_mut().unwrap()
+    }
+    /// Get Reminder Controller.
+    pub fn reminder_ctrl(&mut self) -> &mut ReminderController<'a> {
+        if self.reminder_controller.is_none() {
+            self.reminder_controller =
+                Some(ReminderController::new(self.ref_meeting_service).unwrap());
+            self.reminder_controller
+                .as_ref()
+                .expect("Cannot create ReminderController");
+        }
+        self.reminder_controller.as_mut().unwrap()
     }
     /// Get Sharing Controller.
     pub fn sharing_ctrl(&mut self) -> &mut SharingController<'a> {

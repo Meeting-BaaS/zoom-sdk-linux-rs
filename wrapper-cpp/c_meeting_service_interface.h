@@ -1,6 +1,7 @@
 #ifndef _C_MEETING_SERVICE_INTERFACE_H_
 #define _C_MEETING_SERVICE_INTERFACE_H_
 #include "../zoom-meeting-sdk-linux/h/meeting_service_interface.h"
+#include "../zoom-meeting-sdk-linux/h/meeting_service_components/meeting_reminder_ctrl_interface.h"
 
 /// \brief Set meeting service callback event handler.
 /// \param pEvent A pointer to the IMeetingServiceEvent that receives the meeting service callback event.
@@ -60,6 +61,21 @@ extern "C" ZOOMSDK::IMeetingShareController* meeting_get_meeting_share_controlle
 /// \return If the function succeeds, the return value is a pointer to IMeetingAudioController. Otherwise returns NULL.
 extern "C" ZOOMSDK::IMeetingAudioController *meeting_get_meeting_audio_controller(
     ZOOMSDK::IMeetingService* meeting_service
+);
+
+/// \brief Get the reminder controller interface.
+/// \return If the function succeeds, the return value is a pointer to IMeetingReminderController. Otherwise returns NULL.
+extern "C" ZOOMSDK::IMeetingReminderController *meeting_get_meeting_reminder_controller(
+    ZOOMSDK::IMeetingService* meeting_service
+);
+
+/// \brief Set the event handler for reminder/disclaimer events.
+/// \param controller A pointer to ZOOMSDK::IMeetingReminderController
+/// \param arc_ptr A pointer to the Rust event handler (Arc<Mutex<dyn ReminderEvent>>)
+/// \return SDKError indicating success or failure.
+extern "C" ZOOMSDK::SDKError reminder_set_event(
+    ZOOMSDK::IMeetingReminderController *controller,
+    void *arc_ptr
 );
 
 #endif

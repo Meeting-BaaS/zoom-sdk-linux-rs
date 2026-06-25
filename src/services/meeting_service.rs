@@ -192,16 +192,17 @@ impl<'a> MeetingService<'a> {
         }
         self.recording_controller.as_mut().unwrap()
     }
+    /// Try to get Reminder Controller.
+    pub fn try_reminder_ctrl(&mut self) -> Option<&mut ReminderController<'a>> {
+        if self.reminder_controller.is_none() {
+            self.reminder_controller = ReminderController::new(self.ref_meeting_service);
+        }
+        self.reminder_controller.as_mut()
+    }
     /// Get Reminder Controller.
     pub fn reminder_ctrl(&mut self) -> &mut ReminderController<'a> {
-        if self.reminder_controller.is_none() {
-            self.reminder_controller =
-                Some(ReminderController::new(self.ref_meeting_service).unwrap());
-            self.reminder_controller
-                .as_ref()
-                .expect("Cannot create ReminderController");
-        }
-        self.reminder_controller.as_mut().unwrap()
+        self.try_reminder_ctrl()
+            .expect("Cannot create ReminderController")
     }
     /// Get Sharing Controller.
     pub fn sharing_ctrl(&mut self) -> &mut SharingController<'a> {
